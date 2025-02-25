@@ -7,9 +7,9 @@ public class OrderRepository(AppDbContext context) : GenericRepository<Order>(co
 
     public override void Update(Order entity)
     {
-        if (entity.OrderStatus?.Name == "Delivered")
+        if (entity.OrderStatus?.Name == "Completed")
         {
-            throw new InvalidOperationException("Order cannot be updated after it has been delivered.");
+            throw new InvalidOperationException("Order cannot be updated after it has been completed.");
         }
 
         base.Update(entity);
@@ -17,9 +17,9 @@ public class OrderRepository(AppDbContext context) : GenericRepository<Order>(co
 
     public override void Delete(Order entity)
     {
-        if (entity.OrderStatus?.Name == "Delivered")
+        if (entity.OrderStatus?.Name == "Completed")
         {
-            throw new InvalidOperationException("Order cannot be deleted after it has been delivered.");
+            throw new InvalidOperationException("Order cannot be deleted after it has been completed.");
         }
 
         base.Delete(entity);

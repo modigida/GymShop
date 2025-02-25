@@ -59,7 +59,7 @@ public class OrderProductsController(IUnitOfWork unitOfWork, IGenericRepository<
         return Ok(updatedOrderProduct);
     }
 
-    [HttpDelete("{id")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         var orderProduct = await _orderProductRepository.GetByIdAsync(id);
