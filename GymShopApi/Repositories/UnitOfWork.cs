@@ -10,9 +10,10 @@ public class UnitOfWork : IUnitOfWork
     public IGenericRepository<Category> Categories { get; }
     public IGenericRepository<Order> Orders { get; }
     public IGenericRepository<OrderProduct> OrderProducts { get; }
+    public IGenericRepository<OrderStatus> OrderStatuses { get; }
     public IGenericRepository<Product> Products { get; }
+    public IGenericRepository<ProductStatus> ProductStatuses { get; }
     public IGenericRepository<Role> Roles { get; }
-    public IGenericRepository<OrderStatus> Statuses { get; }
     public IGenericRepository<User> Users { get; }
 
     public UnitOfWork(AppDbContext context)
@@ -21,9 +22,10 @@ public class UnitOfWork : IUnitOfWork
         Categories = new GenericRepository<Category>(_context);
         Orders = new GenericRepository<Order>(_context);
         OrderProducts = new GenericRepository<OrderProduct>(_context);
+        OrderStatuses = new GenericRepository<OrderStatus>(_context);
         Products = new GenericRepository<Product>(_context);
         Roles = new GenericRepository<Role>(_context);
-        Statuses = new GenericRepository<OrderStatus>(_context);
+        ProductStatuses = new GenericRepository<ProductStatus>(_context);
         Users = new GenericRepository<User>(_context);
     }
     public async Task<int> CompleteAsync()

@@ -7,34 +7,33 @@ namespace GymShopApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class OrdersController(IUnitOfWork unitOfWork, IGenericRepository<Order> orderRepository) : ControllerBase
+public class OrdersController(IUnitOfWork unitOfWork) : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IGenericRepository<Order> _orderRepository = orderRepository;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var orders = await _orderRepository.GetAllAsync();
+        var orders = await _unitOfWork.Orders.GetAllAsync();
 
         if (!orders.Any())
         {
             return NotFound("No orders found");
         }
-
+        await _unitOfWork.CompleteAsync();
         return Ok(orders);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var order = await _orderRepository.GetByIdAsync(id);
+        var order = await _unitOfWork.Orders.GetByIdAsync(id);
 
         if (order == null)
         {
             return NotFound($"No order found with ID: {id}");
         }
-
+        await _unitOfWork.CompleteAsync();
         return Ok(order);
     }
 
@@ -46,15 +45,15 @@ public class OrdersController(IUnitOfWork unitOfWork, IGenericRepository<Order> 
             return BadRequest("Invalid input");
         }
 
-        await _orderRepository.AddAsync(order);
-
+        await _unitOfWork.Orders.AddAsync(order);
+        await _unitOfWork.CompleteAsync();
         return CreatedAtAction(nameof(GetAll), new { id = order.Id }, order);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] Order updatedOrder)
     {
-        var order = await _orderRepository.GetByIdAsync(id);
+        var order = await _unitOfWork.Orders.GetByIdAsync(id);
         if (order == null)
         {
             return NotFound("Order not found");
@@ -67,21 +66,21 @@ public class OrdersController(IUnitOfWork unitOfWork, IGenericRepository<Order> 
 
         order.OrderStatusId = updatedOrder.OrderStatusId;
 
-        _orderRepository.Update(order);
-
+        _unitOfWork.Orders.Update(order);
+        await _unitOfWork.CompleteAsync();
         return Ok(order);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var order = await _orderRepository.GetByIdAsync(id);
+        var order = await _unitOfWork.Orders.GetByIdAsync(id);
         if (order == null)
         {
             return NotFound("Order not found");
         }
-        _orderRepository.Delete(order);
-
+        _unitOfWork.Orders.Delete(order);
+        await _unitOfWork.CompleteAsync();
         return Ok("Order deleted");
     }
 }

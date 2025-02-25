@@ -9,34 +9,35 @@ namespace GymShopApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductStatusesController(IUnitOfWork unitOfWork, IGenericRepository<ProductStatus> productStatusRepository) : ControllerBase
+public class ProductStatusesController(IUnitOfWork unitOfWork) : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IGenericRepository<ProductStatus> _productStatusRepository = productStatusRepository;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var productStatuses = await _productStatusRepository.GetAllAsync();
+        var productStatuses = await _unitOfWork.ProductStatuses.GetAllAsync();
 
         if (!productStatuses.Any())
         {
             return NotFound("No product statuses found");
         }
 
+        await _unitOfWork.CompleteAsync();
         return Ok(productStatuses);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var productStatus = await _productStatusRepository.GetByIdAsync(id);
+        var productStatus = await _unitOfWork.ProductStatuses.GetByIdAsync(id);
 
         if (productStatus == null)
         {
             return NotFound($"No product status found with ID: {id}");
         }
 
+        await _unitOfWork.CompleteAsync();
         return Ok(productStatus);
     }
 
@@ -48,15 +49,15 @@ public class ProductStatusesController(IUnitOfWork unitOfWork, IGenericRepositor
             return BadRequest("Invalid input");
         }
 
-        await _productStatusRepository.AddAsync(productStatus);
-
+        await _unitOfWork.ProductStatuses.AddAsync(productStatus);
+        await _unitOfWork.CompleteAsync();
         return CreatedAtAction(nameof(GetAll), new { id = productStatus.Id }, productStatus);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] Role updatedProductStatus)
+    public async Task<IActionResult> Put(int id, [FromBody] ProductStatus updatedProductStatus)
     {
-        var productStatus = await _productStatusRepository.GetByIdAsync(id);
+        var productStatus = await _unitOfWork.ProductStatuses.GetByIdAsync(id);
         if (productStatus == null)
         {
             return NotFound("Product status not found");
@@ -69,21 +70,21 @@ public class ProductStatusesController(IUnitOfWork unitOfWork, IGenericRepositor
 
         productStatus.Name = updatedProductStatus.Name;
 
-        _productStatusRepository.Update(productStatus);
-
+        _unitOfWork.ProductStatuses.Update(productStatus);
+        await _unitOfWork.CompleteAsync();
         return Ok(productStatus);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var productStatus = await _productStatusRepository.GetByIdAsync(id);
+        var productStatus = await _unitOfWork.ProductStatuses.GetByIdAsync(id);
         if (productStatus == null)
         {
             return NotFound("Product status not found");
         }
-        _productStatusRepository.Delete(productStatus);
-
+        _unitOfWork.ProductStatuses.Delete(productStatus);
+        await _unitOfWork.CompleteAsync();
         return Ok("Product status deleted");
     }
 }

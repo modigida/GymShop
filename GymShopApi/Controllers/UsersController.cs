@@ -8,34 +8,33 @@ namespace GymShopApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController(IUnitOfWork unitOfWork, IGenericRepository<User> userRepository) : ControllerBase
+public class UsersController(IUnitOfWork unitOfWork) : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IGenericRepository<User> _userRepository = userRepository;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var users = await _userRepository.GetAllAsync();
+        var users = await _unitOfWork.Users.GetAllAsync();
 
         if (!users.Any())
         {
             return NotFound("No users found");
         }
-
+        await _unitOfWork.CompleteAsync();
         return Ok(users);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var user = await _userRepository.GetByIdAsync(id);
+        var user = await _unitOfWork.Users.GetByIdAsync(id);
 
         if (user == null)
         {
             return NotFound($"No user found with ID: {id}");
         }
-
+        await _unitOfWork.CompleteAsync();
         return Ok(user);
     }
 
@@ -49,15 +48,15 @@ public class UsersController(IUnitOfWork unitOfWork, IGenericRepository<User> us
             return BadRequest("Invalid input");
         }
 
-        await _userRepository.AddAsync(user);
-
+        await _unitOfWork.Users.AddAsync(user);
+        await _unitOfWork.CompleteAsync();
         return CreatedAtAction(nameof(GetAll), new { id = user.Id }, user);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] User updatedUser)
     {
-        var user = await _userRepository.GetByIdAsync(id);
+        var user = await _unitOfWork.Users.GetByIdAsync(id);
         if (user == null)
         {
             return NotFound("User not found");
@@ -77,21 +76,21 @@ public class UsersController(IUnitOfWork unitOfWork, IGenericRepository<User> us
         if (!string.IsNullOrEmpty(updatedUser.Phone)) { user.Phone = updatedUser.Phone; }
         if (!string.IsNullOrEmpty(updatedUser.Address)) { user.Address = updatedUser.Address; }
 
-        _userRepository.Update(user);
-
+        _unitOfWork.Users.Update(user);
+        await _unitOfWork.CompleteAsync();
         return Ok(user);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var user = await _userRepository.GetByIdAsync(id);
+        var user = await _unitOfWork.Users.GetByIdAsync(id);
         if (user == null)
         {
             return NotFound("User not found");
         }
-        _userRepository.Delete(user);
-
+        _unitOfWork.Users.Delete(user);
+        await _unitOfWork.CompleteAsync();
         return Ok("User deleted");
     }
 

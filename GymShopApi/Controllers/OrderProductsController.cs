@@ -3,30 +3,31 @@ using GymShopApi.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymShopApi.Controllers;
-public class OrderProductsController(IUnitOfWork unitOfWork, IGenericRepository<OrderProduct> orderProductRepository) : ControllerBase
+public class OrderProductsController(IUnitOfWork unitOfWork) : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IGenericRepository<OrderProduct> _orderProductRepository = orderProductRepository;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var orderProducts = await _orderProductRepository.GetAllAsync();
+        var orderProducts = await _unitOfWork.OrderProducts.GetAllAsync();
         if (!orderProducts.Any())
         {
             return NotFound("No order products found");
         }
+        await _unitOfWork.CompleteAsync();
         return Ok(orderProducts);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var orderProduct = await _orderProductRepository.GetByIdAsync(id);
+        var orderProduct = await _unitOfWork.OrderProducts.GetByIdAsync(id);
         if (orderProduct == null)
         {
             return NotFound($"No order product found with ID: {id}");
         }
+        await _unitOfWork.CompleteAsync();
         return Ok(orderProduct);
     }
 
@@ -37,14 +38,15 @@ public class OrderProductsController(IUnitOfWork unitOfWork, IGenericRepository<
         {
             return BadRequest("Invalid input");
         }
-        await _orderProductRepository.AddAsync(orderProduct);
+        await _unitOfWork.OrderProducts.AddAsync(orderProduct);
+        await _unitOfWork.CompleteAsync();
         return CreatedAtAction(nameof(GetAll), new { orderId = orderProduct.OrderId, productId = orderProduct.ProductId }, orderProduct);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] OrderProduct updatedOrderProduct)
     {
-        var orderProduct = await _orderProductRepository.GetByIdAsync(id);
+        var orderProduct = await _unitOfWork.OrderProducts.GetByIdAsync(id);
         if (orderProduct == null)
         {
             return NotFound("Order product not found");
@@ -55,19 +57,21 @@ public class OrderProductsController(IUnitOfWork unitOfWork, IGenericRepository<
         if (updatedOrderProduct.Quantity != 0) { orderProduct.Quantity = updatedOrderProduct.Quantity; }
         if (updatedOrderProduct.TotalPrice != 0) { orderProduct.TotalPrice = updatedOrderProduct.TotalPrice; }
 
-        _orderProductRepository.Update(updatedOrderProduct);
+        _unitOfWork.OrderProducts.Update(updatedOrderProduct);
+        await _unitOfWork.CompleteAsync();
         return Ok(updatedOrderProduct);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var orderProduct = await _orderProductRepository.GetByIdAsync(id);
+        var orderProduct = await _unitOfWork.OrderProducts.GetByIdAsync(id);
         if (orderProduct == null)
         {
             return NotFound("Order product not found");
         }
-        _orderProductRepository.Delete(orderProduct);
+        _unitOfWork.OrderProducts.Delete(orderProduct);
+        await _unitOfWork.CompleteAsync();
         return Ok("Order product deleted");
     }
 }

@@ -9,34 +9,33 @@ namespace GymShopApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RolesController(IUnitOfWork unitOfWork, IGenericRepository<Role> roleRepository) : ControllerBase
+public class RolesController(IUnitOfWork unitOfWork) : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IGenericRepository<Role> _roleRepository = roleRepository;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var roles = await _roleRepository.GetAllAsync();
+        var roles = await _unitOfWork.Roles.GetAllAsync();
 
         if (!roles.Any())
         {
             return NotFound("No roles found");
         }
-
+        await _unitOfWork.CompleteAsync();
         return Ok(roles);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var role = await _roleRepository.GetByIdAsync(id);
+        var role = await _unitOfWork.Roles.GetByIdAsync(id);
 
         if (role == null)
         {
             return NotFound($"No role found with ID: {id}");
         }
-
+        await _unitOfWork.CompleteAsync();
         return Ok(role);
     }
 
@@ -48,15 +47,15 @@ public class RolesController(IUnitOfWork unitOfWork, IGenericRepository<Role> ro
             return BadRequest("Invalid input");
         }
 
-        await _roleRepository.AddAsync(role);
-
+        await _unitOfWork.Roles.AddAsync(role);
+        await _unitOfWork.CompleteAsync();
         return CreatedAtAction(nameof(GetAll), new { id = role.Id }, role);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] Role updatedRole)
     {
-        var role = await _roleRepository.GetByIdAsync(id);
+        var role = await _unitOfWork.Roles.GetByIdAsync(id);
         if (role == null)
         {
             return NotFound("Role not found");
@@ -69,21 +68,21 @@ public class RolesController(IUnitOfWork unitOfWork, IGenericRepository<Role> ro
 
         role.Name = updatedRole.Name;
 
-        _roleRepository.Update(role);
-
+        _unitOfWork.Roles.Update(role);
+        await _unitOfWork.CompleteAsync();
         return Ok(role);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var role = await _roleRepository.GetByIdAsync(id);
+        var role = await _unitOfWork.Roles.GetByIdAsync(id);
         if (role == null)
         {
             return NotFound("Role not found");
         }
-        _roleRepository.Delete(role);
-
+        _unitOfWork.Roles.Delete(role);
+        await _unitOfWork.CompleteAsync();
         return Ok("Role deleted");
     }
 

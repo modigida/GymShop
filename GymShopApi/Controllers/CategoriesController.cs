@@ -10,34 +10,33 @@ namespace GymShopApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CategoriesController(IUnitOfWork unitOfWork, IGenericRepository<Category> categoryRepository) : ControllerBase
+public class CategoriesController(IUnitOfWork unitOfWork) : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IGenericRepository<Category> _categoryRepository = categoryRepository;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var categories = await _categoryRepository.GetAllAsync();
+        var categories = await _unitOfWork.Categories.GetAllAsync();
 
         if (!categories.Any())
         {
             return NotFound("No categories found");
         }
-
+        await _unitOfWork.CompleteAsync();
         return Ok(categories);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var category = await _categoryRepository.GetByIdAsync(id);
+        var category = await _unitOfWork.Categories.GetByIdAsync(id);
 
         if (category == null)
         {
             return NotFound($"No category found with ID: {id}");
         }
-
+        await _unitOfWork.CompleteAsync();
         return Ok(category);
     }
 
@@ -49,15 +48,15 @@ public class CategoriesController(IUnitOfWork unitOfWork, IGenericRepository<Cat
             return BadRequest("Invalid input");
         }
 
-        await _categoryRepository.AddAsync(category);
-
+        await _unitOfWork.Categories.AddAsync(category);
+        await _unitOfWork.CompleteAsync();
         return CreatedAtAction(nameof(GetAll), new { id = category.Id }, category);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] Category updatedCategory)
     {
-        var category = await _categoryRepository.GetByIdAsync(id);
+        var category = await _unitOfWork.Categories.GetByIdAsync(id);
         if (category == null)
         {
             return NotFound("Category not found");
@@ -70,21 +69,21 @@ public class CategoriesController(IUnitOfWork unitOfWork, IGenericRepository<Cat
 
         category.Name = updatedCategory.Name;
 
-        _categoryRepository.Update(category);
-
+        _unitOfWork.Categories.Update(category);
+        await _unitOfWork.CompleteAsync();
         return Ok(category);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var category = await _categoryRepository.GetByIdAsync(id);
+        var category = await _unitOfWork.Categories.GetByIdAsync(id);
         if (category == null)
         {
             return NotFound("Category not found");
         }
-        _categoryRepository.Delete(category);
-
+        _unitOfWork.Categories.Delete(category);
+        await _unitOfWork.CompleteAsync();
         return Ok("Category deleted");
     }
 }
