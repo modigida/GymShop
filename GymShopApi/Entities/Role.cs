@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GymShopApi.Models;
+namespace GymShopApi.Entities;
 public class Role
 {
     [Key]

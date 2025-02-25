@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace GymShopApi.Models;
+namespace GymShopApi.Entities;
 public class OrderProduct
 {
     [Key, Column(Order = 0)]

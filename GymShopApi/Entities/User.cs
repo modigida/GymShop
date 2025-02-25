@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace GymShopApi.Models;
+namespace GymShopApi.Entities;
 public class User
 {
     [Key]
