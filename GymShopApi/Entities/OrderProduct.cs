@@ -5,11 +5,9 @@ using System.Text.Json.Serialization;
 namespace GymShopApi.Entities;
 public class OrderProduct
 {
-    [Key, Column(Order = 0)]
     [ForeignKey("Order")]
     public int OrderId { get; set; }
 
-    [Key, Column(Order = 1)]
     [ForeignKey("Product")]
     public int ProductId { get; set; }
 

@@ -1,9 +1,7 @@
 ﻿using GymShopApi.Database;
 using GymShopApi.Entities;
 
-namespace GymShopApi.Repositories
+namespace GymShopApi.Repositories;
+public class UserRepository(AppDbContext context) : GenericRepository<User>(context)
 {
-    public class UserRepository(AppDbContext context) : GenericRepository<User>(context)
-    {
-    }
 }
