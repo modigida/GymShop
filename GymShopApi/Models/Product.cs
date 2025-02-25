@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace GymShopApi.Models;
 public class Product
@@ -27,4 +28,10 @@ public class Product
 
     [MaxLength(255)]
     public string Description { get; set; } = string.Empty;
+
+    [JsonIgnore]
+    public Category? Category { get; set; }
+
+    [JsonIgnore]
+    public ProductStatus? ProductStatus { get; set; }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace GymShopApi.Models;
 public class User
@@ -34,6 +35,12 @@ public class User
     [Required]
     [MaxLength(20)]
     [Phone(ErrorMessage = "Invalid phone number format.")]
-    [RegularExpression(@"^\+?\d{7,15}$", ErrorMessage = "Phone number must contain 7-15 digits and can start with '+'.")]
     public string Phone { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(255)]
+    public string Address { get; set; } = string.Empty;
+
+    [JsonIgnore]
+    public Role? Role { get; set; }
 }
