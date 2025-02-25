@@ -85,6 +85,6 @@ public class CategoriesController(IUnitOfWork unitOfWork, IGenericRepository<Cat
         }
         _categoryRepository.Delete(category);
 
-        return Ok("Removed successfully");
+        return Ok("Category deleted");
     }
 }
