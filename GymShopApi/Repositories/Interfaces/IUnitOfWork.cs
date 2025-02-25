@@ -1,4 +1,4 @@
-﻿using GymShopApi.Models;
+﻿using GymShopApi.Entities;
 
 namespace GymShopApi.Repositories.Interfaces;
 public interface IUnitOfWork : IDisposable

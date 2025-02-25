@@ -3,16 +3,11 @@ using GymShopApi.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymShopApi.Repositories;
-public class GenericRepository<T> : IGenericRepository<T> where T : class
+public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> where T : class
 {
-    private readonly AppDbContext _context;
-    private readonly DbSet<T> _dbSet;
+    private readonly AppDbContext _context = context;
+    private readonly DbSet<T> _dbSet = context.Set<T>();
 
-    public GenericRepository(AppDbContext context)
-    {
-        _context = context;
-        _dbSet = context.Set<T>();
-    }
     public async Task<IEnumerable<T>> GetAllAsync()
     {
         return await _dbSet.ToListAsync();

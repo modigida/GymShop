@@ -1,4 +1,4 @@
-﻿using GymShopApi.Models;
+﻿using GymShopApi.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymShopApi.Database;

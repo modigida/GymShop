@@ -1,5 +1,5 @@
 ﻿using GymShopApi.Database;
-using GymShopApi.Models;
+using GymShopApi.Entities;
 using GymShopApi.Repositories.Interfaces;
 
 namespace GymShopApi.Repositories;
