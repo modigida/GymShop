@@ -1,6 +1,6 @@
 ﻿using GymShopApi.Models;
 
-namespace GymShopApi.Interfaces;
+namespace GymShopApi.Repositories.Interfaces;
 public interface IUnitOfWork : IDisposable
 {
     IGenericRepository<Category> Categories { get; }
@@ -8,7 +8,7 @@ public interface IUnitOfWork : IDisposable
     IGenericRepository<OrderProduct> OrderProducts { get; }
     IGenericRepository<Product> Products { get; }
     IGenericRepository<Role> Roles { get; }
-    IGenericRepository<Status> Statuses { get; }
+    IGenericRepository<OrderStatus> Statuses { get; }
     IGenericRepository<User> Users { get; }
     Task<int> CompleteAsync();
 }

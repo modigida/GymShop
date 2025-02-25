@@ -1,12 +1,39 @@
-﻿namespace GymShopApi.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GymShopApi.Models;
 public class User
 {
+    [Key]
     public Guid Id { get; set; }
-    public required string FirstName { get; set; }
-    public required string LastName { get; set; }
+
+    [Required(ErrorMessage = "First name is required.")]
+    [MaxLength(50)] 
+    public string FirstName { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Last name is required.")]
+    [MaxLength(50)] 
+    public string LastName { get; set; } = string.Empty;
+
+    [Required]
+    [Range(1, int.MaxValue, ErrorMessage = "RoleId must be a positive integer.")]
     public int RoleId { get; set; }
-    public required string PasswordHash { get; set; }
-    public required string PasswordSalt { get; set; }
-    public required string Email { get; set; }
-    public required string Phone { get; set; }
+
+    [Required]
+    [MaxLength(150)]
+    public string PasswordHash { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(150)]
+    public string PasswordSalt { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(150)]
+    [EmailAddress(ErrorMessage = "Invalid email format.")]
+    public required string Email { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(20)]
+    [Phone(ErrorMessage = "Invalid phone number format.")]
+    [RegularExpression(@"^\+?\d{7,15}$", ErrorMessage = "Phone number must contain 7-15 digits and can start with '+'.")]
+    public string Phone { get; set; } = string.Empty;
 }

@@ -1,7 +1,13 @@
-﻿namespace GymShopApi.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GymShopApi.Models;
 public class Role
 {
+    [Key]
     public int Id { get; set; }
-    public required string Name { get; set; } // Admin, User
+
+    [Required] 
+    [MaxLength(50)] 
+    public string Name { get; set; } = string.Empty;  // Admin, User
 }
 

@@ -1,6 +1,6 @@
 ﻿using GymShopApi.Database;
-using GymShopApi.Interfaces;
 using GymShopApi.Models;
+using GymShopApi.Repositories.Interfaces;
 
 namespace GymShopApi.Repositories;
 public class UnitOfWork : IUnitOfWork
@@ -12,7 +12,7 @@ public class UnitOfWork : IUnitOfWork
     public IGenericRepository<OrderProduct> OrderProducts { get; }
     public IGenericRepository<Product> Products { get; }
     public IGenericRepository<Role> Roles { get; }
-    public IGenericRepository<Status> Statuses { get; }
+    public IGenericRepository<OrderStatus> Statuses { get; }
     public IGenericRepository<User> Users { get; }
 
     public UnitOfWork(AppDbContext context)
@@ -23,7 +23,7 @@ public class UnitOfWork : IUnitOfWork
         OrderProducts = new GenericRepository<OrderProduct>(_context);
         Products = new GenericRepository<Product>(_context);
         Roles = new GenericRepository<Role>(_context);
-        Statuses = new GenericRepository<Status>(_context);
+        Statuses = new GenericRepository<OrderStatus>(_context);
         Users = new GenericRepository<User>(_context);
     }
     public async Task<int> CompleteAsync()

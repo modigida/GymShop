@@ -1,8 +1,21 @@
-﻿namespace GymShopApi.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace GymShopApi.Models;
+
 public class Order
 {
+    [Key]
     public int Id { get; set; }
+
+    [Required]
+    [ForeignKey("User")]
     public Guid UserId { get; set; }
+
+    [Required]
     public DateTime PurchaseDate { get; set; }
-    public int StatusId { get; set; }
+
+    [Required]
+    [Range(1, int.MaxValue, ErrorMessage = "OrderStatusId must be a positive integer.")]
+    public int OrderStatusId { get; set; }
 }

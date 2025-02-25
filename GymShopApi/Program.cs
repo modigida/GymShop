@@ -1,6 +1,6 @@
 using GymShopApi.Database;
-using GymShopApi.Interfaces;
 using GymShopApi.Repositories;
+using GymShopApi.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
