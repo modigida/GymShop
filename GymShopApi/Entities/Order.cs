@@ -22,4 +22,7 @@ public class Order
 
     [JsonIgnore]
     public User? User { get; set; }
+
+    [JsonIgnore]
+    public OrderStatus? OrderStatus { get; set; }
 }

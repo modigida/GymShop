@@ -5,24 +5,24 @@ namespace GymShopApi.Repositories;
 public class OrderRepository(AppDbContext context) : GenericRepository<Order>(context)
 {
 
-    //  public void Update(Order entity)
-    //  {
-    //      if (entity.Status == "Delivered")
-    //      {
-    //          throw new InvalidOperationException("Order cannot be updated after it has been delivered.");
-    //      }
-    //
-    //      _dbSet.Update(entity);
-    //  }
-    //
-    //  public void Delete(Order entity)
-    //  {
-    //      if (entity.Status == "Delivered")
-    //      {
-    //          throw new InvalidOperationException("Order cannot be deleted after it has been delivered.");
-    //      }
-    //
-    //      _dbSet.Remove(entity);
-    //  }
+    public override void Update(Order entity)
+    {
+        if (entity.OrderStatus?.Name == "Delivered")
+        {
+            throw new InvalidOperationException("Order cannot be updated after it has been delivered.");
+        }
+
+        base.Update(entity);
+    }
+
+    public override void Delete(Order entity)
+    {
+        if (entity.OrderStatus?.Name == "Delivered")
+        {
+            throw new InvalidOperationException("Order cannot be deleted after it has been delivered.");
+        }
+
+        base.Delete(entity);
+    }
 }
 
