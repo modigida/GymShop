@@ -26,14 +26,14 @@ public class GenericService<T>(IUnitOfWork unitOfWork) : IGenericService<T> wher
 
     public virtual async Task<T> Update(int id, T entity)
     {
-        _repository.Update(entity);
+        await _repository.Update(entity);
         await _unitOfWork.CompleteAsync();
         return entity;
     }
 
     public virtual async Task Delete(T entity)
     {
-        _repository.Delete(entity);
+        await _repository.Delete(entity);
         await _unitOfWork.CompleteAsync();
     }
 }
