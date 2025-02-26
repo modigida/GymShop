@@ -1,6 +1,4 @@
-﻿namespace GymShopApi.Services
+﻿namespace GymShopApi.Services;
+public class ProductService
 {
-    public class ProductService
-    {
-    }
 }

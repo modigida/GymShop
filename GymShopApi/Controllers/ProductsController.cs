@@ -48,7 +48,7 @@ public class ProductsController(IUnitOfWork unitOfWork) : ControllerBase
 
         await _unitOfWork.Products.AddAsync(product);
         await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(GetAll), new { id = product.Id }, product);
+        return CreatedAtAction(nameof(Get), new { id = product.Id }, product);
     }
 
     [HttpPut("{id}")]

@@ -40,7 +40,7 @@ public class OrderProductsController(IUnitOfWork unitOfWork) : ControllerBase
         }
         await _unitOfWork.OrderProducts.AddAsync(orderProduct);
         await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(GetAll), new { orderId = orderProduct.OrderId, productId = orderProduct.ProductId }, orderProduct);
+        return CreatedAtAction(nameof(Get), new { orderId = orderProduct.OrderId, productId = orderProduct.ProductId }, orderProduct);
     }
 
     [HttpPut("{id}")]

@@ -8,5 +8,5 @@ public class Category
 
     [Required]
     [MaxLength(50)]
-    public string Name { get; set; } = string.Empty; // Clothes, Equipments, Supplements
+    public string Name { get; set; } = string.Empty;
 }

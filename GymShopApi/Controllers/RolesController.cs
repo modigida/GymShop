@@ -49,7 +49,7 @@ public class RolesController(IUnitOfWork unitOfWork) : ControllerBase
 
         await _unitOfWork.Roles.AddAsync(role);
         await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(GetAll), new { id = role.Id }, role);
+        return CreatedAtAction(nameof(Get), new { id = role.Id }, role);
     }
 
     [HttpPut("{id}")]

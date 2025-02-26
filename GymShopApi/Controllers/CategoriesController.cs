@@ -1,89 +1,83 @@
 ﻿using GymShopApi.Entities;
-using GymShopApi.Repositories;
-using GymShopApi.Repositories.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
+using GymShopApi.Services.Interfaces;
 
 namespace GymShopApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CategoriesController(IUnitOfWork unitOfWork) : ControllerBase
+public class CategoriesController(IGenericService<Category> categoryService) : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IGenericService<Category> _categoryService = categoryService;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var categories = await _unitOfWork.Categories.GetAllAsync();
+        var categories = await _categoryService.GetAllAsync();
 
         if (!categories.Any())
         {
             return NotFound("No categories found");
         }
-        await _unitOfWork.CompleteAsync();
         return Ok(categories);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var category = await _unitOfWork.Categories.GetByIdAsync(id);
+        var category = await _categoryService.GetByIdAsync(id);
 
         if (category == null)
         {
             return NotFound($"No category found with ID: {id}");
         }
-        await _unitOfWork.CompleteAsync();
+
         return Ok(category);
     }
 
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] Category category)
     {
-        if (category == null || string.IsNullOrEmpty(category.Name))
+        try
         {
-            return BadRequest("Invalid input");
+            var newCategory = await _categoryService.AddAsync(category);
+            return CreatedAtAction(nameof(Get), new { id = newCategory.Id }, newCategory);
         }
-
-        await _unitOfWork.Categories.AddAsync(category);
-        await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(GetAll), new { id = category.Id }, category);
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] Category updatedCategory)
     {
-        var category = await _unitOfWork.Categories.GetByIdAsync(id);
-        if (category == null)
+        try
+        {
+            var category = await _categoryService.Update(id, updatedCategory);
+            return Ok(category);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound("Category not found");
         }
-
-        if (updatedCategory == null || string.IsNullOrEmpty(updatedCategory.Name))
-        {
-            return BadRequest("Invalid input");
-        }
-
-        category.Name = updatedCategory.Name;
-
-        _unitOfWork.Categories.Update(category);
-        await _unitOfWork.CompleteAsync();
-        return Ok(category);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(Category category)
     {
-        var category = await _unitOfWork.Categories.GetByIdAsync(id);
-        if (category == null)
+        try
+        {
+            await _categoryService.Delete(category);
+            return Ok("Category deleted");
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound("Category not found");
         }
-        _unitOfWork.Categories.Delete(category);
-        await _unitOfWork.CompleteAsync();
-        return Ok("Category deleted");
     }
 }

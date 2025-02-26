@@ -12,4 +12,5 @@ public interface IUnitOfWork : IDisposable
     IGenericRepository<Role> Roles { get; }
     IGenericRepository<User> Users { get; }
     Task<int> CompleteAsync();
+    IGenericRepository<T> GetRepository<T>() where T : class;
 }

@@ -1,6 +1,8 @@
 using GymShopApi.Database;
 using GymShopApi.Repositories;
 using GymShopApi.Repositories.Interfaces;
+using GymShopApi.Services.Interfaces;
+using GymShopApi.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Register Interfaces
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
 
 var app = builder.Build();
 

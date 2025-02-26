@@ -6,6 +6,7 @@ namespace GymShopApi.Repositories;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _context;
+    private readonly Dictionary<Type, object> _repositories = new();
 
     public IGenericRepository<Category> Categories { get; }
     public IGenericRepository<Order> Orders { get; }
@@ -27,6 +28,15 @@ public class UnitOfWork : IUnitOfWork
         Roles = new GenericRepository<Role>(_context);
         ProductStatuses = new GenericRepository<ProductStatus>(_context);
         Users = new GenericRepository<User>(_context);
+    }
+
+    public IGenericRepository<T> GetRepository<T>() where T : class
+    {
+        if (!_repositories.ContainsKey(typeof(T)))
+        {
+            _repositories[typeof(T)] = new GenericRepository<T>(_context);
+        }
+        return (IGenericRepository<T>)_repositories[typeof(T)];
     }
     public async Task<int> CompleteAsync()
     {

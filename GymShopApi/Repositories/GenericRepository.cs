@@ -19,13 +19,16 @@ public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> 
     public async Task AddAsync(T entity)
     {
         await _dbSet.AddAsync(entity);
+        await _context.SaveChangesAsync();
     }
     public virtual void Update(T entity)
     {
         _dbSet.Update(entity);
+        _context.SaveChangesAsync();
     }
     public virtual void Delete(T entity)
     {
         _dbSet.Remove(entity);
+        _context.SaveChangesAsync();
     }
 }

@@ -50,7 +50,7 @@ public class UsersController(IUnitOfWork unitOfWork) : ControllerBase
 
         await _unitOfWork.Users.AddAsync(user);
         await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(GetAll), new { id = user.Id }, user);
+        return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
     }
 
     [HttpPut("{id}")]

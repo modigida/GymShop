@@ -48,7 +48,7 @@ public class OrderStatusesController(IUnitOfWork unitOfWork) : ControllerBase
 
         await _unitOfWork.OrderStatuses.AddAsync(orderStatus);
         await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(GetAll), new { id = orderStatus.Id }, orderStatus);
+        return CreatedAtAction(nameof(Get), new { id = orderStatus.Id }, orderStatus);
     }
 
     [HttpPut("{id}")]
