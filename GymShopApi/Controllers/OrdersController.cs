@@ -1,86 +1,87 @@
 ﻿using GymShopApi.Entities;
 using GymShopApi.Repositories;
 using GymShopApi.Repositories.Interfaces;
+using GymShopApi.Services;
+using GymShopApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymShopApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class OrdersController(IUnitOfWork unitOfWork) : ControllerBase
+public class OrdersController(IGenericService<Order> orderService) : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IGenericService<Order> _orderService = orderService;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var orders = await _unitOfWork.Orders.GetAllAsync();
+        var orders = await _orderService.GetAllAsync();
 
         if (!orders.Any())
         {
             return NotFound("No orders found");
         }
-        await _unitOfWork.CompleteAsync();
+
         return Ok(orders);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var order = await _unitOfWork.Orders.GetByIdAsync(id);
+        var order = await _orderService.GetByIdAsync(id);
 
         if (order == null)
         {
             return NotFound($"No order found with ID: {id}");
         }
-        await _unitOfWork.CompleteAsync();
+
         return Ok(order);
     }
 
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] Order order)
     {
-        if (order == null || order.UserId == null || order.OrderStatusId == 0 || order.PurchaseDate == null)
+        try
         {
-            return BadRequest("Invalid input");
+            var newOrder = await _orderService.AddAsync(order);
+            return CreatedAtAction(nameof(Get), new { id = newOrder.Id }, newOrder);
         }
-
-        await _unitOfWork.Orders.AddAsync(order);
-        await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(Get), new { id = order.Id }, order);
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] Order updatedOrder)
     {
-        var order = await _unitOfWork.Orders.GetByIdAsync(id);
-        if (order == null)
+        try
+        {
+            var category = await _orderService.Update(id, updatedOrder);
+            return Ok(category);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound("Order not found");
         }
-
-        if (updatedOrder == null || updatedOrder.OrderStatusId == null)
-        {
-            return BadRequest("Invalid input");
-        }
-
-        order.OrderStatusId = updatedOrder.OrderStatusId;
-
-        _unitOfWork.Orders.Update(order);
-        await _unitOfWork.CompleteAsync();
-        return Ok(order);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(Order order)
     {
-        var order = await _unitOfWork.Orders.GetByIdAsync(id);
-        if (order == null)
+        try
+        {
+            await _orderService.Delete(order);
+            return Ok("Order deleted");
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound("Order not found");
         }
-        _unitOfWork.Orders.Delete(order);
-        await _unitOfWork.CompleteAsync();
-        return Ok("Order deleted");
     }
 }
