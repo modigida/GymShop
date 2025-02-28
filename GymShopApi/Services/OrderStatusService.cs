@@ -36,7 +36,9 @@ public class OrderStatusService(IUnitOfWork unitOfWork) : GenericService<OrderSt
         {
             throw new ArgumentException("Order status with the same name already exists.");
         }
+
         orderStatus.Name = entity.Name;
         return await base.Update(orderStatus.Id, orderStatus);
     }
 }
+
