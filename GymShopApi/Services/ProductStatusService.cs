@@ -4,14 +4,50 @@ using GymShopApi.Repositories.Interfaces;
 namespace GymShopApi.Services;
 public class ProductStatusService(IUnitOfWork unitOfWork) : GenericService<ProductStatus>(unitOfWork)
 {
-    //TODO
-    public override Task<ProductStatus> AddAsync(ProductStatus entity)
+    public async Task<bool> NameExistsAsync(string name)
     {
-        throw new NotImplementedException();
+        var productStatuses = await _unitOfWork.ProductStatuses.GetAllAsync();
+        return productStatuses.Any(p => p.Name == name);
+    }
+    public override async Task<ProductStatus> AddAsync(ProductStatus entity)
+    {
+        if (entity == null || string.IsNullOrEmpty(entity.Name))
+        {
+            throw new ArgumentException("Product status name is required.");
+        }
+        if (await NameExistsAsync(entity.Name))
+        {
+            throw new ArgumentException("Product status with the same name already exists.");
+        }
+
+        await _unitOfWork.ProductStatuses.AddAsync(entity);
+        await _unitOfWork.CompleteAsync();
+
+        return entity;
     }
 
-    public override Task<ProductStatus> Update(object id, ProductStatus entity)
+    public override async Task<ProductStatus> Update(object id, ProductStatus entity)
     {
-        throw new NotImplementedException();
+        var productStatus = await GetByIdAsync(id);
+        if (productStatus == null)
+        {
+            throw new ArgumentException("Category not found.");
+        }
+        if (entity == null || string.IsNullOrEmpty(entity.Name))
+        {
+            throw new ArgumentException("Category name is required.");
+        }
+
+        if (await NameExistsAsync(entity.Name))
+        {
+            throw new ArgumentException("Category with the same name already exists.");
+        }
+
+        productStatus.Name = entity.Name;
+
+        await _unitOfWork.ProductStatuses.Update(productStatus);
+        await _unitOfWork.CompleteAsync();
+
+        return productStatus;
     }
 }
