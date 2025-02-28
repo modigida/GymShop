@@ -4,12 +4,18 @@ using GymShopApi.Repositories.Interfaces;
 namespace GymShopApi.Services;
 public class ProductService(IUnitOfWork unitOfWork) : GenericService<Product>(unitOfWork)
 {
-    public override Task<Product> AddAsync(Product entity)
+    public override async Task<Product> AddAsync(Product entity)
     {
-        // TODO
-        throw new NotImplementedException();
-    }
+        if (string.IsNullOrEmpty(entity.Name) || entity.Balance <= 0.0 || entity.Price <= 0)
+        {
+            throw new ArgumentException("Invalid input.");
+        }
+        await _unitOfWork.Products.AddAsync(entity);
+        await _unitOfWork.CompleteAsync();
 
+        entity.Category = await _unitOfWork.Categories.GetByIdAsync(entity.CategoryId);
+        return entity;
+    }
     public override async Task<Product> Update(object id, Product entity)
     {
         var product = await _unitOfWork.Products.GetByIdAsync(id);

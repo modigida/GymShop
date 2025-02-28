@@ -25,9 +25,6 @@ public class UserService(IUnitOfWork unitOfWork) : GenericService<User>(unitOfWo
         {
             throw new ArgumentException("Invalid input.");
         }
-        // TODO delete when Hashing is implemented
-        if (string.IsNullOrEmpty(entity.PasswordHash)) { entity.PasswordHash = "TestHash"; }
-        if (string.IsNullOrEmpty(entity.PasswordSalt)) { entity.PasswordSalt = "TestSalt"; }
         
         await _unitOfWork.Users.AddAsync(entity);
         await _unitOfWork.CompleteAsync();

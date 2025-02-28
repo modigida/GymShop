@@ -4,10 +4,19 @@ using GymShopApi.Repositories.Interfaces;
 namespace GymShopApi.Services;
 public class OrderService(IUnitOfWork unitOfWork) : GenericService<Order>(unitOfWork)
 {
-    public override Task<Order> AddAsync(Order entity)
+    public override async Task<Order> AddAsync(Order entity)
     {
-        //TODO
-        throw new NotImplementedException();
+        if (entity.UserId == Guid.Empty || entity.PurchaseDate == DateTime.MinValue || entity.OrderStatusId <= 0)
+        {
+            throw new ArgumentException("Invalid input.");
+        }
+
+        await _unitOfWork.Orders.AddAsync(entity);
+        await _unitOfWork.CompleteAsync();
+
+        entity.User = await _unitOfWork.Users.GetByIdAsync(entity.UserId);
+        entity.OrderStatus = await _unitOfWork.OrderStatuses.GetByIdAsync(entity.OrderStatusId);
+        return entity;
     }
     public override async Task<Order> Update(object id, Order entity)
     {
