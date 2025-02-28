@@ -57,7 +57,7 @@ public class ProductsController(IGenericService<Product> productService) : Contr
     {
         try
         {
-            var product = await _productService.Update(id, updatedProduct);
+            var product = await _productService.Update( updatedProduct, id);
             return Ok(product);
         }
         catch (ArgumentException ex)

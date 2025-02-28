@@ -27,9 +27,9 @@ public class CategoryService(IUnitOfWork unitOfWork) : GenericService<Category>(
 
         return entity;
     }
-    public override async Task<Category> Update(object id, Category entity)
+    public override async Task<Category> Update(Category entity, params object[] keyValues)
     {
-        var category = await GetByIdAsync(id);
+        var category = await GetByIdAsync(keyValues);
         if (category == null)
         {
             throw new ArgumentException("Category not found.");

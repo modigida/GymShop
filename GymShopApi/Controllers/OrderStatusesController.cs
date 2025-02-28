@@ -59,7 +59,7 @@ public class OrderStatusesController(IGenericService<OrderStatus> orderStatusSer
     {
         try
         {
-            var orderStatus = await _orderStatusService.Update(id, updatedOrderStatus);
+            var orderStatus = await _orderStatusService.Update(updatedOrderStatus, id);
             return Ok(orderStatus);
         }
         catch (ArgumentException ex)

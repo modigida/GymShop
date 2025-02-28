@@ -54,7 +54,7 @@ public class CategoriesController(IGenericService<Category> categoryService) : C
     {
         try
         {
-            var category = await _categoryService.Update(id, updatedCategory);
+            var category = await _categoryService.Update(updatedCategory, id);
             return Ok(category);
         }
         catch (ArgumentException ex)

@@ -60,7 +60,7 @@ public class ProductStatusesController(IGenericService<ProductStatus> productSta
     {
         try
         {
-            var productStatus = await _productStatusService.Update(id, updatedProductStatus);
+            var productStatus = await _productStatusService.Update(updatedProductStatus, id);
             return Ok(productStatus);
         }
         catch (ArgumentException ex)

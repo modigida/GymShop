@@ -26,9 +26,9 @@ public class ProductStatusService(IUnitOfWork unitOfWork) : GenericService<Produ
         return entity;
     }
 
-    public override async Task<ProductStatus> Update(object id, ProductStatus entity)
+    public override async Task<ProductStatus> Update(ProductStatus entity, params object[] keyValues)
     {
-        var productStatus = await GetByIdAsync(id);
+        var productStatus = await GetByIdAsync(keyValues);
         if (productStatus == null)
         {
             throw new ArgumentException("Category not found.");

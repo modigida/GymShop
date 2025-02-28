@@ -4,7 +4,6 @@ using GymShopApi.Repositories.Interfaces;
 namespace GymShopApi.Services;
 public class RoleService(IUnitOfWork unitOfWork) : GenericService<Role>(unitOfWork)
 {
-    // TODO
     public async Task<bool> NameExistsAsync(string name)
     {
         var roles = await _unitOfWork.Roles.GetAllAsync();
@@ -27,9 +26,9 @@ public class RoleService(IUnitOfWork unitOfWork) : GenericService<Role>(unitOfWo
         return entity;
     }
 
-    public override async Task<Role> Update(object id, Role entity)
+    public override async Task<Role> Update(Role entity, params object[] keyValues)
     {
-        var role = await GetByIdAsync(id);
+        var role = await GetByIdAsync(keyValues);
         if (role == null)
         {
             throw new ArgumentException("Role not found.");

@@ -34,9 +34,9 @@ public class UserService(IUnitOfWork unitOfWork) : GenericService<User>(unitOfWo
     }
 
 
-    public override async Task<User> Update(object id, User entity)
+    public override async Task<User> Update(User entity, params object[] keyValues)
     {
-        var user = await GetByIdAsync(id);
+        var user = await GetByIdAsync(keyValues);
         if (user == null)
         {
             throw new ArgumentException("User not found.");
@@ -86,9 +86,9 @@ public class UserService(IUnitOfWork unitOfWork) : GenericService<User>(unitOfWo
         return user;
     }
 
-    public async Task Delete(Guid id)
+    public async Task Delete(params object[] keyValues)
     {
-        var user = await GetByIdAsync(id);
+        var user = await GetByIdAsync(keyValues);
         if (user == null)
         {
             throw new KeyNotFoundException("User not found.");

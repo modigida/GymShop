@@ -25,9 +25,9 @@ public class OrderStatusService(IUnitOfWork unitOfWork) : GenericService<OrderSt
 
         return entity;
     }
-    public override async Task<OrderStatus> Update(object id, OrderStatus entity)
+    public override async Task<OrderStatus> Update(OrderStatus entity, params object[] keyValues)
     {
-        var orderStatus = await GetByIdAsync(id);
+        var orderStatus = await GetByIdAsync(keyValues);
         if (orderStatus == null)
         {
             throw new ArgumentException("Order status not found.");

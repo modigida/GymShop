@@ -58,7 +58,7 @@ public class OrdersController(IGenericService<Order> orderService) : ControllerB
     {
         try
         {
-            var category = await _orderService.Update(id, updatedOrder);
+            var category = await _orderService.Update(updatedOrder, id);
             return Ok(category);
         }
         catch (ArgumentException ex)

@@ -59,7 +59,7 @@ public class UsersController(IGenericService<User> userService) : ControllerBase
     {
         try
         {
-            var user = await _userService.Update(id, updatedUser);
+            var user = await _userService.Update(updatedUser, id);
             return Ok(user);
         }
         catch (ArgumentException ex)

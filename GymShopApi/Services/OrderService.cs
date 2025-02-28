@@ -18,9 +18,9 @@ public class OrderService(IUnitOfWork unitOfWork) : GenericService<Order>(unitOf
         entity.OrderStatus = await _unitOfWork.OrderStatuses.GetByIdAsync(entity.OrderStatusId);
         return entity;
     }
-    public override async Task<Order> Update(object id, Order entity)
+    public override async Task<Order> Update(Order entity, params object[] keyValues)
     {
-        var order = await GetByIdAsync(id);
+        var order = await GetByIdAsync(keyValues);
         if (order == null)
         {
             throw new ArgumentException("Order not found.");
@@ -45,9 +45,9 @@ public class OrderService(IUnitOfWork unitOfWork) : GenericService<Order>(unitOf
         return order;
     }
 
-    public override async Task Delete(object id)
+    public override async Task Delete(params object[] keyValues)
     {
-        var entity = await GetByIdAsync(id);
+        var entity = await GetByIdAsync(keyValues);
         if (entity == null)
         {
             throw new ArgumentException("Order not found.");

@@ -16,9 +16,9 @@ public class ProductService(IUnitOfWork unitOfWork) : GenericService<Product>(un
         entity.Category = await _unitOfWork.Categories.GetByIdAsync(entity.CategoryId);
         return entity;
     }
-    public override async Task<Product> Update(object id, Product entity)
+    public override async Task<Product> Update(Product entity, params object[] keyValues)
     {
-        var product = await _unitOfWork.Products.GetByIdAsync(id);
+        var product = await _unitOfWork.Products.GetByIdAsync(keyValues);
         if (product == null)
         {
             throw new ArgumentException("Product not found.");

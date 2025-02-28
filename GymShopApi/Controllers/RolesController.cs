@@ -60,7 +60,7 @@ public class RolesController(IGenericService<Role> roleService) : ControllerBase
     {
         try
         {
-            var role = await _roleService.Update(id, updatedRole);
+            var role = await _roleService.Update(updatedRole, id);
             return Ok(role);
         }
         catch (ArgumentException ex)

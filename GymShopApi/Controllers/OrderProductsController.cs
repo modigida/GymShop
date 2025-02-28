@@ -1,80 +1,83 @@
 ﻿using GymShopApi.Entities;
 using GymShopApi.Repositories.Interfaces;
+using GymShopApi.Services;
+using GymShopApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymShopApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class OrderProductsController(IUnitOfWork unitOfWork) : ControllerBase
+public class OrderProductsController(IGenericService<OrderProduct> orderProductService) : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var orderProducts = await _unitOfWork.OrderProducts.GetAllAsync();
+        var orderProducts = await orderProductService.GetAllAsync();
         if (!orderProducts.Any())
         {
             return NotFound("No order products found");
         }
-        await _unitOfWork.CompleteAsync();
+
         return Ok(orderProducts);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
+    [HttpGet("{orderId}/{productId}")]
+    public async Task<IActionResult> Get(int orderId, int productId)
     {
-        var orderProduct = await _unitOfWork.OrderProducts.GetByIdAsync(id);
+        var orderProduct = await orderProductService.GetByIdAsync(orderId, productId);
         if (orderProduct == null)
         {
-            return NotFound($"No order product found with ID: {id}");
+            return NotFound($"No order product found");
         }
-        await _unitOfWork.CompleteAsync();
+
         return Ok(orderProduct);
     }
 
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] OrderProduct orderProduct)
     {
-        if (orderProduct == null || orderProduct.OrderId == 0 || orderProduct.ProductId == 0 || orderProduct.Quantity == 0)
+        try
         {
-            return BadRequest("Invalid input");
+            var newOrderProduct = await orderProductService.AddAsync(orderProduct);
+            return CreatedAtAction(nameof(Get), new { orderId = newOrderProduct.OrderId, 
+                productId = newOrderProduct.ProductId }, newOrderProduct);
         }
-        await _unitOfWork.OrderProducts.AddAsync(orderProduct);
-        await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(Get), new { orderId = orderProduct.OrderId, productId = orderProduct.ProductId }, orderProduct);
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] OrderProduct updatedOrderProduct)
+    [HttpPut("{orderId}/{productId}")]
+    public async Task<IActionResult> Put(int orderId, int productId, [FromBody] OrderProduct updatedOrderProduct)
     {
-        var orderProduct = await _unitOfWork.OrderProducts.GetByIdAsync(id);
-        if (orderProduct == null)
+        try
+        {
+            var orderProduct = await orderProductService.Update(updatedOrderProduct, orderId, productId);
+            return Ok(orderProduct);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound("Order product not found");
         }
-
-        if (updatedOrderProduct.OrderId != 0) { orderProduct.OrderId = updatedOrderProduct.OrderId; }
-        if (updatedOrderProduct.ProductId != 0) { orderProduct.ProductId = updatedOrderProduct.ProductId; }
-        if (updatedOrderProduct.Quantity != 0) { orderProduct.Quantity = updatedOrderProduct.Quantity; }
-        if (updatedOrderProduct.TotalPrice != 0) { orderProduct.TotalPrice = updatedOrderProduct.TotalPrice; }
-
-        _unitOfWork.OrderProducts.Update(updatedOrderProduct);
-        await _unitOfWork.CompleteAsync();
-        return Ok(updatedOrderProduct);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    [HttpDelete("{orderId}/{productId}")]
+    public async Task<IActionResult> Delete(int orderId, int productId)
     {
-        var orderProduct = await _unitOfWork.OrderProducts.GetByIdAsync(id);
-        if (orderProduct == null)
+        try
+        {
+            await orderProductService.Delete(orderId, productId);
+            return Ok("Order product deleted");
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound("Order product not found");
         }
-        _unitOfWork.OrderProducts.Delete(orderProduct);
-        await _unitOfWork.CompleteAsync();
-        return Ok("Order product deleted");
     }
 }

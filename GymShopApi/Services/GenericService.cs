@@ -12,17 +12,17 @@ public abstract class GenericService<T>(IUnitOfWork unitOfWork) : IGenericServic
         return await _repository.GetAllAsync();
     }
 
-    public virtual async Task<T?> GetByIdAsync(object id)
+    public virtual async Task<T?> GetByIdAsync(params object[] keyValues)
     {
-        return await _repository.GetByIdAsync(id);
+        return await _repository.GetByIdAsync(keyValues);
     }
 
     public abstract Task<T> AddAsync(T entity);
-    public abstract Task<T> Update(object id, T entity);
+    public abstract Task<T> Update(T entity, params object[] keyValues);
 
-    public virtual async Task Delete(object id)
+    public virtual async Task Delete(params object[] keyValues)
     {
-        var entity = await GetByIdAsync(id);
+        var entity = await GetByIdAsync(keyValues);
         if (entity == null)
         {
             throw new ArgumentException("Entity not found.");

@@ -12,9 +12,9 @@ public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> 
     {
         return await _dbSet.ToListAsync();
     }
-    public async Task<T?> GetByIdAsync(object id)
+    public async Task<T?> GetByIdAsync(params object[] keyValues)
     {
-        return await _dbSet.FindAsync(id);
+        return await _dbSet.FindAsync(keyValues);
     }
     public async Task AddAsync(T entity)
     {

@@ -1,17 +1,48 @@
 ﻿using GymShopApi.Entities;
 using GymShopApi.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace GymShopApi.Services;
 public class OrderProductService(IUnitOfWork unitOfWork) : GenericService<OrderProduct>(unitOfWork)
 {
-    //TODO
-    public override Task<OrderProduct> AddAsync(OrderProduct entity)
+    public override async Task<OrderProduct> AddAsync(OrderProduct entity)
     {
-        throw new NotImplementedException();
-    }
+        if (entity.OrderId <= 0 || entity.ProductId <= 0 || entity.Quantity <= 0 || entity.TotalPrice <= 0.0)
+        {
+            throw new ArgumentException("Invalid input.");
+        }
 
-    public override Task<OrderProduct> Update(object id, OrderProduct entity)
+        await _repository.AddAsync(entity);
+        await _unitOfWork.CompleteAsync();
+
+        entity.Order = await _unitOfWork.Orders.GetByIdAsync(entity.OrderId);
+        entity.Product = await _unitOfWork.Products.GetByIdAsync(entity.ProductId);
+        return entity;
+    }
+    public override async Task<OrderProduct> Update(OrderProduct entity, params object[] keyValues)
     {
-        throw new NotImplementedException();
+        var existingOrderProduct = await GetByIdAsync(keyValues);
+        if (existingOrderProduct == null)
+        {
+            throw new ArgumentException("Order product not found.");
+        }
+
+        if (entity.Quantity > 0) existingOrderProduct.Quantity = entity.Quantity;
+        if (entity.TotalPrice > 0) existingOrderProduct.TotalPrice = entity.TotalPrice;
+
+        await _repository.Update(existingOrderProduct);
+        await _unitOfWork.CompleteAsync();
+        return existingOrderProduct;
+    }
+    public override async Task Delete(params object[] keyValues)
+    {
+        var entity = await GetByIdAsync(keyValues);
+        if (entity == null)
+        {
+            throw new ArgumentException("OrderProduct not found.");
+        }
+
+        await _repository.Delete(entity);
+        await _unitOfWork.CompleteAsync();
     }
 }
