@@ -2,7 +2,7 @@
 using GymShopApi.Services.Interfaces;
 
 namespace GymShopApi.Services;
-public class GenericService<T>(IUnitOfWork unitOfWork) : IGenericService<T> where T : class
+public abstract class GenericService<T>(IUnitOfWork unitOfWork) : IGenericService<T> where T : class
 {
     protected readonly IUnitOfWork _unitOfWork = unitOfWork;
     protected readonly IGenericRepository<T> _repository = unitOfWork.GetRepository<T>();
@@ -17,22 +17,17 @@ public class GenericService<T>(IUnitOfWork unitOfWork) : IGenericService<T> wher
         return await _repository.GetByIdAsync(id);
     }
 
-    public virtual async Task<T> AddAsync(T entity)
-    {
-        await _repository.AddAsync(entity);
-        await _unitOfWork.CompleteAsync();
-        return entity;
-    }
+    public abstract Task<T> AddAsync(T entity);
 
-    public virtual async Task<T> Update(int id, T entity)
-    {
-        await _repository.Update(entity);
-        await _unitOfWork.CompleteAsync();
-        return entity;
-    }
+    public abstract Task<T> Update(int id, T entity);
 
-    public virtual async Task Delete(T entity)
+    public virtual async Task Delete(int id)
     {
+        var entity = await GetByIdAsync(id);
+        if (entity == null)
+        {
+            throw new ArgumentException("Entity not found.");
+        }
         await _repository.Delete(entity);
         await _unitOfWork.CompleteAsync();
     }

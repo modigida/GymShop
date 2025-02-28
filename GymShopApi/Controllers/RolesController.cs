@@ -4,86 +4,87 @@ using GymShopApi.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 using System.Data;
+using GymShopApi.Services.Interfaces;
+using GymShopApi.Services;
 
 namespace GymShopApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RolesController(IUnitOfWork unitOfWork) : ControllerBase
+public class RolesController(IGenericService<Role> roleService) : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IGenericService<Role> _roleService = roleService;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var roles = await _unitOfWork.Roles.GetAllAsync();
+        var roles = await _roleService.GetAllAsync();
 
         if (!roles.Any())
         {
             return NotFound("No roles found");
         }
-        await _unitOfWork.CompleteAsync();
+
         return Ok(roles);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var role = await _unitOfWork.Roles.GetByIdAsync(id);
+        var role = await _roleService.GetByIdAsync(id);
 
         if (role == null)
         {
             return NotFound($"No role found with ID: {id}");
         }
-        await _unitOfWork.CompleteAsync();
+
         return Ok(role);
     }
 
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] Role role)
     {
-        if (role == null || string.IsNullOrEmpty(role.Name))
+        try
         {
-            return BadRequest("Invalid input");
+            var newRole = await _roleService.AddAsync(role);
+            return CreatedAtAction(nameof(Get), new { id = newRole.Id }, newRole);
         }
-
-        await _unitOfWork.Roles.AddAsync(role);
-        await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(Get), new { id = role.Id }, role);
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] Role updatedRole)
     {
-        var role = await _unitOfWork.Roles.GetByIdAsync(id);
-        if (role == null)
+        try
+        {
+            var role = await _roleService.Update(id, updatedRole);
+            return Ok(role);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound("Role not found");
         }
-
-        if (updatedRole == null || string.IsNullOrEmpty(updatedRole.Name))
-        {
-            return BadRequest("Invalid input");
-        }
-
-        role.Name = updatedRole.Name;
-
-        _unitOfWork.Roles.Update(role);
-        await _unitOfWork.CompleteAsync();
-        return Ok(role);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var role = await _unitOfWork.Roles.GetByIdAsync(id);
-        if (role == null)
+        try
+        {
+            await _roleService.Delete(id);
+            return Ok("Role deleted");
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound("Role not found");
         }
-        _unitOfWork.Roles.Delete(role);
-        await _unitOfWork.CompleteAsync();
-        return Ok("Role deleted");
     }
 
 }

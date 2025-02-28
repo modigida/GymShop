@@ -8,5 +8,5 @@ public interface IGenericService<T> where T : class
     Task<T?> GetByIdAsync(object id);
     Task<T> AddAsync(T entity);
     Task<T> Update(int id, T entity);
-    Task Delete(T entity);
+    Task Delete(int id);
 }

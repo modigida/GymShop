@@ -4,6 +4,12 @@ using GymShopApi.Repositories.Interfaces;
 namespace GymShopApi.Services;
 public class ProductService(IUnitOfWork unitOfWork) : GenericService<Product>(unitOfWork)
 {
+    public override Task<Product> AddAsync(Product entity)
+    {
+        // TODO
+        throw new NotImplementedException();
+    }
+
     public override async Task<Product> Update(int id, Product entity)
     {
         var product = await _unitOfWork.Products.GetByIdAsync(id);
@@ -23,6 +29,9 @@ public class ProductService(IUnitOfWork unitOfWork) : GenericService<Product>(un
         if (entity.Price != 0) { product.Price = entity.Price; }
         if (!string.IsNullOrEmpty(entity.Description)) { product.Description = entity.Description; }
 
-        return await base.Update(product.Id, product);
+        await _unitOfWork.Products.Update(product);
+        await _unitOfWork.CompleteAsync();
+
+        return product;
     }
 }

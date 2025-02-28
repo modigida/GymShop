@@ -68,11 +68,11 @@ public class CategoriesController(IGenericService<Category> categoryService) : C
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Category category)
+    public async Task<IActionResult> Delete(int id)
     {
         try
         {
-            await _categoryService.Delete(category);
+            await _categoryService.Delete(id);
             return Ok("Category deleted");
         }
         catch (KeyNotFoundException)

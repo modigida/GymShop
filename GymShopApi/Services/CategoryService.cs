@@ -22,7 +22,10 @@ public class CategoryService(IUnitOfWork unitOfWork) : GenericService<Category>(
             throw new ArgumentException("Category with the same name already exists.");
         }
 
-        return await base.AddAsync(entity);
+        await _unitOfWork.Categories.AddAsync(entity);
+        await _unitOfWork.CompleteAsync();
+
+        return entity;
     }
     public override async Task<Category> Update(int id, Category entity)
     {
@@ -42,6 +45,10 @@ public class CategoryService(IUnitOfWork unitOfWork) : GenericService<Category>(
         }
 
         category.Name = entity.Name;
-        return await base.Update(category.Id, category);
+
+        await _unitOfWork.Categories.Update(category);
+        await _unitOfWork.CompleteAsync();
+
+        return category;
     }
 }

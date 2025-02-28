@@ -3,6 +3,9 @@ using GymShopApi.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymShopApi.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
 public class OrderProductsController(IUnitOfWork unitOfWork) : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;

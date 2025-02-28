@@ -71,11 +71,11 @@ public class ProductsController(IGenericService<Product> productService) : Contr
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Product product)
+    public async Task<IActionResult> Delete(int id)
     {
         try
         {
-            await _productService.Delete(product);
+            await _productService.Delete(id);
             return Ok("Product deleted");
         }
         catch (KeyNotFoundException)

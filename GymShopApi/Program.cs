@@ -33,8 +33,6 @@ builder.Services.AddScoped<IGenericRepository<User>, UserRepository>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-builder.Services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
-
 builder.Services.AddScoped<IGenericService<Category>, CategoryService>();
 builder.Services.AddScoped<IGenericService<Order>, OrderService>();
 builder.Services.AddScoped<IGenericService<OrderProduct>, OrderProductService>();

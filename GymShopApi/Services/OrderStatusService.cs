@@ -19,7 +19,11 @@ public class OrderStatusService(IUnitOfWork unitOfWork) : GenericService<OrderSt
         {
             throw new ArgumentException("Order status with the same name already exists.");
         }
-        return await base.AddAsync(entity);
+
+        await _unitOfWork.OrderStatuses.AddAsync(entity);
+        await _unitOfWork.CompleteAsync();
+
+        return entity;
     }
     public override async Task<OrderStatus> Update(int id, OrderStatus entity)
     {
@@ -38,7 +42,11 @@ public class OrderStatusService(IUnitOfWork unitOfWork) : GenericService<OrderSt
         }
 
         orderStatus.Name = entity.Name;
-        return await base.Update(orderStatus.Id, orderStatus);
+
+        await _unitOfWork.OrderStatuses.Update(orderStatus);
+        await _unitOfWork.CompleteAsync();
+
+        return orderStatus;
     }
 }
 

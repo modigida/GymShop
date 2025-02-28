@@ -1,6 +1,8 @@
 ﻿using GymShopApi.Entities;
 using GymShopApi.Repositories;
 using GymShopApi.Repositories.Interfaces;
+using GymShopApi.Services;
+using GymShopApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 using System.Data;
@@ -9,82 +11,79 @@ namespace GymShopApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductStatusesController(IUnitOfWork unitOfWork) : ControllerBase
+public class ProductStatusesController(IGenericService<ProductStatus> productStatusService) : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IGenericService<ProductStatus> _productStatusService = productStatusService;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var productStatuses = await _unitOfWork.ProductStatuses.GetAllAsync();
+        var productStatuses = await _productStatusService.GetAllAsync();
 
         if (!productStatuses.Any())
         {
             return NotFound("No product statuses found");
         }
 
-        await _unitOfWork.CompleteAsync();
         return Ok(productStatuses);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var productStatus = await _unitOfWork.ProductStatuses.GetByIdAsync(id);
+        var productStatus = await _productStatusService.GetByIdAsync(id);
 
         if (productStatus == null)
         {
             return NotFound($"No product status found with ID: {id}");
         }
 
-        await _unitOfWork.CompleteAsync();
         return Ok(productStatus);
     }
 
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] ProductStatus productStatus)
     {
-        if (productStatus == null || string.IsNullOrEmpty(productStatus.Name))
+        try
         {
-            return BadRequest("Invalid input");
+            var newProductStatus = await _productStatusService.AddAsync(productStatus);
+            return CreatedAtAction(nameof(Get), new { id = newProductStatus.Id }, newProductStatus);
         }
-
-        await _unitOfWork.ProductStatuses.AddAsync(productStatus);
-        await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(Get), new { id = productStatus.Id }, productStatus);
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] ProductStatus updatedProductStatus)
     {
-        var productStatus = await _unitOfWork.ProductStatuses.GetByIdAsync(id);
-        if (productStatus == null)
+        try
+        {
+            var productStatus = await _productStatusService.Update(id, updatedProductStatus);
+            return Ok(productStatus);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound("Product status not found");
         }
-
-        if (updatedProductStatus == null || string.IsNullOrEmpty(updatedProductStatus.Name))
-        {
-            return BadRequest("Invalid input");
-        }
-
-        productStatus.Name = updatedProductStatus.Name;
-
-        _unitOfWork.ProductStatuses.Update(productStatus);
-        await _unitOfWork.CompleteAsync();
-        return Ok(productStatus);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var productStatus = await _unitOfWork.ProductStatuses.GetByIdAsync(id);
-        if (productStatus == null)
+        try
+        {
+            await _productStatusService.Delete(id);
+            return Ok("Product status deleted");
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound("Product status not found");
         }
-        _unitOfWork.ProductStatuses.Delete(productStatus);
-        await _unitOfWork.CompleteAsync();
-        return Ok("Product status deleted");
     }
 }

@@ -72,11 +72,11 @@ public class OrdersController(IGenericService<Order> orderService) : ControllerB
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Order order)
+    public async Task<IActionResult> Delete(int id)
     {
         try
         {
-            await _orderService.Delete(order);
+            await _orderService.Delete(id);
             return Ok("Order deleted");
         }
         catch (KeyNotFoundException)
