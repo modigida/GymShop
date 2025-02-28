@@ -27,7 +27,7 @@ public class CategoryService(IUnitOfWork unitOfWork) : GenericService<Category>(
 
         return entity;
     }
-    public override async Task<Category> Update(int id, Category entity)
+    public override async Task<Category> Update(object id, Category entity)
     {
         var category = await GetByIdAsync(id);
         if (category == null)

@@ -18,10 +18,9 @@ public abstract class GenericService<T>(IUnitOfWork unitOfWork) : IGenericServic
     }
 
     public abstract Task<T> AddAsync(T entity);
+    public abstract Task<T> Update(object id, T entity);
 
-    public abstract Task<T> Update(int id, T entity);
-
-    public virtual async Task Delete(int id)
+    public virtual async Task Delete(object id)
     {
         var entity = await GetByIdAsync(id);
         if (entity == null)

@@ -10,7 +10,7 @@ public class ProductService(IUnitOfWork unitOfWork) : GenericService<Product>(un
         throw new NotImplementedException();
     }
 
-    public override async Task<Product> Update(int id, Product entity)
+    public override async Task<Product> Update(object id, Product entity)
     {
         var product = await _unitOfWork.Products.GetByIdAsync(id);
         if (product == null)

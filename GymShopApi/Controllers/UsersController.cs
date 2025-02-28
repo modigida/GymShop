@@ -28,7 +28,7 @@ public class UsersController(IGenericService<User> userService) : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> Get(Guid id)
     {
         var user = await _userService.GetByIdAsync(id);
 
@@ -55,7 +55,7 @@ public class UsersController(IGenericService<User> userService) : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] User updatedUser)
+    public async Task<IActionResult> Put(Guid id, [FromBody] User updatedUser)
     {
         try
         {
@@ -73,7 +73,7 @@ public class UsersController(IGenericService<User> userService) : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         try
         {

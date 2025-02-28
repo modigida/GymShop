@@ -27,7 +27,7 @@ public class RoleService(IUnitOfWork unitOfWork) : GenericService<Role>(unitOfWo
         return entity;
     }
 
-    public override async Task<Role> Update(int id, Role entity)
+    public override async Task<Role> Update(object id, Role entity)
     {
         var role = await GetByIdAsync(id);
         if (role == null)

@@ -1,4 +1,5 @@
 ﻿using GymShopApi.Entities;
+using GymShopApi.Hasher;
 using GymShopApi.Repositories.Interfaces;
 
 namespace GymShopApi.Services;
@@ -14,13 +15,29 @@ public class UserService(IUnitOfWork unitOfWork) : GenericService<User>(unitOfWo
         var users = await _unitOfWork.Users.GetAllAsync();
         return users.Any(u => u.Email == name);
     }
-    public override Task<User> AddAsync(User entity)
+    public override async Task<User> AddAsync(User entity)
     {
-        // TODO
-        throw new NotImplementedException();
+        // TODO: create user with role "admin" can only be made by an admin. Offline can only create users of type
+        // customer, this will be automatically, customers can´t choose role
+        if (string.IsNullOrEmpty(entity.FirstName) || string.IsNullOrEmpty(entity.LastName) || entity.RoleId == 0 ||
+            string.IsNullOrEmpty(entity.Email) || string.IsNullOrEmpty(entity.Phone) ||
+            string.IsNullOrEmpty(entity.Address))
+        {
+            throw new ArgumentException("Invalid input.");
+        }
+        // TODO delete when Hashing is implemented
+        if (string.IsNullOrEmpty(entity.PasswordHash)) { entity.PasswordHash = "TestHash"; }
+        if (string.IsNullOrEmpty(entity.PasswordSalt)) { entity.PasswordSalt = "TestSalt"; }
+        
+        await _unitOfWork.Users.AddAsync(entity);
+        await _unitOfWork.CompleteAsync();
+
+        entity.Role = await _unitOfWork.Roles.GetByIdAsync(entity.RoleId);
+        return entity;
     }
 
-    public override async Task<User> Update(int id, User entity)
+
+    public override async Task<User> Update(object id, User entity)
     {
         var user = await GetByIdAsync(id);
         if (user == null)
@@ -35,6 +52,7 @@ public class UserService(IUnitOfWork unitOfWork) : GenericService<User>(unitOfWo
         if (!string.IsNullOrEmpty(entity.FirstName)) { user.FirstName = entity.FirstName; }
         if (!string.IsNullOrEmpty(entity.LastName)) { user.LastName = entity.LastName; }
 
+        // TODO: to make a user "admin" you need to be logged in as admin
         if (entity.RoleId != 0 && entity.RoleId != user.RoleId)
         {
             user.RoleId = entity.RoleId;
@@ -69,5 +87,16 @@ public class UserService(IUnitOfWork unitOfWork) : GenericService<User>(unitOfWo
         await _unitOfWork.CompleteAsync();
 
         return user;
+    }
+
+    public async Task Delete(Guid id)
+    {
+        var user = await GetByIdAsync(id);
+        if (user == null)
+        {
+            throw new KeyNotFoundException("User not found.");
+        }
+        await _unitOfWork.Users.Delete(user);
+        await _unitOfWork.CompleteAsync();
     }
 }

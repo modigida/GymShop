@@ -7,6 +7,6 @@ public interface IGenericService<T> where T : class
     Task<IEnumerable<T?>> GetAllAsync();
     Task<T?> GetByIdAsync(object id);
     Task<T> AddAsync(T entity);
-    Task<T> Update(int id, T entity);
-    Task Delete(int id);
+    Task<T> Update(object id, T entity);
+    Task Delete(object id);
 }

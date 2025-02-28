@@ -9,7 +9,7 @@ public class OrderService(IUnitOfWork unitOfWork) : GenericService<Order>(unitOf
         //TODO
         throw new NotImplementedException();
     }
-    public override async Task<Order> Update(int id, Order entity)
+    public override async Task<Order> Update(object id, Order entity)
     {
         var order = await GetByIdAsync(id);
         if (order == null)
@@ -36,7 +36,7 @@ public class OrderService(IUnitOfWork unitOfWork) : GenericService<Order>(unitOf
         return order;
     }
 
-    public override async Task Delete(int id)
+    public override async Task Delete(object id)
     {
         var entity = await GetByIdAsync(id);
         if (entity == null)

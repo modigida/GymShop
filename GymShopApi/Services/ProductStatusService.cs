@@ -10,7 +10,7 @@ public class ProductStatusService(IUnitOfWork unitOfWork) : GenericService<Produ
         throw new NotImplementedException();
     }
 
-    public override Task<ProductStatus> Update(int id, ProductStatus entity)
+    public override Task<ProductStatus> Update(object id, ProductStatus entity)
     {
         throw new NotImplementedException();
     }

@@ -25,7 +25,7 @@ public class OrderStatusService(IUnitOfWork unitOfWork) : GenericService<OrderSt
 
         return entity;
     }
-    public override async Task<OrderStatus> Update(int id, OrderStatus entity)
+    public override async Task<OrderStatus> Update(object id, OrderStatus entity)
     {
         var orderStatus = await GetByIdAsync(id);
         if (orderStatus == null)
