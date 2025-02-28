@@ -25,7 +25,11 @@ public class OrderService(IUnitOfWork unitOfWork) : GenericService<Order>(unitOf
             throw new InvalidOperationException("Order cannot be updated after it has been completed.");
         }
 
-        if (entity.OrderStatusId != 0) { order.OrderStatusId = entity.OrderStatusId; }
+        if (entity.OrderStatusId != 0 && entity.OrderStatusId != order.OrderStatusId)
+        {
+            order.OrderStatusId = entity.OrderStatusId;
+            order.OrderStatus = await _unitOfWork.OrderStatuses.GetByIdAsync(entity.OrderStatusId);
+        }
 
         await _unitOfWork.Orders.Update(order);
         await _unitOfWork.CompleteAsync();

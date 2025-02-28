@@ -23,7 +23,12 @@ public class ProductService(IUnitOfWork unitOfWork) : GenericService<Product>(un
             throw new ArgumentException("Invalid input.");
         }
         if (!string.IsNullOrEmpty(entity.Name)) { product.Name = entity.Name; }
-        if (entity.CategoryId != 0) { product.CategoryId = entity.CategoryId; }
+
+        if (entity.CategoryId != 0 && entity.CategoryId != product.CategoryId)
+        {
+            product.CategoryId = entity.CategoryId;
+            product.Category = await _unitOfWork.Categories.GetByIdAsync(entity.CategoryId);
+        }
         if (entity.ProductStatusId != 0) { product.ProductStatusId = entity.ProductStatusId; }
         if (entity.Balance != 0) { product.Balance = entity.Balance; }
         if (entity.Price != 0) { product.Price = entity.Price; }

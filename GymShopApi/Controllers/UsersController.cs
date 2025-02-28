@@ -1,6 +1,8 @@
 ﻿using GymShopApi.Entities;
 using GymShopApi.Repositories;
 using GymShopApi.Repositories.Interfaces;
+using GymShopApi.Services;
+using GymShopApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 
@@ -8,90 +10,80 @@ namespace GymShopApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController(IUnitOfWork unitOfWork) : ControllerBase
+public class UsersController(IGenericService<User> userService) : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IGenericService<User> _userService = userService;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var users = await _unitOfWork.Users.GetAllAsync();
+        var users = await _userService.GetAllAsync();
 
         if (!users.Any())
         {
             return NotFound("No users found");
         }
-        await _unitOfWork.CompleteAsync();
+
         return Ok(users);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var user = await _unitOfWork.Users.GetByIdAsync(id);
+        var user = await _userService.GetByIdAsync(id);
 
         if (user == null)
         {
             return NotFound($"No user found with ID: {id}");
         }
-        await _unitOfWork.CompleteAsync();
+
         return Ok(user);
     }
 
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] User user)
     {
-        if (user == null || string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName) || user.RoleId == 0 ||
-            string.IsNullOrEmpty(user.PasswordHash) || string.IsNullOrEmpty(user.PasswordSalt) || string.IsNullOrEmpty(user.Email) ||
-            string.IsNullOrEmpty(user.Phone) || string.IsNullOrEmpty(user.Address))
+        try
         {
-            return BadRequest("Invalid input");
+            var newUser = await _userService.AddAsync(user);
+            return CreatedAtAction(nameof(Get), new { id = newUser.Id }, newUser);
         }
-
-        await _unitOfWork.Users.AddAsync(user);
-        await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] User updatedUser)
     {
-        var user = await _unitOfWork.Users.GetByIdAsync(id);
-        if (user == null)
+        try
+        {
+            var user = await _userService.Update(id, updatedUser);
+            return Ok(user);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound("User not found");
         }
-
-        if (updatedUser == null)
-        {
-            return BadRequest("Invalid input");
-        }
-
-        if (!string.IsNullOrEmpty(updatedUser.FirstName)) { user.FirstName = updatedUser.FirstName; }
-        if (!string.IsNullOrEmpty(updatedUser.LastName)) { user.LastName = updatedUser.LastName; }
-        if (updatedUser.RoleId != 0) { user.RoleId = updatedUser.RoleId; }
-        if (!string.IsNullOrEmpty(updatedUser.PasswordHash)) { user.PasswordHash = updatedUser.PasswordHash; }
-        if (!string.IsNullOrEmpty(updatedUser.PasswordSalt)) { user.PasswordSalt = updatedUser.PasswordSalt; }
-        if (!string.IsNullOrEmpty(updatedUser.Email)) { user.Email = updatedUser.Email; }
-        if (!string.IsNullOrEmpty(updatedUser.Phone)) { user.Phone = updatedUser.Phone; }
-        if (!string.IsNullOrEmpty(updatedUser.Address)) { user.Address = updatedUser.Address; }
-
-        _unitOfWork.Users.Update(user);
-        await _unitOfWork.CompleteAsync();
-        return Ok(user);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var user = await _unitOfWork.Users.GetByIdAsync(id);
-        if (user == null)
+        try
+        {
+            await _userService.Delete(id);
+            return Ok("User deleted");
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound("User not found");
         }
-        _unitOfWork.Users.Delete(user);
-        await _unitOfWork.CompleteAsync();
-        return Ok("User deleted");
     }
 
 }
