@@ -1,4 +1,4 @@
-ï»¿.navbar {
+.navbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -65,7 +65,7 @@
     }
 
 
-/* BasinstÃ¤llningar fÃ¶r navbar */
+/* Basinställningar för navbar */
 .navbar-container {
     display: flex;
     justify-content: space-between;
@@ -79,7 +79,7 @@
     cursor: pointer;
 }
 
-/* Meny - Dold frÃ¥n bÃ¶rjan */
+/* Meny - Dold från början */
 .navbar-menu {
     list-style-type: none;
     display: flex;
@@ -90,13 +90,13 @@
         padding: 10px;
     }
 
-    /* Menyn Ã¶ppnas vid toggle */
+    /* Menyn öppnas vid toggle */
     .navbar-menu.open {
         display: block;
     }
 
 @media (max-width: 768px) {
-    /* DÃ¶lja menyn och visa hamburgermenyn pÃ¥ mindre skÃ¤rmar */
+    /* Dölja menyn och visa hamburgermenyn på mindre skärmar */
     .navbar-menu {
         display: none;
     }
@@ -109,7 +109,7 @@
         display: block;
     }
 }
-/* Stilar fÃ¶r ikoner (cart, login) */
+/* Stilar för ikoner (cart, login) */
 .navbar-icons {
     display: flex;
     gap: 15px;
@@ -117,11 +117,11 @@
 }
 
 .cart-icon, .user-icon {
-    font-size: 1.5rem; /* Justera storleken pÃ¥ ikonerna */
-    color: #333; /* FÃ¤rgen pÃ¥ ikonerna */
+    font-size: 1.5rem; /* Justera storleken på ikonerna */
+    color: #333; /* Färgen på ikonerna */
     text-decoration: none; /* Ta bort understrykning */
 }
 
     .cart-icon:hover, .user-icon:hover {
-        color: #007bff; /* Ã„ndra fÃ¤rgen vid hover */
+        color: #007bff; /* Ändra färgen vid hover */
     }

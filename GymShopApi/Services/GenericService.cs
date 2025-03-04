@@ -7,7 +7,7 @@ public abstract class GenericService<T>(IUnitOfWork unitOfWork) : IGenericServic
     protected readonly IUnitOfWork _unitOfWork = unitOfWork;
     protected readonly IGenericRepository<T> _repository = unitOfWork.GetRepository<T>();
 
-    public virtual async Task<IEnumerable<T>> GetAllAsync()
+    public virtual async Task<IEnumerable<T?>> GetAllAsync()
     {
         return await _repository.GetAllAsync();
     }

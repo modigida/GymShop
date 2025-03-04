@@ -5,7 +5,7 @@ VisualStudioVersion = 17.12.35514.174
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymShopApi", "GymShopApi\GymShopApi.csproj", "{F3C9EC12-E611-4A53-B1F3-EAF1D882A43D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymShopBlazor", "GymShopBlazor\GymShopBlazor.csproj", "{1E9D61AE-21A0-4285-9DCB-419676CCE8D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymShopBlazor", "BlazorApp1\GymShopBlazor.csproj", "{52CDA93C-E183-4A54-83FA-99C6C1AD6C18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{F3C9EC12-E611-4A53-B1F3-EAF1D882A43D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3C9EC12-E611-4A53-B1F3-EAF1D882A43D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3C9EC12-E611-4A53-B1F3-EAF1D882A43D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1E9D61AE-21A0-4285-9DCB-419676CCE8D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E9D61AE-21A0-4285-9DCB-419676CCE8D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E9D61AE-21A0-4285-9DCB-419676CCE8D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E9D61AE-21A0-4285-9DCB-419676CCE8D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52CDA93C-E183-4A54-83FA-99C6C1AD6C18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52CDA93C-E183-4A54-83FA-99C6C1AD6C18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52CDA93C-E183-4A54-83FA-99C6C1AD6C18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52CDA93C-E183-4A54-83FA-99C6C1AD6C18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
