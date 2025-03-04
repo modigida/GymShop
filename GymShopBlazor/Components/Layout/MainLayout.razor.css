@@ -1,0 +1,65 @@
+﻿.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: black;
+    color: white;
+    padding: 10px 20px;
+}
+
+.menu-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.nav-links {
+    display: flex;
+    gap: 15px;
+}
+
+    .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+.brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+}
+
+    .search-bar input {
+        padding: 5px;
+        border: 1px solid white;
+        background: black;
+        color: white;
+    }
+
+    .search-bar button {
+        background: white;
+        color: black;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+.user-actions {
+    display: flex;
+    gap: 15px;
+}
+
+    .user-actions a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1rem;
+    }
