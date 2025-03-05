@@ -1,19 +1,28 @@
 ﻿@page "/login"
 
-<h3>Logga in på mina sidor</h3>
-<a>Välkommen till Gym Shop! Logga in med dina användaruppgifter</a>
+<div class="login-form">
+    <h3>Logga in på mina sidor</h3>
+    <p>Välkommen till Gym Shop! Logga in med dina användaruppgifter</p>
 
-<a>E-post</a>
-<input placeholder="E-post"/>
+    <div class="mb-3">
+        <label for="email" class="form-label">E-post</label>
+        <input type="email" class="form-control" id="email" placeholder="E-post" />
+    </div>
 
-<a>Lösenord</a>
-<input placeholder="Lösenord" />
+    <div class="mb-3">
+        <label for="password" class="form-label">Lösenord</label>
+        <input type="password" class="form-control" id="password" placeholder="Lösenord" />
+    </div>
 
-<button>Logga in</button>
-<NavLink href="/resetPassword">Jag har glömt mitt lösenord!</NavLink>
+    <button class="btn btn-primary">Logga in</button>
 
-<h3>Är du ny kund?</h3>
-<NavLink href="/register">Registrera dig här</NavLink>
+    <div class="reset-password-link">
+        <NavLink href="/resetPassword">Jag har glömt mitt lösenord!</NavLink>
+    </div>
+
+    <h3>Är du ny kund?</h3>
+    <NavLink href="/register" class="btn btn-secondary">Registrera dig här</NavLink>
+</div>
 
 @code {
 
