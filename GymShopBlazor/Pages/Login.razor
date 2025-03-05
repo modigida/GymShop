@@ -1,6 +1,10 @@
 ﻿@page "/login"
 
-<div class="login-form">
+<head>
+    <link href="css/userstyling.css" rel="stylesheet" />
+</head>
+
+<div class="user-form">
     <h3>Logga in på mina sidor</h3>
     <p>Välkommen till Gym Shop! Logga in med dina användaruppgifter</p>
 
@@ -17,10 +21,10 @@
     <button class="btn btn-primary">Logga in</button>
 
     <div class="reset-password-link">
-        <NavLink href="/resetPassword">Jag har glömt mitt lösenord!</NavLink>
+        <NavLink href="/resetPassword"><a>Jag har glömt mitt lösenord!</a></NavLink>
     </div>
 
-    <h3>Är du ny kund?</h3>
+    <h5>Är du ny kund?</h5>
     <NavLink href="/register" class="btn btn-secondary">Registrera dig här</NavLink>
 </div>
 
