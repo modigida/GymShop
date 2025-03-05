@@ -15,13 +15,21 @@
     @if (cartItems.Count > 0)
     {
         <div class="cart-summary">
-            <h4>Totalt: @totalPrice.ToString("0.00") SEK</h4>
-            <button class="btn btn-success">Gå till kassan</button>
+            <h4>Totalt ordervärde: @totalPrice.ToString("0.00") SEK</h4>
+            @if (!isCheckoutOpen)
+            {
+                <button class="btn btn-success" @onclick="OpenCheckout">Betala</button>
+            }
         </div>
     }
     else
     {
         <p>Din varukorg är tom.</p>
+    }
+    
+    @if (isCheckoutOpen)
+    {
+        <Checkout/>
     }
 </div>
 
@@ -33,6 +41,7 @@
     };
 
     private double totalPrice;
+    private bool isCheckoutOpen = false;
 
     private void UpdateTotalPrice()
     {
@@ -51,6 +60,11 @@
         cartItems.Remove(item);
         UpdateTotalPrice();
         StateHasChanged();
+    }
+
+    private void OpenCheckout()
+    {
+        isCheckoutOpen = !isCheckoutOpen;
     }
 
     public class DemoItems

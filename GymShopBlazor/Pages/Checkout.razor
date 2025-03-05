@@ -1,7 +1,22 @@
-﻿@page "/checkout"
+﻿@inject NavigationManager Navigation
 
-<h3>Checkout</h3>
+<div class="checkout-container">
+    <h3>Slutför ditt köp</h3>
+
+    <h5>Dina uppgifter</h5>
+
+    <div class="input-group">
+        <input type="email" placeholder="E-postadress" />
+        <input type="tel" placeholder="Mobiltelefonnummer" />
+    </div>
+
+    <button class="btn btn-success" @onclick="OpenOrderConfirmation">Beställ</button>
+</div>
 
 @code {
 
+    private void OpenOrderConfirmation()
+    {
+        Navigation.NavigateTo("/orderConfirmation");
+    }
 }
