@@ -51,42 +51,6 @@ a, .btn-link {
     }
 }
 
-.footer {
-    background-color: black;
-    color: white;
-    padding: 20px;
-    text-align: center;
-    position: relative;
-    bottom: 0;
-    width: 100%;
-}
-
-.footer-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-}
-
-.footer-logo {
-    width: 100px; 
-    height: auto;
-}
-
-.footer-info {
-    font-size: 14px;
-}
-
-    .footer-info a {
-        color: white;
-        text-decoration: none;
-    }
-
-        .footer-info a:hover {
-            text-decoration: underline;
-        }
-
-
 
 #blazor-error-ui {
     background: lightyellow;
