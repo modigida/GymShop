@@ -1,9 +1,19 @@
 ﻿@page "/login"
 
-<h3>Login</h3>
+<h3>Logga in på mina sidor</h3>
+<a>Välkommen till Gym Shop! Logga in med dina användaruppgifter</a>
 
-<h3>Inte medlem?</h3>
-<NavLink href="/register">Bli medlem här</NavLink>
+<a>E-post</a>
+<input placeholder="E-post"/>
+
+<a>Lösenord</a>
+<input placeholder="Lösenord" />
+
+<button>Logga in</button>
+<NavLink href="/resetPassword">Jag har glömt mitt lösenord!</NavLink>
+
+<h3>Är du ny kund?</h3>
+<NavLink href="/register">Registrera dig här</NavLink>
 
 @code {
 
