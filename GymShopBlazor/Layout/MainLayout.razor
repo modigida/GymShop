@@ -3,7 +3,7 @@
 <div class="navbar">
     <button class="menu-btn" @onclick="ToggleMenu">☰</button>
 
-    <div class="nav-links">
+    <div class="top-nav-links">
         <NavLink href="/products?category=supplements">Kosttillskott</NavLink>
         <NavLink href="/products?category=clothes">Träningskläder</NavLink>
         <NavLink href="/products?category=equipments">Träningstillbehör</NavLink>
@@ -18,7 +18,7 @@
         <button>🔍</button>
     </div>
 
-    <div class="navbar-icons">
+    <div class="top-navbar-icons">
         <NavLink href="/login" class="user-icon">👤</NavLink>
         <NavLink href="/cart" class="cart-icons">🛒</NavLink>
     </div>
@@ -26,8 +26,10 @@
 
 @if (isMenuOpen)
 {
+    <div class="overlay" @onclick="ToggleMenu"></div>
+
     <div class="menu-sidebar">
-        <NavMenu />
+        <SideMenu />
     </div>
 }
 
