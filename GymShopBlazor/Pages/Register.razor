@@ -1,6 +1,30 @@
 ﻿@page "/register"
 
-<h3>Register</h3>
+<div class="register-form">
+    <h3>Skapa ett konto</h3>
+    <p>Att handla hos Gym Shop ska alltid vara enkelt och som vanlig konsument behöver du
+        inte skapa ett konto för att handla hos oss.
+    </p>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">E-post*</label>
+        <input type="email" class="form-control" id="email" placeholder="E-post" />
+    </div>
+
+    <div class="mb-3">
+        <label for="password" class="form-label">Lösenord*</label>
+        <input type="password" class="form-control" id="password" placeholder="Lösenord" />
+    </div>
+    
+    <div class="mb-3">
+        <label for="password" class="form-label">Repetera ösenordet*</label>
+        <input type="password" class="form-control" id="password" placeholder="Lösenord" />
+    </div>
+
+    <button class="btn btn-primary">Registrera mig</button>
+
+    <NavLink href="/login"><h5>Är du redan kund?</h5></NavLink>
+</div>
 
 @code {
 
