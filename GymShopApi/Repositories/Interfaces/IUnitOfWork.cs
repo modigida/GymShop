@@ -3,6 +3,8 @@
 namespace GymShopApi.Repositories.Interfaces;
 public interface IUnitOfWork : IDisposable
 {
+    IGenericRepository<CampaignProduct> CampaignProducts { get; }
+    IGenericRepository<Campaign> Campaigns { get; }
     IGenericRepository<Category> Categories { get; }
     IGenericRepository<Order> Orders { get; }
     IGenericRepository<OrderProduct> OrderProducts { get; }
