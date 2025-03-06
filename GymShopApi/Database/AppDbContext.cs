@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 namespace GymShopApi.Database;
 public class AppDbContext : DbContext
 {
+    public DbSet<Campaign> Campaigns { get; set; }
+    public DbSet<CampaignProduct> CampaignProducts { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
@@ -20,6 +22,9 @@ public class AppDbContext : DbContext
     {
         modelBuilder.Entity<OrderProduct>()
             .HasKey(op => new { op.OrderId, op.ProductId });
+
+        modelBuilder.Entity<CampaignProduct>()
+            .HasKey(cp => new { cp.CampaignId, cp.ProductId });
 
         base.OnModelCreating(modelBuilder);
     }

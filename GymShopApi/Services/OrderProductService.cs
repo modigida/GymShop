@@ -7,7 +7,7 @@ public class OrderProductService(IUnitOfWork unitOfWork) : GenericService<OrderP
 {
     public override async Task<OrderProduct> AddAsync(OrderProduct entity)
     {
-        if (entity.OrderId <= 0 || entity.ProductId <= 0 || entity.Quantity <= 0 || entity.TotalPrice <= 0.0)
+        if (entity.OrderId <= 0 || entity.ProductId <= 0 || entity.Quantity <= 0 || entity.CurrentPrice <= 0.0)
         {
             throw new ArgumentException("Invalid input.");
         }
@@ -28,7 +28,7 @@ public class OrderProductService(IUnitOfWork unitOfWork) : GenericService<OrderP
         }
 
         if (entity.Quantity > 0) existingOrderProduct.Quantity = entity.Quantity;
-        if (entity.TotalPrice > 0) existingOrderProduct.TotalPrice = entity.TotalPrice;
+        if (entity.CurrentPrice > 0) existingOrderProduct.CurrentPrice = entity.CurrentPrice;
 
         await _repository.Update(existingOrderProduct);
         await _unitOfWork.CompleteAsync();

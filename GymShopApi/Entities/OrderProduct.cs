@@ -16,8 +16,8 @@ public class OrderProduct
     public int Quantity { get; set; }
 
     [Required]
-    [Range(0.01, double.MaxValue, ErrorMessage = "Total price must be a positive value.")]
-    public double TotalPrice { get; set; }
+    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be a positive value.")]
+    public double CurrentPrice { get; set; }
 
     [JsonIgnore]
     public Order? Order { get; set; }
