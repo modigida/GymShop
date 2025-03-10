@@ -1,0 +1,20 @@
+﻿<div class="product-card">
+    <img src="@Product.ImageUrl" alt="@Product.Name" class="product-image" />
+    
+    <div class="product-info">
+        <h4 class="product-name">@Product.Name</h4>
+        <p class="product-price">@Product.Price.ToString("0.00") SEK</p>
+    </div>
+    
+    <button class="add-to-cart-button" @onclick="AddToCart">Köp</button>
+</div>
+
+@code {
+    [Parameter] public Cart.DemoItems Product { get; set; }
+    [Parameter] public EventCallback<Cart.DemoItems> OnAddToCart { get; set; }
+
+    private async Task AddToCart()
+    {
+        await OnAddToCart.InvokeAsync(Product);
+    }
+}

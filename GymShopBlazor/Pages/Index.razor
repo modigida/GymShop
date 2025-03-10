@@ -2,6 +2,21 @@
 
 <h3>Index</h3>
 
-@code {
+@foreach (var item in demoItems)
+{
+    <ProductComponent Product="item" OnAddToCart="HandleAddToCart" />
+}
 
+@code {
+    private List<Cart.DemoItems> demoItems = new()
+    {
+        new Cart.DemoItems { Name = "Löpartröja dam", Price = 299.00, ImageUrl = "https://03.cdn37.se/zY/images/2.2443182/craft-lopartroja-pro-hypervent-tee-2-dam-black.jpeg" },
+        new Cart.DemoItems { Name = "Träningsbyxor adidas dam", Price = 499.00, ImageUrl = "https://sannadal.com/content/uploads/2022/12/377154_102_ADIDAS_TIRO23-L-TRG-PNT-W.jpg" }
+    };
+
+    private void HandleAddToCart(Cart.DemoItems item)
+    {
+        // Lägg till produkten i varukorgen
+        Console.WriteLine($"{item.Name} tillagd i varukorgen!");
+    }
 }
