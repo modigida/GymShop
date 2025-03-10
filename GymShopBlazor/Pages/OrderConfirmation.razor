@@ -6,14 +6,59 @@
 
 <div class="order-confirmation">
     <h3>Orderbekräftelse</h3>
-    
-    <p>Observera att detta är en fejkad order. Du kommer inte få några produkter. Butiken existerar inte.</p>
 
+    <div class="order-details">
+        <p><strong>Orderdatum:</strong> @PurchaseDate.ToString("yyyy-MM-dd HH:mm")</p>
+        <p><strong>Ordernummer:</strong> @OrderId</p>
 
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>Produkt-ID</th>
+                    <th>Produktnamn</th>
+                    <th>Antal</th>
+                    <th>Pris</th>
+                    <th>Totalt pris</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in OrderItems)
+                {
+                    <tr>
+                        <td>@item.ProductId</td>
+                        <td>@item.ProductName</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.Price.ToString("0.00") SEK</td>
+                        <td>@(item.TotalPrice.ToString("0.00")) SEK</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <p class="total-price"><strong>Totalsumma:</strong> @TotalPrice.ToString("0.00") SEK</p>
+    </div>
 </div>
 
-
-
 @code {
+    // Simulerad orderdata
+    private DateTime PurchaseDate = DateTime.Now;
+    private int OrderId = 1;
 
+    private List<OrderItem> OrderItems = new()
+    {
+        new OrderItem { ProductId = 101, ProductName = "Proteinpulver", Price = 299.00, Quantity = 2 },
+        new OrderItem { ProductId = 202, ProductName = "Kreatin Monohydrat", Price = 199.00, Quantity = 1 },
+        new OrderItem { ProductId = 303, ProductName = "BCAA", Price = 149.00, Quantity = 3 }
+    };
+
+    private double TotalPrice => OrderItems.Sum(item => item.TotalPrice);
+
+    private class OrderItem
+    {
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public double Price { get; set; }
+        public int Quantity { get; set; }
+        public double TotalPrice => Price * Quantity;
+    }
 }
