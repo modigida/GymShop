@@ -1,7 +1,53 @@
 ﻿@page "/products"
 
 <h3>Products</h3>
+@if (string.IsNullOrEmpty(Category))
+{
+    <p>Visar alla produkter.</p>
+}
+else
+{
+    <p>Visar produkter inom kategori: @Category</p>
+}
 
 @code {
+    [Inject]
+    private NavigationManager Navigation { get; set; }
 
+    public string Category { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Navigation.LocationChanged += OnLocationChanged;
+        ExtractCategoryFromUri();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        ExtractCategoryFromUri();
+        await base.OnParametersSetAsync();
+    }
+
+    private void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        ExtractCategoryFromUri();
+    }
+
+    private void ExtractCategoryFromUri()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var query = uri.Query;
+
+        if (!string.IsNullOrEmpty(query) && query.Contains("category"))
+        {
+            var queryParams = System.Web.HttpUtility.ParseQueryString(query);
+            Category = queryParams["category"];
+        }
+        else
+        {
+            Category = null;
+        }
+
+        StateHasChanged();
+    }
 }

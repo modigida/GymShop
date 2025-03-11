@@ -1,0 +1,75 @@
+﻿@page "/admin"
+@inherits LayoutComponentBase
+
+<head>
+    <link href="css/admin.css" rel="stylesheet" />
+</head>
+
+<div class="admin-nav">
+    <NavLink href="/admin/customers" class="admin-nav-link">Kunder</NavLink>
+    <NavLink href="/admin/products" class="admin-nav-link">Produkter</NavLink>
+    <NavLink href="/admin/orders" class="admin-nav-link">Ordrar</NavLink>
+</div>
+
+<main>
+    <article class="content px-4">
+        @Body
+    </article>
+</main>
+
+@code {
+    private List<User> users = new List<User>();
+    private List<Order> orders = new List<Order>();
+    private List<Product> products = new List<Product>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await GetUsersAsync();
+        orders = await GetOrdersAsync();
+        products = await GetProductsAsync();
+    }
+
+    private Task<List<User>> GetUsersAsync()
+    {
+        return Task.FromResult(new List<User>
+        {
+            new User { Name = "Användare 1" },
+            new User { Name = "Användare 2" },
+            new User { Name = "Användare 3" }
+        });
+    }
+
+    private Task<List<Order>> GetOrdersAsync()
+    {
+        return Task.FromResult(new List<Order>
+        {
+            new Order { Id = 1 },
+            new Order { Id = 2 }
+        });
+    }
+
+    private Task<List<Product>> GetProductsAsync()
+    {
+        return Task.FromResult(new List<Product>
+        {
+            new Product { Name = "Produkt 1" },
+            new Product { Name = "Produkt 2" }
+        });
+    }
+
+
+    public class User
+    {
+        public string Name { get; set; }
+    }
+
+    public class Order
+    {
+        public int Id { get; set; }
+    }
+
+    public class Product
+    {
+        public string Name { get; set; }
+    }
+}
