@@ -1,11 +1,18 @@
 ﻿@page "/"
 
+<head>
+    <link href="css/product.css" rel="stylesheet" />
+</head>
+
 <h3>Index</h3>
 
-@foreach (var item in demoItems)
-{
-    <ProductComponent Product="item" OnAddToCart="HandleAddToCart" />
-}
+<div class="product-list">
+    @foreach (var item in demoItems)
+    {
+        <ProductComponent Product="item" OnAddToCart="HandleAddToCart" />
+    }
+</div>
+
 
 @code {
     private List<Cart.DemoItems> demoItems = new()
@@ -19,4 +26,5 @@
         // Lägg till produkten i varukorgen
         Console.WriteLine($"{item.Name} tillagd i varukorgen!");
     }
+    [Parameter] public EventCallback<Cart.DemoItems> OnAddToCart { get; set; }
 }
