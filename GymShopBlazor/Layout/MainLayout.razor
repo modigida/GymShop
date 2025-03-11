@@ -1,9 +1,12 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="navbar">
-    <button class="menu-btn" @onclick="ToggleMenu">☰</button>
+<head>
+    <link href="css/navbar.css" rel="stylesheet" />
+</head>
 
+<div class="navbar">
     <div class="top-nav-links">
+        <NavLink href="/products">Alla produkter</NavLink>
         <NavLink href="/products?category=supplements">Kosttillskott</NavLink>
         <NavLink href="/products?category=clothes">Träningskläder</NavLink>
         <NavLink href="/products?category=equipments">Träningstillbehör</NavLink>
@@ -20,7 +23,14 @@
 
     <div class="top-navbar-icons">
         <NavLink href="/login" class="user-icon">👤</NavLink>
-        <NavLink href="/cart" class="cart-icons">🛒</NavLink>
+        @if (!isAdmin)
+        {
+            <NavLink href="/admin" class="admin-icon">⚙️</NavLink>
+        }
+        else
+        {
+            <NavLink href="/cart" class="cart-icons">🛒</NavLink>
+        }
     </div>
 </div>
 
@@ -28,7 +38,7 @@
 {
     <div class="overlay" @onclick="ToggleMenu"></div>
 
-    <div class="menu-sidebar">
+    <div class="menu-sidebar @(isMenuOpen ? "open" : "")">
         <SideMenu />
     </div>
 }
@@ -42,6 +52,12 @@
 @code
 {
     private bool isMenuOpen = false;
+    private bool isAdmin = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Kontrollera om användaren är administratör
+    }
 
     private void ToggleMenu()
     {
