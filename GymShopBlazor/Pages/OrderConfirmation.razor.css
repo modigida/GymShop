@@ -5,16 +5,48 @@
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     background: #fff;
-    text-align: center;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
-    .order-confirmation h3 {
-        margin-bottom: 20px;
-        color: #333;
+    .order-confirmation .order-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
     }
 
-.order-details {
+    .order-confirmation h3 {
+        text-align: center;
+        color: #333;
+    }
+    .order-confirmation .logo {
+        width: 100px;
+        height: auto;
+    }
+
+    .order-confirmation .logo img {
+        position: absolute;
+    }
+
+.order-info .order-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: auto;
+}
+
+.order-info .logo-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-left: auto;
+}
+
+.order-info p {
     text-align: left;
+    margin: 0;
 }
 
 .order-table {
