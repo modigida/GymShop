@@ -29,6 +29,8 @@ public class Product
     [MaxLength(255)]
     public string Description { get; set; } = string.Empty;
 
+    public string? ImageUrl { get; set; }
+
     [JsonIgnore]
     public Category? Category { get; set; }
 
