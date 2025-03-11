@@ -6,7 +6,7 @@ public class OrderStatusService(IUnitOfWork unitOfWork) : GenericService<OrderSt
 {
     public async Task<bool> NameExistsAsync(string name)
     {
-        var orderStatuses = await _unitOfWork.OrderStatuses.GetAllAsync();
+        var orderStatuses = await unitOfWork.OrderStatuses.GetAllAsync();
         return orderStatuses.Any(c => c.Name == name);
     }
     public override async Task<OrderStatus> AddAsync(OrderStatus entity)
@@ -20,8 +20,8 @@ public class OrderStatusService(IUnitOfWork unitOfWork) : GenericService<OrderSt
             throw new ArgumentException("Order status with the same name already exists.");
         }
 
-        await _unitOfWork.OrderStatuses.AddAsync(entity);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.OrderStatuses.AddAsync(entity);
+        await unitOfWork.CompleteAsync();
 
         return entity;
     }
@@ -43,8 +43,8 @@ public class OrderStatusService(IUnitOfWork unitOfWork) : GenericService<OrderSt
 
         orderStatus.Name = entity.Name;
 
-        await _unitOfWork.OrderStatuses.Update(orderStatus);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.OrderStatuses.Update(orderStatus);
+        await unitOfWork.CompleteAsync();
 
         return orderStatus;
     }

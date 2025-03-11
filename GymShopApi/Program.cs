@@ -44,7 +44,7 @@ builder.Services.AddScoped<IGenericService<OrderStatus>, OrderStatusService>();
 builder.Services.AddScoped<IGenericService<Product>, ProductService>();
 builder.Services.AddScoped<IGenericService<ProductStatus>, ProductStatusService>();
 builder.Services.AddScoped<IGenericService<Role>, RoleService>();
-builder.Services.AddScoped<IGenericService<User>, UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

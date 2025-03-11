@@ -1,4 +1,5 @@
-﻿using GymShopApi.Entities;
+﻿using GymShopApi.DTOs;
+using GymShopApi.Entities;
 using GymShopApi.Repositories;
 using GymShopApi.Repositories.Interfaces;
 using GymShopApi.Services;
@@ -10,9 +11,33 @@ namespace GymShopApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController(IGenericService<User> userService) : ControllerBase
+public class UsersController(IUserService userService) : ControllerBase
 {
-    private readonly IGenericService<User> _userService = userService;
+    private readonly IUserService _userService = userService;
+
+    [HttpPost("register")]
+    public async Task<ActionResult<UserResponseDto>> Register(UserCreateDto dto)
+    {
+        try
+        {
+            var user = await _userService.RegisterUserAsync(dto);
+            return Ok(user);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<bool>> Login(UserLoginDto dto)
+    {
+        var isValid = await _userService.LoginUserAsync(dto);
+        if (!isValid)
+            return Unauthorized(new { message = "Invalid email or password" });
+
+        return Ok(new { message = "Login successful" });
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -40,22 +65,22 @@ public class UsersController(IGenericService<User> userService) : ControllerBase
         return Ok(user);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Post([FromBody] User user)
-    {
-        try
-        {
-            var newUser = await _userService.AddAsync(user);
-            return CreatedAtAction(nameof(Get), new { id = newUser.Id }, newUser);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
+    //[HttpPost]
+    //public async Task<IActionResult> Post([FromBody] User user)
+    //{
+    //    try
+    //    {
+    //        var newUser = await _userService.AddAsync(user);
+    //        return CreatedAtAction(nameof(Get), new { id = newUser.Id }, newUser);
+    //    }
+    //    catch (ArgumentException ex)
+    //    {
+    //        return BadRequest(ex.Message);
+    //    }
+    //}
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(Guid id, [FromBody] User updatedUser)
+    public async Task<IActionResult> Put(Guid id, [FromBody] UserCreateDto updatedUser)
     {
         try
         {

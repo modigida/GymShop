@@ -5,19 +5,17 @@ using System.Text;
 namespace GymShopApi.Hasher;
 public class PasswordHasher
 {
-    public static string HashPassword(string password)
+    public static void CreatePasswordHash(string password, out string passwordHash, out string passwordSalt)
     {
-        return BCrypt.Net.BCrypt.HashPassword(password);
+        using var hmac = new HMACSHA512();
+        passwordSalt = Convert.ToBase64String(hmac.Key[..72]);
+        passwordHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
     }
 
-    public static bool VerifyPassword(string password, string hashedPassword)
+    public static bool VerifyPassword(string password, string storedHash, string storedSalt)
     {
-        return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
-    }
-
-    public static string ExtractSalt(string hashedPassword)
-    {
-        var parts = hashedPassword.Split('$');
-        return "$" + string.Join("$", parts.Take(3));
+        using var hmac = new HMACSHA512(Convert.FromBase64String(storedSalt));
+        var computedHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
+        return computedHash == storedHash;
     }
 }

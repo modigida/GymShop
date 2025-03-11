@@ -11,11 +11,11 @@ public class OrderService(IUnitOfWork unitOfWork) : GenericService<Order>(unitOf
             throw new ArgumentException("Invalid input.");
         }
 
-        await _unitOfWork.Orders.AddAsync(entity);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.Orders.AddAsync(entity);
+        await unitOfWork.CompleteAsync();
 
-        entity.User = await _unitOfWork.Users.GetByIdAsync(entity.UserId);
-        entity.OrderStatus = await _unitOfWork.OrderStatuses.GetByIdAsync(entity.OrderStatusId);
+        entity.User = await unitOfWork.Users.GetByIdAsync(entity.UserId);
+        entity.OrderStatus = await unitOfWork.OrderStatuses.GetByIdAsync(entity.OrderStatusId);
         return entity;
     }
     public override async Task<Order> Update(Order entity, params object[] keyValues)
@@ -37,11 +37,11 @@ public class OrderService(IUnitOfWork unitOfWork) : GenericService<Order>(unitOf
         if (entity.OrderStatusId != 0 && entity.OrderStatusId != order.OrderStatusId)
         {
             order.OrderStatusId = entity.OrderStatusId;
-            order.OrderStatus = await _unitOfWork.OrderStatuses.GetByIdAsync(entity.OrderStatusId);
+            order.OrderStatus = await unitOfWork.OrderStatuses.GetByIdAsync(entity.OrderStatusId);
         }
 
-        await _unitOfWork.Orders.Update(order);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.Orders.Update(order);
+        await unitOfWork.CompleteAsync();
         return order;
     }
 
@@ -56,7 +56,7 @@ public class OrderService(IUnitOfWork unitOfWork) : GenericService<Order>(unitOf
         {
             throw new InvalidOperationException("Order cannot be deleted after it has been completed.");
         }
-        await _unitOfWork.Orders.Delete(entity);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.Orders.Delete(entity);
+        await unitOfWork.CompleteAsync();
     }
 }

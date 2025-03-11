@@ -12,8 +12,8 @@ namespace GymShopApi.Services
                 throw new ArgumentException("Invalid input.");
             }
 
-            await _unitOfWork.Campaigns.AddAsync(entity);
-            await _unitOfWork.CompleteAsync();
+            await unitOfWork.Campaigns.AddAsync(entity);
+            await unitOfWork.CompleteAsync();
 
             return entity;
         }
@@ -39,8 +39,8 @@ namespace GymShopApi.Services
                 campaign.Duration = entity.Duration;
             }
 
-            await _unitOfWork.Campaigns.Update(campaign);
-            await _unitOfWork.CompleteAsync();
+            await unitOfWork.Campaigns.Update(campaign);
+            await unitOfWork.CompleteAsync();
             return entity;
 
         }

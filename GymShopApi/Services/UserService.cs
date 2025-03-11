@@ -1,99 +1,174 @@
-﻿using GymShopApi.Entities;
+﻿using GymShopApi.DTOs;
+using GymShopApi.Entities;
 using GymShopApi.Hasher;
 using GymShopApi.Repositories.Interfaces;
+using GymShopApi.Services.Interfaces;
+using System.Data;
 
 namespace GymShopApi.Services;
-public class UserService(IUnitOfWork unitOfWork) : GenericService<User>(unitOfWork)
+public class UserService(IUnitOfWork unitOfWork) : IUserService
 {
-    public async Task<bool> PhoneExistsAsync(string name)
+    public async Task<IEnumerable<UserResponseDto?>> GetAllAsync()
     {
-        var users = await _unitOfWork.Users.GetAllAsync();
-        return users.Any(u => u.Phone == name);
-    }
-    public async Task<bool> EmailExistsAsync(string name)
-    {
-        var users = await _unitOfWork.Users.GetAllAsync();
-        return users.Any(u => u.Email == name);
-    }
-    public override async Task<User> AddAsync(User entity)
-    {
-        // TODO: create user with role "admin" can only be made by an admin. Offline can only create users of type
-        // customer, this will be automatically, customers can´t choose role
-        if (string.IsNullOrEmpty(entity.FirstName) || string.IsNullOrEmpty(entity.LastName) || entity.RoleId == 0 ||
-            string.IsNullOrEmpty(entity.Email) || string.IsNullOrEmpty(entity.Phone) ||
-            string.IsNullOrEmpty(entity.Address))
+        var users = await unitOfWork.Users.GetAllAsync();
+        List<UserResponseDto>? userResponseDtos = new List<UserResponseDto>();
+        foreach (var user in users)
         {
-            throw new ArgumentException("Invalid input.");
+            var role = await unitOfWork.Roles.GetByIdAsync(user.RoleId);
+            userResponseDtos.Add(new UserResponseDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Phone = user.Phone,
+                Address = user.Address,
+                Role = role?.Name
+            });
         }
-        
-        await _unitOfWork.Users.AddAsync(entity);
-        await _unitOfWork.CompleteAsync();
-
-        entity.Role = await _unitOfWork.Roles.GetByIdAsync(entity.RoleId);
-        return entity;
+        return userResponseDtos;
     }
-
-
-    public override async Task<User> Update(User entity, params object[] keyValues)
+    public async Task<UserResponseDto?> GetByIdAsync(params object[] keyValues)
     {
-        var user = await GetByIdAsync(keyValues);
+        var user = await unitOfWork.Users.GetByIdAsync(keyValues);
+        var role = await unitOfWork.Roles.GetByIdAsync(user.RoleId);
+        return new UserResponseDto
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            Phone = user.Phone,
+            Address = user.Address,
+            Role = role?.Name
+        };
+    }
+    public async Task<UserResponseDto> Update(UserCreateDto entity, params object[] keyValues)
+    {
+        var user = await unitOfWork.Users.GetByIdAsync(keyValues);
         if (user == null)
         {
             throw new ArgumentException("User not found.");
-        }
-        if (entity == null)
-        {
-            throw new ArgumentException("Invalid input.");
         }
 
         if (!string.IsNullOrEmpty(entity.FirstName)) { user.FirstName = entity.FirstName; }
         if (!string.IsNullOrEmpty(entity.LastName)) { user.LastName = entity.LastName; }
 
-        // TODO: to make a user "admin" you need to be logged in as admin
-        if (entity.RoleId != 0 && entity.RoleId != user.RoleId)
-        {
-            user.RoleId = entity.RoleId;
-            user.Role = await _unitOfWork.Roles.GetByIdAsync(entity.RoleId);
-        }
+        //if (!string.IsNullOrEmpty(entity.Password))
+        //{
+        //    PasswordHasher.CreatePasswordHash(entity.Password, out string newHash, out string newSalt);
+        //    user.PasswordHash = newHash;
+        //    user.PasswordSalt = newSalt;
+        //}
 
-        // TODO: manage hash and salt 
-        if (!string.IsNullOrEmpty(entity.PasswordHash)) { user.PasswordHash = entity.PasswordHash; }
-        if (!string.IsNullOrEmpty(entity.PasswordSalt)) { user.PasswordSalt = entity.PasswordSalt; }
-
-        if (!string.IsNullOrEmpty(entity.Email) && await EmailExistsAsync(entity.Email))
+        if (!string.IsNullOrEmpty(entity.Email) && entity.Email != user.Email)
         {
+            if (await EmailExistsAsync(entity.Email))
+            {
+                throw new ArgumentException("Email already exists.");
+            }
             user.Email = entity.Email;
         }
-        else if (!string.IsNullOrEmpty(entity.Email) && !await EmailExistsAsync(entity.Email) && entity.Email != user.Email)
+        
+        if (!string.IsNullOrEmpty(entity.Phone) && entity.Phone != user.Phone)
         {
-            throw new ArgumentException("Email already exists.");
-        }
-
-        if (!string.IsNullOrEmpty(entity.Phone) && await PhoneExistsAsync(entity.Phone))
-        {
+            if (await EmailExistsAsync(entity.Phone))
+            {
+                throw new ArgumentException("Phone already exists.");
+            }
             user.Phone = entity.Phone;
-        }
-        else if (!string.IsNullOrEmpty(entity.Phone) && !await PhoneExistsAsync(entity.Phone) && entity.Phone != user.Phone)
-        {
-            throw new ArgumentException("Phone already exists.");
         }
 
         if (!string.IsNullOrEmpty(entity.Address)) { user.Address = entity.Address; }
 
-        await _unitOfWork.Users.Update(user);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.Users.Update(user);
+        await unitOfWork.CompleteAsync();
 
-        return user;
+        var role = await unitOfWork.Roles.GetByIdAsync(user.RoleId);
+        return new UserResponseDto
+        {
+            Id = user.Id,
+            Address = user.Address,
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Phone = user.Phone,
+            Role = role?.Name
+        };
+    }
+
+    public async Task<UserResponseDto> RegisterUserAsync(UserCreateDto dto)
+    {
+        if (await EmailExistsAsync(dto.Email))
+        {
+            throw new ArgumentException("Email already exists.");
+        }
+        if (await PhoneExistsAsync(dto.Phone))
+        {
+            throw new ArgumentException("Phone already exists.");
+        }
+
+        PasswordHasher.CreatePasswordHash(dto.Password, out var passwordHash, out var passwordSalt);
+        
+        var user = new User
+        {
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            RoleId = dto.RoleId,
+            Email = dto.Email,
+            Phone = dto.Phone,
+            Address = dto.Address,
+            PasswordHash = passwordHash,
+            PasswordSalt = passwordSalt
+        };
+
+        await unitOfWork.Users.AddAsync(user);
+        await unitOfWork.CompleteAsync();
+
+        var role = await unitOfWork.Roles.GetByIdAsync(user.RoleId);
+        return new UserResponseDto
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            Phone = user.Phone,
+            Address = user.Address,
+            Role = role?.Name ?? string.Empty
+        };
+    }
+
+    public async Task<bool> LoginUserAsync(UserLoginDto dto)
+    {
+        //var user = await unitOfWork.Users.FindAsync(u => u.Email == dto.Email);
+        var user = (await unitOfWork.Users.GetAllAsync()).FirstOrDefault(u => u.Email == dto.Email);
+        if (user == null)
+        {
+            return false;
+        }
+        return PasswordHasher.VerifyPassword(dto.Password, user.PasswordHash, user.PasswordSalt);
+    }
+    public async Task<bool> PhoneExistsAsync(string name)
+    {
+        //return await _unitOfWork.Users.AnyAsync(u => u.Email == name);
+        var users = await unitOfWork.Users.GetAllAsync();
+        return users.Any(u => u.Phone == name);
+    }
+    public async Task<bool> EmailExistsAsync(string name)
+    {
+        //return await _unitOfWork.Users.AnyAsync(u => u.Email == name);
+        var users = await unitOfWork.Users.GetAllAsync();
+        return users.Any(u => u.Email == name);
     }
 
     public async Task Delete(params object[] keyValues)
     {
-        var user = await GetByIdAsync(keyValues);
+        var user = await unitOfWork.Users.GetByIdAsync(keyValues);
         if (user == null)
         {
             throw new KeyNotFoundException("User not found.");
         }
-        await _unitOfWork.Users.Delete(user);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.Users.Delete(user);
+        await unitOfWork.CompleteAsync();
     }
 }

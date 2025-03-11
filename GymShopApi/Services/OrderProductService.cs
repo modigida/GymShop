@@ -13,10 +13,10 @@ public class OrderProductService(IUnitOfWork unitOfWork) : GenericService<OrderP
         }
 
         await _repository.AddAsync(entity);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.CompleteAsync();
 
-        entity.Order = await _unitOfWork.Orders.GetByIdAsync(entity.OrderId);
-        entity.Product = await _unitOfWork.Products.GetByIdAsync(entity.ProductId);
+        entity.Order = await unitOfWork.Orders.GetByIdAsync(entity.OrderId);
+        entity.Product = await unitOfWork.Products.GetByIdAsync(entity.ProductId);
         return entity;
     }
     public override async Task<OrderProduct> Update(OrderProduct entity, params object[] keyValues)
@@ -31,7 +31,7 @@ public class OrderProductService(IUnitOfWork unitOfWork) : GenericService<OrderP
         if (entity.CurrentPrice > 0) existingOrderProduct.CurrentPrice = entity.CurrentPrice;
 
         await _repository.Update(existingOrderProduct);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.CompleteAsync();
         return existingOrderProduct;
     }
     public override async Task Delete(params object[] keyValues)
@@ -43,6 +43,6 @@ public class OrderProductService(IUnitOfWork unitOfWork) : GenericService<OrderP
         }
 
         await _repository.Delete(entity);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.CompleteAsync();
     }
 }

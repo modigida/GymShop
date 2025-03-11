@@ -4,7 +4,6 @@ using GymShopApi.Services.Interfaces;
 namespace GymShopApi.Services;
 public abstract class GenericService<T>(IUnitOfWork unitOfWork) : IGenericService<T> where T : class
 {
-    protected readonly IUnitOfWork _unitOfWork = unitOfWork;
     protected readonly IGenericRepository<T> _repository = unitOfWork.GetRepository<T>();
 
     public virtual async Task<IEnumerable<T?>> GetAllAsync()
@@ -28,6 +27,6 @@ public abstract class GenericService<T>(IUnitOfWork unitOfWork) : IGenericServic
             throw new ArgumentException("Entity not found.");
         }
         await _repository.Delete(entity);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.CompleteAsync();
     }
 }

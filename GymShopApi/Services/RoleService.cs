@@ -6,7 +6,7 @@ public class RoleService(IUnitOfWork unitOfWork) : GenericService<Role>(unitOfWo
 {
     public async Task<bool> NameExistsAsync(string name)
     {
-        var roles = await _unitOfWork.Roles.GetAllAsync();
+        var roles = await unitOfWork.Roles.GetAllAsync();
         return roles.Any(r => r.Name == name);
     }
     public override async Task<Role> AddAsync(Role entity)
@@ -20,8 +20,8 @@ public class RoleService(IUnitOfWork unitOfWork) : GenericService<Role>(unitOfWo
             throw new ArgumentException("Role with the same name already exists.");
         }
 
-        await _unitOfWork.Roles.AddAsync(entity);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.Roles.AddAsync(entity);
+        await unitOfWork.CompleteAsync();
 
         return entity;
     }
@@ -45,8 +45,8 @@ public class RoleService(IUnitOfWork unitOfWork) : GenericService<Role>(unitOfWo
 
         role.Name = entity.Name;
 
-        await _unitOfWork.Roles.Update(role);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.Roles.Update(role);
+        await unitOfWork.CompleteAsync();
 
         return role;
     }

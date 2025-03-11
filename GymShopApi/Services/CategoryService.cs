@@ -8,7 +8,7 @@ public class CategoryService(IUnitOfWork unitOfWork) : GenericService<Category>(
 {
     public async Task<bool> NameExistsAsync(string name)
     {
-        var categories = await _unitOfWork.Categories.GetAllAsync();
+        var categories = await unitOfWork.Categories.GetAllAsync();
         return categories.Any(c => c.Name == name);
     }
     public override async Task<Category> AddAsync(Category entity)
@@ -22,8 +22,8 @@ public class CategoryService(IUnitOfWork unitOfWork) : GenericService<Category>(
             throw new ArgumentException("Category with the same name already exists.");
         }
 
-        await _unitOfWork.Categories.AddAsync(entity);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.Categories.AddAsync(entity);
+        await unitOfWork.CompleteAsync();
 
         return entity;
     }
@@ -46,8 +46,8 @@ public class CategoryService(IUnitOfWork unitOfWork) : GenericService<Category>(
 
         category.Name = entity.Name;
 
-        await _unitOfWork.Categories.Update(category);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.Categories.Update(category);
+        await unitOfWork.CompleteAsync();
 
         return category;
     }

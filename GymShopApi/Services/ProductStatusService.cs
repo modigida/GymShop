@@ -6,7 +6,7 @@ public class ProductStatusService(IUnitOfWork unitOfWork) : GenericService<Produ
 {
     public async Task<bool> NameExistsAsync(string name)
     {
-        var productStatuses = await _unitOfWork.ProductStatuses.GetAllAsync();
+        var productStatuses = await unitOfWork.ProductStatuses.GetAllAsync();
         return productStatuses.Any(p => p.Name == name);
     }
     public override async Task<ProductStatus> AddAsync(ProductStatus entity)
@@ -20,8 +20,8 @@ public class ProductStatusService(IUnitOfWork unitOfWork) : GenericService<Produ
             throw new ArgumentException("Product status with the same name already exists.");
         }
 
-        await _unitOfWork.ProductStatuses.AddAsync(entity);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.ProductStatuses.AddAsync(entity);
+        await unitOfWork.CompleteAsync();
 
         return entity;
     }
@@ -45,8 +45,8 @@ public class ProductStatusService(IUnitOfWork unitOfWork) : GenericService<Produ
 
         productStatus.Name = entity.Name;
 
-        await _unitOfWork.ProductStatuses.Update(productStatus);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.ProductStatuses.Update(productStatus);
+        await unitOfWork.CompleteAsync();
 
         return productStatus;
     }
