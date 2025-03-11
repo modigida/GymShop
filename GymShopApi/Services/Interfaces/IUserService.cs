@@ -10,6 +10,6 @@ namespace GymShopApi.Services.Interfaces
         Task<UserResponseDto> Update(UserCreateDto entity, params object[] keyValues);
         Task Delete(params object[] keyValues);
         Task<UserResponseDto> RegisterUserAsync(UserCreateDto dto);
-        Task<bool> LoginUserAsync(UserLoginDto dto);
+        Task<string?> LoginUserAsync(UserLoginDto dto);
     }
 }

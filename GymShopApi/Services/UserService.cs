@@ -4,9 +4,10 @@ using GymShopApi.Hasher;
 using GymShopApi.Repositories.Interfaces;
 using GymShopApi.Services.Interfaces;
 using System.Data;
+using GymShopApi.JWT;
 
 namespace GymShopApi.Services;
-public class UserService(IUnitOfWork unitOfWork) : IUserService
+public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserService
 {
     public async Task<IEnumerable<UserResponseDto?>> GetAllAsync()
     {
@@ -138,15 +139,26 @@ public class UserService(IUnitOfWork unitOfWork) : IUserService
         };
     }
 
-    public async Task<bool> LoginUserAsync(UserLoginDto dto)
+    public async Task<string?> LoginUserAsync(UserLoginDto dto)
     {
         //var user = await unitOfWork.Users.FindAsync(u => u.Email == dto.Email);
         var user = (await unitOfWork.Users.GetAllAsync()).FirstOrDefault(u => u.Email == dto.Email);
+        user.Role = await unitOfWork.Roles.GetByIdAsync(user.RoleId);
         if (user == null)
         {
-            return false;
+            return null;
         }
-        return PasswordHasher.VerifyPassword(dto.Password, user.PasswordHash, user.PasswordSalt);
+        var isPasswordValid = PasswordHasher.VerifyPassword(dto.Password, user.PasswordHash, user.PasswordSalt);
+        if (!isPasswordValid)
+        {
+            return null;
+        }
+
+        if (user.Role == null)
+        {
+            return null;
+        }
+        return jwtService.GenerateToken(user.Id, user.Email, user.Role.Name);
     }
     public async Task<bool> PhoneExistsAsync(string name)
     {

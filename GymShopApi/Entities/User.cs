@@ -20,11 +20,11 @@ public class User
     public int RoleId { get; set; }
 
     [Required]
-    [MaxLength(150)]
+    [MaxLength(250)]
     public string PasswordHash { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(150)]
+    [MaxLength(250)]
     public string PasswordSalt { get; set; } = string.Empty;
 
     [Required]

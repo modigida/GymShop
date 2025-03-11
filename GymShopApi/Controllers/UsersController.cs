@@ -4,6 +4,7 @@ using GymShopApi.Repositories;
 using GymShopApi.Repositories.Interfaces;
 using GymShopApi.Services;
 using GymShopApi.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 
@@ -13,14 +14,12 @@ namespace GymShopApi.Controllers;
 [Route("api/[controller]")]
 public class UsersController(IUserService userService) : ControllerBase
 {
-    private readonly IUserService _userService = userService;
-
     [HttpPost("register")]
     public async Task<ActionResult<UserResponseDto>> Register(UserCreateDto dto)
     {
         try
         {
-            var user = await _userService.RegisterUserAsync(dto);
+            var user = await userService.RegisterUserAsync(dto);
             return Ok(user);
         }
         catch (ArgumentException ex)
@@ -30,19 +29,23 @@ public class UsersController(IUserService userService) : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<bool>> Login(UserLoginDto dto)
+    public async Task<ActionResult> Login(UserLoginDto dto)
     {
-        var isValid = await _userService.LoginUserAsync(dto);
-        if (!isValid)
-            return Unauthorized(new { message = "Invalid email or password" });
+        var token = await userService.LoginUserAsync(dto);
 
-        return Ok(new { message = "Login successful" });
+        if (token == null)
+        {
+            return Unauthorized(new { message = "Invalid email or password" });
+        }
+
+        return Ok(new { token });
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAll()
     {
-        var users = await _userService.GetAllAsync();
+        var users = await userService.GetAllAsync();
 
         if (!users.Any())
         {
@@ -55,7 +58,7 @@ public class UsersController(IUserService userService) : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var user = await _userService.GetByIdAsync(id);
+        var user = await userService.GetByIdAsync(id);
 
         if (user == null)
         {
@@ -84,7 +87,7 @@ public class UsersController(IUserService userService) : ControllerBase
     {
         try
         {
-            var user = await _userService.Update(updatedUser, id);
+            var user = await userService.Update(updatedUser, id);
             return Ok(user);
         }
         catch (ArgumentException ex)
@@ -102,7 +105,7 @@ public class UsersController(IUserService userService) : ControllerBase
     {
         try
         {
-            await _userService.Delete(id);
+            await userService.Delete(id);
             return Ok("User deleted");
         }
         catch (KeyNotFoundException)
