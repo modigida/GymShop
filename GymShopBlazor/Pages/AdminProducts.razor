@@ -1,7 +1,35 @@
 ﻿@page "/admin/products"
+@using GymShopBlazor.ApiService
+@using GymShopBlazor.Models
+@inject ProductService ProductService
 
 <h3>Produkter</h3>
 
-@code {
+<table class="table">
+    <thead>
+    <tr>
+        <th>Namn</th>
+        <th>Pris</th>
+        <th>Beskrivning</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var product in products)
+    {
+        <tr>
+            <td>@product.Name</td>
+            <td>@product.Price</td>
+            <td>@product.Description</td>
+        </tr>
+    }
+    </tbody>
+</table>
 
+@code {
+    private List<Product> products = new List<Product>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await ProductService.GetAll();
+    }
 }

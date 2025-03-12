@@ -1,7 +1,37 @@
 ﻿@page "/admin/orders"
+@using GymShopBlazor.ApiService
+@using GymShopBlazor.Models
+@inject OrderService OrderService
 
 <h3>Ordrar</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Datum</th>
+            <th>Totalsumma</th>
+            <th>Produkter</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in orders)
+        {
+            <tr>
+                <td>@order.PurchaseDate</td>
+                <td>@order.TotalPrice</td>
+                @foreach (var product in order.OrderProducts)
+                {
+                    <td>@product.Quantity</td>
+
+                }
+            </tr>
+        }
+    </tbody>
+</table>
 
 @code {
-
+    private List<Order> orders { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        orders = await OrderService.GetAll();
+    }
 }
