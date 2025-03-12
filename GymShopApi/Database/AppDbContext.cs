@@ -23,6 +23,18 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<OrderProduct>()
             .HasKey(op => new { op.OrderId, op.ProductId });
 
+        modelBuilder.Entity<OrderProduct>()
+            .HasOne(op => op.Order)
+            .WithMany(o => o.OrderProducts)
+            .HasForeignKey(op => op.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<OrderProduct>()
+            .HasOne(op => op.Product)
+            .WithMany()
+            .HasForeignKey(op => op.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         modelBuilder.Entity<CampaignProduct>()
             .HasKey(cp => new { cp.CampaignId, cp.ProductId });
 

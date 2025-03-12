@@ -9,6 +9,7 @@ using GymShopApi.JWT;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using GymShopApi.DTOs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,7 +54,7 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IGenericRepository<CampaignProduct>, CampaignProductRepository>();
 builder.Services.AddScoped<IGenericRepository<Campaign>, CampaignRepository>();
 builder.Services.AddScoped<IGenericRepository<Category>, CategoryRepository>();
-builder.Services.AddScoped<IGenericRepository<Order>, OrderRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IGenericRepository<OrderProduct>, OrderProductRepository>();
 builder.Services.AddScoped<IGenericRepository<OrderStatus>, OrderStatusRepository>();
 builder.Services.AddScoped<IGenericRepository<Product>, ProductRepository>();
@@ -66,7 +67,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IGenericService<CampaignProduct>, CampaignProductService>();
 builder.Services.AddScoped<IGenericService<Campaign>, CampaignService>();
 builder.Services.AddScoped<IGenericService<Category>, CategoryService>();
-builder.Services.AddScoped<IGenericService<Order>, OrderService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IGenericService<OrderProduct>, OrderProductService>();
 builder.Services.AddScoped<IGenericService<OrderStatus>, OrderStatusService>();
 builder.Services.AddScoped<IGenericService<Product>, ProductService>();
@@ -74,7 +75,20 @@ builder.Services.AddScoped<IGenericService<ProductStatus>, ProductStatusService>
 builder.Services.AddScoped<IGenericService<Role>, RoleService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazor",
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:7130")
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowBlazor");
 
 app.UseAuthentication();
 app.UseAuthorization();

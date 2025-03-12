@@ -11,11 +11,10 @@ namespace GymShopApi.Controllers;
 [Route("api/[controller]")]
 public class ProductsController(IGenericService<Product> productService) : ControllerBase
 {
-    private readonly IGenericService<Product> _productService = productService;
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var products = await _productService.GetAllAsync();
+        var products = await productService.GetAllAsync();
 
         if (!products.Any())
         {
@@ -28,7 +27,7 @@ public class ProductsController(IGenericService<Product> productService) : Contr
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var product = await _productService.GetByIdAsync(id);
+        var product = await productService.GetByIdAsync(id);
 
         if (product == null)
         {
@@ -43,7 +42,7 @@ public class ProductsController(IGenericService<Product> productService) : Contr
     {
         try
         {
-            var newProduct = await _productService.AddAsync(product);
+            var newProduct = await productService.AddAsync(product);
             return CreatedAtAction(nameof(Get), new { id = newProduct.Id }, newProduct);
         }
         catch (ArgumentException ex)
@@ -57,7 +56,7 @@ public class ProductsController(IGenericService<Product> productService) : Contr
     {
         try
         {
-            var product = await _productService.Update( updatedProduct, id);
+            var product = await productService.Update( updatedProduct, id);
             return Ok(product);
         }
         catch (ArgumentException ex)
@@ -75,7 +74,7 @@ public class ProductsController(IGenericService<Product> productService) : Contr
     {
         try
         {
-            await _productService.Delete(id);
+            await productService.Delete(id);
             return Ok("Product deleted");
         }
         catch (KeyNotFoundException)

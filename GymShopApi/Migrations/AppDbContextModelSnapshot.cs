@@ -38,7 +38,7 @@ namespace GymShopApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Campaigns");
+                    b.ToTable("Campaigns", (string)null);
                 });
 
             modelBuilder.Entity("GymShopApi.Entities.CampaignProduct", b =>
@@ -56,7 +56,7 @@ namespace GymShopApi.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CampaignProducts");
+                    b.ToTable("CampaignProducts", (string)null);
                 });
 
             modelBuilder.Entity("GymShopApi.Entities.Category", b =>
@@ -74,7 +74,7 @@ namespace GymShopApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("GymShopApi.Entities.Order", b =>
@@ -103,7 +103,7 @@ namespace GymShopApi.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("GymShopApi.Entities.OrderProduct", b =>
@@ -124,7 +124,7 @@ namespace GymShopApi.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderProducts");
+                    b.ToTable("OrderProducts", (string)null);
                 });
 
             modelBuilder.Entity("GymShopApi.Entities.OrderStatus", b =>
@@ -142,7 +142,7 @@ namespace GymShopApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OrderStatuses");
+                    b.ToTable("OrderStatuses", (string)null);
                 });
 
             modelBuilder.Entity("GymShopApi.Entities.Product", b =>
@@ -184,7 +184,7 @@ namespace GymShopApi.Migrations
 
                     b.HasIndex("ProductStatusId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("GymShopApi.Entities.ProductStatus", b =>
@@ -202,7 +202,7 @@ namespace GymShopApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductStatuses");
+                    b.ToTable("ProductStatuses", (string)null);
                 });
 
             modelBuilder.Entity("GymShopApi.Entities.Role", b =>
@@ -220,7 +220,7 @@ namespace GymShopApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("GymShopApi.Entities.User", b =>
@@ -271,7 +271,7 @@ namespace GymShopApi.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("GymShopApi.Entities.CampaignProduct", b =>

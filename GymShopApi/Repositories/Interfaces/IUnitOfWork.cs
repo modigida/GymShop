@@ -6,7 +6,7 @@ public interface IUnitOfWork : IDisposable
     IGenericRepository<CampaignProduct> CampaignProducts { get; }
     IGenericRepository<Campaign> Campaigns { get; }
     IGenericRepository<Category> Categories { get; }
-    IGenericRepository<Order> Orders { get; }
+    IOrderRepository Orders { get; }
     IGenericRepository<OrderProduct> OrderProducts { get; }
     IGenericRepository<OrderStatus> OrderStatuses { get; }
     IGenericRepository<Product> Products { get; }

@@ -1,4 +1,5 @@
-﻿using GymShopApi.Entities;
+﻿using GymShopApi.DTOs;
+using GymShopApi.Entities;
 using GymShopApi.Repositories;
 using GymShopApi.Repositories.Interfaces;
 using GymShopApi.Services;
@@ -9,14 +10,13 @@ namespace GymShopApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class OrdersController(IGenericService<Order> orderService) : ControllerBase
+public class OrdersController(IOrderService orderService) : ControllerBase
 {
-    private readonly IGenericService<Order> _orderService = orderService;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var orders = await _orderService.GetAllAsync();
+        var orders = await orderService.GetAllAsync();
 
         if (!orders.Any())
         {
@@ -26,10 +26,10 @@ public class OrdersController(IGenericService<Order> orderService) : ControllerB
         return Ok(orders);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("id/{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var order = await _orderService.GetByIdAsync(id);
+        var order = await orderService.GetByIdAsync(id);
 
         if (order == null)
         {
@@ -39,12 +39,25 @@ public class OrdersController(IGenericService<Order> orderService) : ControllerB
         return Ok(order);
     }
 
+    [HttpGet("email/{email}")]
+    public async Task<IActionResult> GetByEmail(string email)
+    {
+        var orders = await orderService.GetByEmailAsync(email);
+
+        if (orders == null)
+        {
+            return NotFound($"No orders found for email: {email}");
+        }
+
+        return Ok(orders);
+    }
+
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Order order)
+    public async Task<IActionResult> Post([FromBody] OrderDto order)
     {
         try
         {
-            var newOrder = await _orderService.AddAsync(order);
+            var newOrder = await orderService.AddAsync(order);
             return CreatedAtAction(nameof(Get), new { id = newOrder.Id }, newOrder);
         }
         catch (ArgumentException ex)
@@ -54,11 +67,11 @@ public class OrdersController(IGenericService<Order> orderService) : ControllerB
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] Order updatedOrder)
+    public async Task<IActionResult> Put(int id, [FromBody] OrderDto updatedOrder)
     {
         try
         {
-            var category = await _orderService.Update(updatedOrder, id);
+            var category = await orderService.Update(updatedOrder, id);
             return Ok(category);
         }
         catch (ArgumentException ex)
@@ -76,7 +89,7 @@ public class OrdersController(IGenericService<Order> orderService) : ControllerB
     {
         try
         {
-            await _orderService.Delete(id);
+            await orderService.Delete(id);
             return Ok("Order deleted");
         }
         catch (KeyNotFoundException)
