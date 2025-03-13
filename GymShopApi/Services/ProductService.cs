@@ -120,9 +120,16 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
         throw new NotImplementedException();
     }
 
-    public Task Delete(params object[] keyValues)
+    public async Task Delete(params object[] keyValues)
     {
-        throw new NotImplementedException();
+        var entity = await unitOfWork.Products.GetByIdAsync(keyValues);
+        if (entity == null)
+        {
+            throw new ArgumentException("Entity not found.");
+        }
+
+        await unitOfWork.Products.Delete(entity);
+        await unitOfWork.CompleteAsync();
     }
 
 
