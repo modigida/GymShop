@@ -53,11 +53,11 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] OrderDto order)
+    public async Task<IActionResult> Post([FromBody] OrderCreateDto orderResponse)
     {
         try
         {
-            var newOrder = await orderService.AddAsync(order);
+            var newOrder = await orderService.AddAsync(orderResponse);
             return CreatedAtAction(nameof(Get), new { id = newOrder.Id }, newOrder);
         }
         catch (ArgumentException ex)
@@ -67,11 +67,11 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] OrderDto updatedOrder)
+    public async Task<IActionResult> Put(int id, [FromBody] OrderCreateDto updatedOrderResponse)
     {
         try
         {
-            var category = await orderService.Update(updatedOrder, id);
+            var category = await orderService.Update(updatedOrderResponse, id);
             return Ok(category);
         }
         catch (ArgumentException ex)

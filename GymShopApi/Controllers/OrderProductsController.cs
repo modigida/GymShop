@@ -10,6 +10,8 @@ namespace GymShopApi.Controllers;
 [Route("api/[controller]")]
 public class OrderProductsController(IGenericService<OrderProduct> orderProductService) : ControllerBase
 {
+    //TODO move into OrdersController, only able to get all orderproducts based on productId, delete??
+
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {

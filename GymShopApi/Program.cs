@@ -55,7 +55,7 @@ builder.Services.AddScoped<IGenericRepository<CampaignProduct>, CampaignProductR
 builder.Services.AddScoped<IGenericRepository<Campaign>, CampaignRepository>();
 builder.Services.AddScoped<IGenericRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IGenericRepository<OrderProduct>, OrderProductRepository>();
+builder.Services.AddScoped<IOrderProductRepository, OrderProductRepository>();
 builder.Services.AddScoped<IGenericRepository<OrderStatus>, OrderStatusRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IGenericRepository<ProductStatus>, ProductStatusRepository>();

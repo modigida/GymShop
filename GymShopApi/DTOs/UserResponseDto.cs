@@ -1,4 +1,6 @@
-﻿namespace GymShopApi.DTOs;
+﻿using GymShopApi.Entities;
+
+namespace GymShopApi.DTOs;
 public class UserResponseDto
 {
     public Guid Id { get; set; }
@@ -7,5 +9,5 @@ public class UserResponseDto
     public string Email { get; set; }
     public string Phone { get; set; }
     public string Address { get; set; }
-    public string Role { get; set; }
+    public Role Role { get; set; }
 }

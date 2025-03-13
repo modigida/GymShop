@@ -38,4 +38,16 @@ public class ProductRepository(AppDbContext context) : GenericRepository<Product
             .Where(p => p.ProductStatus.Id == statusId)
             .ToListAsync();
     }
+
+    public async Task<IEnumerable<Product>> GetByIdsAsync(IEnumerable<int> productIds)
+    {
+        if (productIds == null || !productIds.Any())
+        {
+            throw new ArgumentException("ProductIds list cannot be null or empty.");
+        }
+
+        return await _context.Products
+            .Where(p => productIds.Contains(p.Id))
+            .ToListAsync();
+    }
 }

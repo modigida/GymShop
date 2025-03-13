@@ -12,7 +12,7 @@ public class UnitOfWork : IUnitOfWork
     public IGenericRepository<Campaign> Campaigns { get; }
     public IGenericRepository<Category> Categories { get; }
     public IOrderRepository Orders { get; }
-    public IGenericRepository<OrderProduct> OrderProducts { get; }
+    public IOrderProductRepository OrderProducts { get; }
     public IGenericRepository<OrderStatus> OrderStatuses { get; }
     public IProductRepository Products { get; }
     public IGenericRepository<ProductStatus> ProductStatuses { get; }
@@ -26,7 +26,7 @@ public class UnitOfWork : IUnitOfWork
         Campaigns = new GenericRepository<Campaign>(_context);
         Categories = new GenericRepository<Category>(_context);
         Orders = new OrderRepository(context);
-        OrderProducts = new GenericRepository<OrderProduct>(_context);
+        OrderProducts = new OrderProductRepository(_context);
         OrderStatuses = new GenericRepository<OrderStatus>(_context);
         Products = new ProductRepository(context);
         Roles = new GenericRepository<Role>(_context);

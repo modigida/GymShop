@@ -23,7 +23,7 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
                 Email = user.Email,
                 Phone = user.Phone,
                 Address = user.Address,
-                Role = user.Role.Name
+                Role = user.Role
             });
         }
         return userResponseDtos;
@@ -43,7 +43,7 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
             Email = user.Email,
             Phone = user.Phone,
             Address = user.Address,
-            Role = user.Role.Name
+            Role = user.Role
         };
     }
     public async Task<UserResponseDto> Update(UserCreateDto entity, params object[] keyValues)
@@ -111,7 +111,7 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
             FirstName = user.FirstName,
             LastName = user.LastName,
             Phone = user.Phone,
-            Role = role?.Name
+            Role = role
         };
     }
 
@@ -151,7 +151,7 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
             Email = user.Email,
             Phone = user.Phone,
             Address = user.Address,
-            Role = user.Role.Name
+            Role = user.Role
         };
     }
 

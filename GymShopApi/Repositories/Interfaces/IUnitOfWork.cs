@@ -7,7 +7,7 @@ public interface IUnitOfWork : IDisposable
     IGenericRepository<Campaign> Campaigns { get; }
     IGenericRepository<Category> Categories { get; }
     IOrderRepository Orders { get; }
-    IGenericRepository<OrderProduct> OrderProducts { get; }
+    IOrderProductRepository OrderProducts { get; }
     IGenericRepository<OrderStatus> OrderStatuses { get; }
     IProductRepository Products { get; }
     IGenericRepository<ProductStatus> ProductStatuses { get; }

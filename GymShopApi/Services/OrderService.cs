@@ -12,11 +12,11 @@ public class OrderService(IUnitOfWork unitOfWork) : IOrderService
         return await unitOfWork.Orders.GetByIdAsync(keyValues);
     }
 
-    public async Task<IEnumerable<OrderDto?>> GetAllAsync()
+    public async Task<IEnumerable<OrderResponseDto?>> GetAllAsync()
     {
         var orders = await unitOfWork.Orders.GetAllAsync();
 
-        return orders.Select(o => new OrderDto
+        return orders.Select(o => new OrderResponseDto
         {
             Id = o.Id,
             User = new UserResponseDto
@@ -39,12 +39,12 @@ public class OrderService(IUnitOfWork unitOfWork) : IOrderService
         }).ToList();
     }
 
-    public async Task<OrderDto?> GetByIdAsync(int id)
+    public async Task<OrderResponseDto?> GetByIdAsync(int id)
     {
         var order = await unitOfWork.Orders.GetByIdAsync(id);
         if (order == null) return null;
 
-        return new OrderDto
+        return new OrderResponseDto
         {
             Id = order.Id,
             User = new UserResponseDto
@@ -67,12 +67,12 @@ public class OrderService(IUnitOfWork unitOfWork) : IOrderService
         };
     }
 
-    public async Task<IEnumerable<OrderDto?>> GetByEmailAsync(string email)
+    public async Task<IEnumerable<OrderResponseDto?>> GetByEmailAsync(string email)
     {
         var orders = await unitOfWork.Orders.GetByEmailAsync(email);
-        if (!orders.Any()) return new List<OrderDto?>();
+        if (!orders.Any()) return new List<OrderResponseDto?>();
 
-        return orders.Select(o => new OrderDto
+        return orders.Select(o => new OrderResponseDto
         {
             Id = o.Id,
             User = new UserResponseDto
@@ -96,51 +96,135 @@ public class OrderService(IUnitOfWork unitOfWork) : IOrderService
 
     }
 
-    public async Task<OrderDto> AddAsync(OrderDto orderDto)
+    public async Task<OrderResponseDto> AddAsync(OrderCreateDto entity)
     {
-        if (orderDto.User == null || orderDto.PurchaseDate == DateTime.MinValue || orderDto.OrderStatus == null)
+        if (entity.User == null || entity.PurchaseDate == DateTime.MinValue || entity.OrderStatus == null)
         {
             throw new ArgumentException("Invalid input.");
         }
 
         Order order = new()
         {
-            UserId = orderDto.User.Id,
-            PurchaseDate = orderDto.PurchaseDate,
-            OrderStatusId = orderDto.OrderStatus.Id
+            UserId = entity.User.Id,
+            PurchaseDate = entity.PurchaseDate,
+            OrderStatusId = entity.OrderStatus.Id,
+            TotalPrice = entity.OrderProducts?.Sum(op => op.CurrentPrice * op.Quantity) ?? 0
         };
 
         await unitOfWork.Orders.AddAsync(order);
         await unitOfWork.CompleteAsync();
 
-        //entity.User = await unitOfWork.Users.GetByIdAsync(entity.UserId);
-        //entity.OrderStatus = await unitOfWork.OrderStatuses.GetByIdAsync(entity.OrderStatusId);
-        return orderDto;
+        List<OrderProduct> orderProducts = new();
+
+        if (entity.OrderProducts != null && entity.OrderProducts.Any())
+        {
+            var productIds = entity.OrderProducts.Select(op => op.ProductId).ToList();
+            var products = await unitOfWork.Products.GetByIdsAsync(productIds);
+
+            orderProducts = entity.OrderProducts.Select(op =>
+            {
+                var product = products.FirstOrDefault(p => p.Id == op.ProductId);
+                return new OrderProduct
+                {
+                    OrderId = order.Id,
+                    ProductId = op.ProductId,
+                    Quantity = op.Quantity,
+                    CurrentPrice = op.CurrentPrice,
+                    Product = product
+                };
+            }).ToList();
+
+            order.OrderProducts = orderProducts;
+
+            await unitOfWork.OrderProducts.AddRangeAsync(order.OrderProducts);
+            await unitOfWork.CompleteAsync();
+        }
+
+        return new OrderResponseDto
+        {
+            Id = order.Id,
+            User = entity.User,
+            PurchaseDate = order.PurchaseDate,
+            OrderStatus = entity.OrderStatus,
+            TotalPrice = order.TotalPrice,
+            OrderProducts = order.OrderProducts?.Select(op => new OrderProductDto
+            {
+                ProductId = op.ProductId,
+                Quantity = op.Quantity,
+                CurrentPrice = op.CurrentPrice,
+                ProductName = op.Product?.Name
+            }).ToList() ?? new List<OrderProductDto>()
+        };
     }
-    public async Task<OrderDto> Update(OrderDto orderDto, params object[] keyValues)
+    public async Task<OrderResponseDto> Update(OrderCreateDto entity, params object[] keyValues)
     {
         var order = await GetEntity(keyValues);
         if (order == null)
         {
             throw new ArgumentException("Order not found.");
         }
-        if (orderDto == null)
+        if (entity == null)
         {
             throw new ArgumentException("Invalid input.");
         }
-        if (orderDto.OrderStatus?.Name == "Completed")
+        if (entity.OrderStatus?.Name == "Completed")
         {
             throw new InvalidOperationException("Order cannot be updated after it has been completed.");
         }
 
-        if (orderDto.OrderStatus != null && orderDto.OrderStatus != order.OrderStatus)
+        if (entity.OrderStatus != null && entity.OrderStatus.Id != order.OrderStatusId)
         {
-            order.OrderStatus = orderDto.OrderStatus;
+            var existingOrderStatus = await unitOfWork.OrderStatuses.GetByIdAsync(entity.OrderStatus.Id);
+            if (existingOrderStatus != null)
+            {
+                order.OrderStatus = existingOrderStatus;
+            }
         }
+
+        if (entity.OrderProducts != null && entity.OrderProducts.Any())
+        {
+            var existingProducts = await unitOfWork.OrderProducts.GetByOrderIdAsync(order.Id);
+            await unitOfWork.OrderProducts.DeleteRangeAsync(existingProducts);
+
+            var newOrderProducts = entity.OrderProducts.Select(op => new OrderProduct
+            {
+                OrderId = order.Id,
+                ProductId = op.ProductId,
+                Quantity = op.Quantity,
+                CurrentPrice = op.CurrentPrice
+            }).ToList();
+
+            await unitOfWork.OrderProducts.AddRangeAsync(newOrderProducts);
+
+            order.OrderProducts = newOrderProducts;
+        }
+
+        order.TotalPrice = order.OrderProducts?.Sum(op => op.Quantity * op.CurrentPrice) ?? 0;
 
         await unitOfWork.Orders.Update(order);
         await unitOfWork.CompleteAsync();
-        return orderDto;
+
+        return new OrderResponseDto
+        {
+            Id = order.Id,
+            User = new UserResponseDto
+            {
+                Id = order.User.Id,
+                FirstName = order.User.FirstName,
+                LastName = order.User.LastName,
+                Email = order.User.Email
+            },
+            PurchaseDate = order.PurchaseDate,
+            OrderStatus = order.OrderStatus,
+            TotalPrice = order.TotalPrice,
+            OrderProducts = order.OrderProducts?.Select(op => new OrderProductDto
+            {
+                ProductId = op.ProductId,
+                ProductName = op.Product.Name,
+                Quantity = op.Quantity,
+                CurrentPrice = op.CurrentPrice
+            }).ToList() ?? new List<OrderProductDto>()
+        };
     }
 
     public async Task Delete(params object[] keyValues)
