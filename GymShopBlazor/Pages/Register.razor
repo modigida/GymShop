@@ -1,4 +1,8 @@
 ﻿@page "/register"
+@using GymShopBlazor.Models
+@using GymShopBlazor.ApiService
+@inject UserService UserService
+@inject NavigationManager Navigation
 
 <head>
     <link href="css/userstyling.css" rel="stylesheet" />
@@ -6,30 +10,86 @@
 
 <div class="user-form">
     <h3>Skapa ett konto</h3>
-    <p>Att handla hos Gym Shop ska alltid vara enkelt och som vanlig konsument behöver du
+    <p>
+        Att handla hos Gym Shop ska alltid vara enkelt och som vanlig konsument behöver du
         inte skapa ett konto för att handla hos oss.
     </p>
+    
+    <div class="mb-3">
+        <label for="firstname" class="form-label">Förnamn*</label>
+        <input type="text" class="form-control" id="firstname" placeholder="Förnamn" @bind="newUser.FirstName" @bind:event="oninput" />
+    </div>
+
+    <div class="mb-3">
+        <label for="lastname" class="form-label">Efternamn*</label>
+        <input type="text" class="form-control" id="lastname" placeholder="Efternamn" @bind="newUser.LastName" @bind:event="oninput" />
+    </div>
 
     <div class="mb-3">
         <label for="email" class="form-label">E-post*</label>
-        <input type="email" class="form-control" id="email" placeholder="E-post" />
+        <input type="email" class="form-control" id="email" placeholder="E-post" @bind="newUser.Email" @bind:event="oninput" />
+    </div>
+
+    <div class="mb-3">
+        <label for="phone" class="form-label">Telefonnummer*</label>
+        <input type="text" class="form-control" id="phone" placeholder="Telefonnummer" @bind="newUser.Phone" @bind:event="oninput" />
+    </div>
+
+    <div class="mb-3">
+        <label for="address" class="form-label">Adress*</label>
+        <input type="text" class="form-control" id="address" placeholder="Adress" @bind="newUser.Address" @bind:event="oninput" />
     </div>
 
     <div class="mb-3">
         <label for="password" class="form-label">Lösenord*</label>
-        <input type="password" class="form-control" id="password" placeholder="Lösenord" />
+        <input type="password" class="form-control" id="password" placeholder="Lösenord" @bind="newUser.Password" @bind:event="oninput" />
     </div>
     
-    <div class="mb-3">
-        <label for="password" class="form-label">Repetera lösenordet*</label>
-        <input type="password" class="form-control" id="password" placeholder="Lösenord" />
-    </div>
-
-    <button class="btn btn-primary">Registrera mig</button>
-
+    @if (showSuccessMessage)
+    {
+        <div class="alert alert-success" role="alert">
+            Användare registrerad!
+        </div>
+    }
+    else
+    {
+        <button class="btn" @onclick="RegisterUser" disabled="@(!IsFormValid)"
+                style="background-color: @(IsFormValid ? "black" : "gray"); color: white;">
+            Registrera mig
+        </button>
+    }
+    
     <NavLink href="/login"><h5>Är du redan kund?</h5></NavLink>
 </div>
 
 @code {
+    private UserCreate newUser = new UserCreate { RoleId = 1 };
+    private bool showSuccessMessage = false;
 
+    private bool IsFormValid =>
+        !string.IsNullOrWhiteSpace(newUser.FirstName) &&
+        !string.IsNullOrWhiteSpace(newUser.LastName) &&
+        !string.IsNullOrWhiteSpace(newUser.Email) &&
+        !string.IsNullOrWhiteSpace(newUser.Phone) &&
+        !string.IsNullOrWhiteSpace(newUser.Address) &&
+        !string.IsNullOrWhiteSpace(newUser.Password);
+
+    private async Task RegisterUser()
+    {
+        if (!IsFormValid)
+        {
+            return;
+        }
+
+        var user = await UserService.RegisterUser(newUser);
+        if (user != null)
+        {
+            showSuccessMessage = true;
+            StateHasChanged();
+
+            await Task.Delay(2500);
+
+            Navigation.NavigateTo("/login");
+        }
+    }
 }

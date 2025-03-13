@@ -10,6 +10,7 @@
             <th>Datum</th>
             <th>Totalsumma</th>
             <th>Produkter</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>
@@ -23,6 +24,7 @@
                     <td>@product.Quantity</td>
 
                 }
+                <td>@order.OrderStatus.Name</td>
             </tr>
         }
     </tbody>
