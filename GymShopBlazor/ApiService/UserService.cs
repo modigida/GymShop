@@ -27,4 +27,17 @@ public class UserService(HttpClient httpClient)
 
         return null;
     }
+
+    public async Task<string?> LoginUser(UserLogin user)
+    {
+        var response = await httpClient.PostAsJsonAsync("https://localhost:7097/api/Users/login", user);
+        if (response.IsSuccessStatusCode)
+        {
+            var token = await response.Content.ReadAsStringAsync();
+            return token;
+
+        }
+
+        return string.Empty;
+    }
 }

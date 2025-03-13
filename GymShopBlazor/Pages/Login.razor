@@ -1,4 +1,8 @@
 ﻿@page "/login"
+@using ApiService
+@using Models
+@inject UserService UserService
+@inject NavigationManager Navigation
 
 <head>
     <link href="css/userstyling.css" rel="stylesheet" />
@@ -10,15 +14,25 @@
 
     <div class="mb-3">
         <label for="email" class="form-label">E-post</label>
-        <input type="email" class="form-control" id="email" placeholder="E-post" />
+        <input type="email" class="form-control" id="email" placeholder="E-post" @bind="user.Email" @bind:event="oninput" />
     </div>
 
     <div class="mb-3">
         <label for="password" class="form-label">Lösenord</label>
-        <input type="password" class="form-control" id="password" placeholder="Lösenord" />
+        <input type="password" class="form-control" id="password" placeholder="Lösenord" @bind="user.Password" @bind:event="oninput" />
     </div>
 
-    <button class="btn btn-primary">Logga in</button>
+    @if (showSuccessMessage)
+    {
+        <div class="alert alert-success" role="alert">
+            Inloggad!
+        </div>
+    }
+    else
+    {
+        <button class="btn btn-primary" @onclick="LoginUser" disabled="@(!IsFormValid)"
+        style="background-color: @(IsFormValid ? "black" : "gray"); color: white;">Logga in</button>
+    }
 
     <div class="reset-password-link">
         <NavLink href="/resetPassword"><a>Jag har glömt mitt lösenord!</a></NavLink>
@@ -29,5 +43,30 @@
 </div>
 
 @code {
+    private UserLogin user = new();
+    private bool showSuccessMessage = false;
 
+    private bool IsFormValid =>
+        !string.IsNullOrWhiteSpace(user.Email) &&
+        !string.IsNullOrWhiteSpace(user.Password);
+
+    private async Task LoginUser()
+    {
+        if (!IsFormValid)
+        {
+            return;
+        }
+
+        var token = await UserService.LoginUser(user);
+        if (token != null)
+        {
+            showSuccessMessage = true;
+            StateHasChanged();
+
+            await Task.Delay(2500);
+
+            Navigation.NavigateTo("/");
+        }
+
+    }
 }
