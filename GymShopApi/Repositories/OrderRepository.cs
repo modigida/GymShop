@@ -13,20 +13,10 @@ public class OrderRepository(AppDbContext context) : GenericRepository<Order>(co
             .Include(o => o.User)
                 .ThenInclude(u => u.Role)
             .Include(o => o.OrderStatus)
+            .Include(o => o.OrderProducts)
+                .ThenInclude(op => op.Product)
+                    .ThenInclude(p => p.Category)
             .ToListAsync();
-
-        if (!orders.Any())
-        {
-            return new List<Order?>();
-        }
-
-        foreach (var order in orders)
-        {
-            order.OrderProducts = await _context.OrderProducts
-                .Include(op => op.Product)
-                .Where(op => op.OrderId == order.Id)
-                .ToListAsync();
-        }
 
         return orders;
     }
@@ -36,14 +26,12 @@ public class OrderRepository(AppDbContext context) : GenericRepository<Order>(co
             .Include(o => o.User)
                 .ThenInclude(u => u.Role)
             .Include(o => o.OrderStatus)
+            .Include(o => o.OrderProducts)
+                .ThenInclude(op => op.Product)
+                    .ThenInclude(p => p.Category)
             .FirstOrDefaultAsync(o => o.Id == (int)keyValues[0]);
-        if (order != null)
-        {
-            order.OrderProducts = await _context.OrderProducts
-                .Include(op => op.Product)
-                .Where(op => op.OrderId == order.Id)
-                .ToListAsync();
-        }
+
+
         return order;
     }
 
@@ -53,21 +41,11 @@ public class OrderRepository(AppDbContext context) : GenericRepository<Order>(co
             .Include(o => o.User)
             .ThenInclude(u => u.Role)
             .Include(o => o.OrderStatus)
+            .Include(o => o.OrderProducts)
+                .ThenInclude(op => op.Product)
+                    .ThenInclude(p => p.Category)
             .Where(o => o.User.Email == email)
             .ToListAsync();
-
-        if (!orders.Any())
-        {
-            return new List<Order?>();
-        }
-
-        foreach (var order in orders)
-        {
-            order.OrderProducts = await _context.OrderProducts
-                .Include(op => op.Product)
-                .Where(op => op.OrderId == order.Id)
-                .ToListAsync();
-        }
 
         return orders;
     }
