@@ -60,7 +60,7 @@ builder.Services.AddScoped<IGenericRepository<OrderStatus>, OrderStatusRepositor
 builder.Services.AddScoped<IGenericRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IGenericRepository<ProductStatus>, ProductStatusRepository>();
 builder.Services.AddScoped<IGenericRepository<Role>, RoleRepository>();
-builder.Services.AddScoped<IGenericRepository<User>, UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

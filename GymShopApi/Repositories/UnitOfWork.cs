@@ -17,7 +17,7 @@ public class UnitOfWork : IUnitOfWork
     public IGenericRepository<Product> Products { get; }
     public IGenericRepository<ProductStatus> ProductStatuses { get; }
     public IGenericRepository<Role> Roles { get; }
-    public IGenericRepository<User> Users { get; }
+    public IUserRepository Users { get; }
 
     public UnitOfWork(AppDbContext context)
     {
@@ -31,7 +31,7 @@ public class UnitOfWork : IUnitOfWork
         Products = new GenericRepository<Product>(_context);
         Roles = new GenericRepository<Role>(_context);
         ProductStatuses = new GenericRepository<ProductStatus>(_context);
-        Users = new GenericRepository<User>(_context);
+        Users = new UserRepository(context);
     }
 
     public IGenericRepository<T> GetRepository<T>() where T : class

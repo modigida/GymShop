@@ -15,7 +15,6 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
         List<UserResponseDto>? userResponseDtos = new List<UserResponseDto>();
         foreach (var user in users)
         {
-            var role = await unitOfWork.Roles.GetByIdAsync(user.RoleId);
             userResponseDtos.Add(new UserResponseDto
             {
                 Id = user.Id,
@@ -24,7 +23,7 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
                 Email = user.Email,
                 Phone = user.Phone,
                 Address = user.Address,
-                Role = role?.Name
+                Role = user.Role.Name
             });
         }
         return userResponseDtos;
@@ -32,7 +31,10 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
     public async Task<UserResponseDto?> GetByIdAsync(params object[] keyValues)
     {
         var user = await unitOfWork.Users.GetByIdAsync(keyValues);
-        var role = await unitOfWork.Roles.GetByIdAsync(user.RoleId);
+        if (user == null)
+        {
+            return null;
+        }
         return new UserResponseDto
         {
             Id = user.Id,
@@ -41,7 +43,7 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
             Email = user.Email,
             Phone = user.Phone,
             Address = user.Address,
-            Role = role?.Name
+            Role = user.Role.Name
         };
     }
     public async Task<UserResponseDto> Update(UserCreateDto entity, params object[] keyValues)
@@ -52,8 +54,15 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
             throw new ArgumentException("User not found.");
         }
 
-        if (!string.IsNullOrEmpty(entity.FirstName)) { user.FirstName = entity.FirstName; }
-        if (!string.IsNullOrEmpty(entity.LastName)) { user.LastName = entity.LastName; }
+        if (!string.IsNullOrEmpty(entity.FirstName) && entity.FirstName != user.FirstName)
+        {
+            user.FirstName = entity.FirstName;
+        }
+
+        if (!string.IsNullOrEmpty(entity.LastName) && entity.LastName != user.LastName)
+        {
+            user.LastName = entity.LastName;
+        }
 
         //if (!string.IsNullOrEmpty(entity.Password))
         //{
@@ -80,7 +89,15 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
             user.Phone = entity.Phone;
         }
 
-        if (!string.IsNullOrEmpty(entity.Address)) { user.Address = entity.Address; }
+        if (!string.IsNullOrEmpty(entity.Address) && entity.Address != user.Address)
+        {
+            user.Address = entity.Address;
+        }
+
+        if (entity.RoleId != 0 && entity.RoleId != user.RoleId)
+        {
+            user.RoleId = entity.RoleId;
+        }
 
         await unitOfWork.Users.Update(user);
         await unitOfWork.CompleteAsync();
@@ -126,7 +143,6 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
         await unitOfWork.Users.AddAsync(user);
         await unitOfWork.CompleteAsync();
 
-        var role = await unitOfWork.Roles.GetByIdAsync(user.RoleId);
         return new UserResponseDto
         {
             Id = user.Id,
@@ -135,7 +151,7 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
             Email = user.Email,
             Phone = user.Phone,
             Address = user.Address,
-            Role = role?.Name ?? string.Empty
+            Role = user.Role.Name
         };
     }
 

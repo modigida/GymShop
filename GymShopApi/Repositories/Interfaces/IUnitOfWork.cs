@@ -12,7 +12,7 @@ public interface IUnitOfWork : IDisposable
     IGenericRepository<Product> Products { get; }
     IGenericRepository<ProductStatus> ProductStatuses { get; }
     IGenericRepository<Role> Roles { get; }
-    IGenericRepository<User> Users { get; }
+    IUserRepository Users { get; }
     Task<int> CompleteAsync();
     IGenericRepository<T> GetRepository<T>() where T : class;
 }

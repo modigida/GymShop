@@ -68,20 +68,6 @@ public class UsersController(IUserService userService) : ControllerBase
         return Ok(user);
     }
 
-    //[HttpPost]
-    //public async Task<IActionResult> Post([FromBody] User user)
-    //{
-    //    try
-    //    {
-    //        var newUser = await _userService.AddAsync(user);
-    //        return CreatedAtAction(nameof(Get), new { id = newUser.Id }, newUser);
-    //    }
-    //    catch (ArgumentException ex)
-    //    {
-    //        return BadRequest(ex.Message);
-    //    }
-    //}
-
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(Guid id, [FromBody] UserCreateDto updatedUser)
     {
