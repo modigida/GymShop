@@ -87,6 +87,7 @@ public class OrderService(IUnitOfWork unitOfWork) : IOrderService
     public async Task<IEnumerable<OrderDto?>> GetByEmailAsync(string email)
     {
         var orders = await unitOfWork.Orders.GetByEmailAsync(email);
+        if (!orders.Any()) return new List<OrderDto?>();
 
         return orders.Select(o => new OrderDto
         {

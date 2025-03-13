@@ -44,7 +44,7 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     {
         var orders = await orderService.GetByEmailAsync(email);
 
-        if (orders == null)
+        if (!orders.Any())
         {
             return NotFound($"No orders found for email: {email}");
         }

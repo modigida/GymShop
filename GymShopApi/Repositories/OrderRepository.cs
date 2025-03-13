@@ -15,9 +15,14 @@ public class OrderRepository(AppDbContext context) : GenericRepository<Order>(co
             .Include(o => o.OrderStatus)
             .ToListAsync();
 
+        if (!orders.Any())
+        {
+            return new List<Order?>();
+        }
+
         foreach (var order in orders)
         {
-            var orderProducts = await _context.OrderProducts
+            order.OrderProducts = await _context.OrderProducts
                 .Include(op => op.Product)
                 .Where(op => op.OrderId == order.Id)
                 .ToListAsync();
@@ -51,9 +56,14 @@ public class OrderRepository(AppDbContext context) : GenericRepository<Order>(co
             .Where(o => o.User.Email == email)
             .ToListAsync();
 
+        if (!orders.Any())
+        {
+            return new List<Order?>();
+        }
+
         foreach (var order in orders)
         {
-            var orderProducts = await _context.OrderProducts
+            order.OrderProducts = await _context.OrderProducts
                 .Include(op => op.Product)
                 .Where(op => op.OrderId == order.Id)
                 .ToListAsync();
