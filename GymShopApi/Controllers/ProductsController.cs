@@ -1,4 +1,5 @@
-﻿using GymShopApi.Entities;
+﻿using GymShopApi.DTOs;
+using GymShopApi.Entities;
 using GymShopApi.Repositories;
 using GymShopApi.Repositories.Interfaces;
 using GymShopApi.Services.Interfaces;
@@ -9,7 +10,7 @@ namespace GymShopApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductsController(IGenericService<Product> productService) : ControllerBase
+public class ProductsController(IProductService productService) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -37,8 +38,30 @@ public class ProductsController(IGenericService<Product> productService) : Contr
         return Ok(product);
     }
 
+    [HttpGet("category/{categoryId}")]
+    public async Task<IActionResult> GetByCategory(int categoryId)
+    {
+        var products = await productService.GetByCategoryAsync(categoryId);
+        if (!products.Any())
+        {
+            return NotFound($"No products found for category with ID: {categoryId}");
+        }
+        return Ok(products);
+    }
+
+    [HttpGet("status/{statusId}")]
+    public async Task<IActionResult> GetByStatus(int statusId)
+    {
+        var products = await productService.GetByStatusAsync(statusId);
+        if (!products.Any())
+        {
+            return NotFound($"No products found for status with ID: {statusId}");
+        }
+        return Ok(products);
+    }
+
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Product product)
+    public async Task<IActionResult> Post([FromBody] ProductDto product)
     {
         try
         {
@@ -52,7 +75,7 @@ public class ProductsController(IGenericService<Product> productService) : Contr
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] Product updatedProduct)
+    public async Task<IActionResult> Put(int id, [FromBody] ProductDto updatedProduct)
     {
         try
         {

@@ -14,7 +14,7 @@ public class UnitOfWork : IUnitOfWork
     public IOrderRepository Orders { get; }
     public IGenericRepository<OrderProduct> OrderProducts { get; }
     public IGenericRepository<OrderStatus> OrderStatuses { get; }
-    public IGenericRepository<Product> Products { get; }
+    public IProductRepository Products { get; }
     public IGenericRepository<ProductStatus> ProductStatuses { get; }
     public IGenericRepository<Role> Roles { get; }
     public IUserRepository Users { get; }
@@ -28,7 +28,7 @@ public class UnitOfWork : IUnitOfWork
         Orders = new OrderRepository(context);
         OrderProducts = new GenericRepository<OrderProduct>(_context);
         OrderStatuses = new GenericRepository<OrderStatus>(_context);
-        Products = new GenericRepository<Product>(_context);
+        Products = new ProductRepository(context);
         Roles = new GenericRepository<Role>(_context);
         ProductStatuses = new GenericRepository<ProductStatus>(_context);
         Users = new UserRepository(context);

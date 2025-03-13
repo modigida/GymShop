@@ -9,7 +9,7 @@ public interface IUnitOfWork : IDisposable
     IOrderRepository Orders { get; }
     IGenericRepository<OrderProduct> OrderProducts { get; }
     IGenericRepository<OrderStatus> OrderStatuses { get; }
-    IGenericRepository<Product> Products { get; }
+    IProductRepository Products { get; }
     IGenericRepository<ProductStatus> ProductStatuses { get; }
     IGenericRepository<Role> Roles { get; }
     IUserRepository Users { get; }

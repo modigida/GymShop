@@ -7,23 +7,6 @@ using GymShopApi.Services.Interfaces;
 namespace GymShopApi.Services;
 public class OrderService(IUnitOfWork unitOfWork) : IOrderService
 {
-    private async Task<UserResponseDto> MapUserToDto(User user)
-    {
-        var roles = await unitOfWork.Roles.GetAllAsync();
-        return new UserResponseDto
-        {
-            Id = user.Id,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email,
-            Phone = user.Phone,
-            Address = user.Address,
-            Role = roles.FirstOrDefault(r => r.Id == user.RoleId).Name
-        };
-    }
-
-
-
     public async Task<Order> GetEntity(params object[] keyValues)
     {
         return await unitOfWork.Orders.GetByIdAsync(keyValues);
