@@ -9,5 +9,5 @@ public class ProductStatus
 
     [Required]
     [MaxLength(50)]
-    public string Name { get; set; } = string.Empty; // Available, Out of Stock, Discontinued, Pre-Order, Limited Edition
+    public string Name { get; set; } = string.Empty;
 }

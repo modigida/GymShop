@@ -4,15 +4,15 @@ using GymShopBlazor.Models;
 namespace GymShopBlazor.ApiService;
 public class UserService(HttpClient httpClient)
 {
-    public async Task<List<User?>> GetAll()
+    public async Task<List<UserResponse?>> GetAll()
     {
-        var users = await httpClient.GetFromJsonAsync<List<User>>("https://localhost:7097/api/Users");
+        var users = await httpClient.GetFromJsonAsync<List<UserResponse>>("https://localhost:7097/api/Users");
         Console.WriteLine(users);
-        return users ?? new List<User>();
+        return users ?? new List<UserResponse>();
     }
-    public async Task<User?> GetUserById(Guid id)
+    public async Task<UserResponse?> GetUserById(Guid id)
     {
-        var user = await httpClient.GetFromJsonAsync<User>($"https://localhost:7097/api/user/{id}");
+        var user = await httpClient.GetFromJsonAsync<UserResponse>($"https://localhost:7097/api/user/{id}");
         return user ?? null;
     }
 }

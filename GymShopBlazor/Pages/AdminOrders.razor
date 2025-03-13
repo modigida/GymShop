@@ -29,7 +29,7 @@
 </table>
 
 @code {
-    private List<Order> orders { get; set; }
+    private List<OrderResponse> orders { get; set; }
     protected override async Task OnInitializedAsync()
     {
         orders = await OrderService.GetAll();
