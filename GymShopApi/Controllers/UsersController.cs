@@ -53,6 +53,20 @@ public class UsersController(IUserService userService) : ControllerBase
         }
 
         return Ok(users);
+    }    
+    
+    [HttpGet("customers")]
+    //[Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetAllCustomers()
+    {
+        var users = await userService.GetAllCustomersAsync();
+
+        if (!users.Any())
+        {
+            return NotFound("No users found");
+        }
+
+        return Ok(users);
     }
 
     [HttpGet("{id}")]

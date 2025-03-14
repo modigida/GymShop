@@ -6,7 +6,7 @@ public class UserService(HttpClient httpClient)
 {
     public async Task<List<UserResponse?>> GetAll()
     {
-        var users = await httpClient.GetFromJsonAsync<List<UserResponse>>("https://localhost:7097/api/Users");
+        var users = await httpClient.GetFromJsonAsync<List<UserResponse>>("https://localhost:7097/api/Users/customers");
         Console.WriteLine(users);
         return users ?? new List<UserResponse>();
     }

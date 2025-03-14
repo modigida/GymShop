@@ -9,9 +9,8 @@
 <table class="table">
     <thead>
         <tr>
+            <th>Id</th>
             <th>Datum</th>
-            <th>Totalsumma</th>
-            <th>Produkter</th>
             <th>Status</th>
         </tr>
     </thead>
@@ -19,13 +18,8 @@
         @foreach (var order in orders)
         {
             <tr>
+                <td>@order.Id</td>
                 <td>@order.PurchaseDate</td>
-                <td>@order.TotalPrice</td>
-                @foreach (var product in order.OrderProducts)
-                {
-                    <td>@product.Quantity</td>
-
-                }
                 <td>@order.OrderStatus.Name</td>
             </tr>
         }

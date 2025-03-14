@@ -28,6 +28,27 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
         }
         return userResponseDtos;
     }
+    public async Task<IEnumerable<UserResponseDto?>> GetAllCustomersAsync()
+    {
+        var users = await unitOfWork.Users.GetAllAsync();
+        var filteredUsers = users.Where(user => user.Role.Id == 1);
+
+        List<UserResponseDto>? userResponseDtos = new List<UserResponseDto>();
+        foreach (var user in filteredUsers)
+        {
+            userResponseDtos.Add(new UserResponseDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Phone = user.Phone,
+                Address = user.Address,
+                Role = user.Role
+            });
+        }
+        return userResponseDtos;
+    }
     public async Task<UserResponseDto?> GetByIdAsync(params object[] keyValues)
     {
         var user = await unitOfWork.Users.GetByIdAsync(keyValues);
