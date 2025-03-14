@@ -3,15 +3,8 @@
 @using GymShopBlazor.Models
 @inject ProductService ProductService
 
-<h3>Products</h3>
-@if (string.IsNullOrEmpty(CategoryName))
-{
-    <p>Visar alla produkter.</p>
-}
-else
-{
-    <p>Visar produkter inom kategori: @CategoryName</p>
-}
+<h3>@(string.IsNullOrEmpty(CategoryName) ? "Alla produkter" : GetTranslatedCategoryName(category.Name))</h3>
+
 
 @if (AllProducts == null)
 {
@@ -35,15 +28,22 @@ else
     [Inject]
     private NavigationManager Navigation { get; set; }
 
+    private Dictionary<string, string> categoryTranslations = new()
+    {
+        { "Clothes", "Träningskläder" },
+        { "Supplements", "Kosttillskott" },
+        { "Equipments", "Träningstillbehör" },
+    };
+
     public string CategoryName { get; set; }
-    private List<Category> Categories { get; set; }
-    private Category Category { get; set; }
+    private List<Category> categories { get; set; }
+    private Category category { get; set; }
 
     public List<Product> AllProducts { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        Categories = await ProductService.GetCategories();
+        categories = await ProductService.GetCategories();
         Navigation.LocationChanged += OnLocationChanged;
         await LoadProducts();
         ExtractCategoryFromUri();
@@ -72,7 +72,7 @@ else
         {
             var queryParams = System.Web.HttpUtility.ParseQueryString(query);
             CategoryName = queryParams["category"];
-            Category = Categories.FirstOrDefault(c => c.Name.ToLower() == CategoryName.ToLower());
+            category = categories.FirstOrDefault(c => c.Name.ToLower() == CategoryName.ToLower());
         }
         else
         {
@@ -89,10 +89,19 @@ else
         }
         else
         {
-            AllProducts = await ProductService.GetByCategory(Category);
+            AllProducts = await ProductService.GetByCategory(category);
         }
 
         StateHasChanged();
+    }
+
+    private string GetTranslatedCategoryName(string categoryName)
+    {
+        if (categoryTranslations.ContainsKey(categoryName))
+        {
+            return categoryTranslations[categoryName];
+        }
+        return categoryName;
     }
 
     private async Task HandleAddToCart(Product product)

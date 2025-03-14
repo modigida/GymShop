@@ -6,7 +6,11 @@
     <link href="css/product.css" rel="stylesheet" />
 </head>
 
-<h1>Välkommen till Gym Shop!</h1>
+
+<div class="index-header">
+    <img src="GymShopHeader.png" alt="Välkommen till Gym Shop"/>
+</div>
+
 
 @if (isLoading)
 {
@@ -17,10 +21,9 @@ else
     <div class="product-container">
         @foreach (var category in categories)
         {
-            // Create nowrap function adapting to screen size
             var productsInCategory = products
             .Where(p => p.Category.Id == category.Id)
-            .Take(11)
+            .Take(6)
             .ToList();
 
             if (productsInCategory.Any())
@@ -48,7 +51,7 @@ else
 
     private Dictionary<string, string> categoryTranslations = new()
     {
-        { "Clothens", "Träningskläder" },
+        { "Clothes", "Träningskläder" },
         { "Supplements", "Kosttillskott" },
         { "Equipments", "Träningstillbehör" },
     };

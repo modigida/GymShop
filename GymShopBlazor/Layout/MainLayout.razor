@@ -34,15 +34,6 @@
     </div>
 </div>
 
-@if (isMenuOpen)
-{
-    <div class="overlay" @onclick="ToggleMenu"></div>
-
-    <div class="menu-sidebar @(isMenuOpen ? "open" : "")">
-        <SideMenu />
-    </div>
-}
-
 <main>
     <article class="content px-4">
         @Body
@@ -51,17 +42,10 @@
 
 @code
 {
-    private bool isMenuOpen = false;
     private bool isAdmin = false;
 
     protected override async Task OnInitializedAsync()
     {
         // Kontrollera om användaren är administratör
-    }
-
-    private void ToggleMenu()
-    {
-        isMenuOpen = !isMenuOpen;
-        StateHasChanged();
     }
 }
