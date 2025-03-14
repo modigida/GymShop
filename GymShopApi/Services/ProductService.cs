@@ -111,13 +111,123 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
         }).ToList();
     }
 
-    public Task<ProductDto> AddAsync(ProductDto productDto)
+    public async Task<ProductDto> AddAsync(ProductDto productDto)
     {
-        throw new NotImplementedException();
+        var product = new Product
+        {
+            Name = productDto.Name,
+            CategoryId = productDto.Category.Id,
+            ProductStatusId = productDto.ProductStatus.Id,
+            Balance = productDto.Balance,
+            Price = productDto.Price,
+            Description = productDto.Description,
+            ImageUrl = productDto.ImageUrl
+        };
+
+        await unitOfWork.Products.AddAsync(product);
+        await unitOfWork.CompleteAsync();
+
+        var category = await unitOfWork.Categories.GetByIdAsync(product.CategoryId);
+        var status = await unitOfWork.ProductStatuses.GetByIdAsync(product.ProductStatusId);
+
+        return new ProductDto
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Category = category,
+            ProductStatus = status,
+            Balance = product.Balance,
+            Price = product.Price,
+            Description = product.Description,
+            ImageUrl = product.ImageUrl
+        };
     }
-    public Task<ProductDto> Update(ProductDto entity, params object[] keyValues)
+    public async Task<ProductDto> Update(ProductDto productDto, params object[] keyValues)
     {
-        throw new NotImplementedException();
+        var entity = await unitOfWork.Products.GetByIdAsync(keyValues);
+        if (entity == null)
+        {
+            throw new KeyNotFoundException("Product not found.");
+        }
+        bool hasChanges = false;
+
+        if (!string.IsNullOrEmpty(productDto.Name) && productDto.Name != entity.Name)
+        {
+            entity.Name = productDto.Name;
+            hasChanges = true;
+        }
+
+        if (productDto.Category?.Id != null && productDto.Category.Id != entity.CategoryId)
+        {
+            entity.CategoryId = productDto.Category.Id;
+            hasChanges = true;
+        }
+
+        if (productDto.ProductStatus?.Id != null && productDto.ProductStatus.Id != entity.ProductStatusId)
+        {
+            entity.ProductStatusId = productDto.ProductStatus.Id;
+            hasChanges = true;
+        }
+
+        if (productDto.Balance != entity.Balance)
+        {
+            entity.Balance = productDto.Balance;
+            hasChanges = true;
+        }
+
+        if (productDto.Price != entity.Price)
+        {
+            entity.Price = productDto.Price;
+            hasChanges = true;
+        }
+
+        if (!string.IsNullOrEmpty(productDto.Description) && productDto.Description != entity.Description)
+        {
+            entity.Description = productDto.Description;
+            hasChanges = true;
+        }
+
+        if (!string.IsNullOrEmpty(productDto.ImageUrl) && productDto.ImageUrl != entity.ImageUrl)
+        {
+            entity.ImageUrl = productDto.ImageUrl;
+            hasChanges = true;
+        }
+
+        if (!hasChanges)
+        {
+            var existingCategory = await unitOfWork.Categories.GetByIdAsync(entity.CategoryId);
+            var existingStatus = await unitOfWork.ProductStatuses.GetByIdAsync(entity.ProductStatusId);
+
+            return new ProductDto
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Category = existingCategory,
+                ProductStatus = existingStatus,
+                Balance = entity.Balance,
+                Price = entity.Price,
+                Description = entity.Description,
+                ImageUrl = entity.ImageUrl
+            };
+        }
+
+        await unitOfWork.Products.Update(entity);
+        await unitOfWork.CompleteAsync();
+
+        var category = await unitOfWork.Categories.GetByIdAsync(entity.CategoryId);
+        var status = await unitOfWork.ProductStatuses.GetByIdAsync(entity.ProductStatusId);
+
+        return new ProductDto
+        {
+            Id = entity.Id,
+            Name = entity.Name,
+            Category = category,
+            ProductStatus = status,
+            Balance = entity.Balance,
+            Price = entity.Price,
+            Description = entity.Description,
+            ImageUrl = entity.ImageUrl
+        };
     }
 
     public async Task Delete(params object[] keyValues)
@@ -126,6 +236,13 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
         if (entity == null)
         {
             throw new ArgumentException("Entity not found.");
+        }
+
+        bool isUsedInOrders = await unitOfWork.OrderProducts.AnyAsync((int)keyValues[0]);
+
+        if (isUsedInOrders)
+        {
+            throw new InvalidOperationException("Produkten kan inte tas bort eftersom den är kopplad till en order.");
         }
 
         await unitOfWork.Products.Delete(entity);

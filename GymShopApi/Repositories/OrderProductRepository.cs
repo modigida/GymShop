@@ -2,6 +2,7 @@
 using GymShopApi.Entities;
 using GymShopApi.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace GymShopApi.Repositories;
 
@@ -26,6 +27,11 @@ public class OrderProductRepository(AppDbContext context)
             .Include(op => op.Product)
             .ToListAsync();
     }
+    public async Task<bool> AnyAsync(int productId)
+    {
+        return await _context.OrderProducts.AnyAsync(op => op.ProductId == productId);
+    }
+
 
     public async Task DeleteRangeAsync(IEnumerable<OrderProduct> orderProducts)
     {
