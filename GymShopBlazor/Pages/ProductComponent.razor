@@ -1,4 +1,5 @@
-﻿<head>
+﻿@using GymShopBlazor.Models
+<head>
     <link href="css/product.css" rel="stylesheet" />
 </head>
 
@@ -7,15 +8,15 @@
     
     <div class="product-info">
         <h4 class="product-name">@Product.Name</h4>
-        <p class="product-price">@Product.Price.ToString("0.00") SEK</p>
+        <p class="product-price">@Product.Price.ToString() SEK</p>
     </div>
     
     <button class="add-to-cart-button" @onclick="AddToCart">Köp</button>
 </div>
 
 @code {
-    [Parameter] public Cart.DemoItems Product { get; set; }
-    [Parameter] public EventCallback<Cart.DemoItems> OnAddToCart { get; set; }
+    [Parameter] public Product Product { get; set; }
+    [Parameter] public EventCallback<Product> OnAddToCart { get; set; }
 
     private async Task AddToCart()
     {

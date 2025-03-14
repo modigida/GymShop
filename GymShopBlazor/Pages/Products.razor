@@ -1,36 +1,66 @@
 ﻿@page "/products"
+@using GymShopBlazor.ApiService
+@using GymShopBlazor.Models
+@inject ProductService ProductService
 
 <h3>Products</h3>
-@if (string.IsNullOrEmpty(Category))
+@if (string.IsNullOrEmpty(CategoryName))
 {
     <p>Visar alla produkter.</p>
 }
 else
 {
-    <p>Visar produkter inom kategori: @Category</p>
+    <p>Visar produkter inom kategori: @CategoryName</p>
+}
+
+@if (AllProducts == null)
+{
+    <p>Laddar produkter...</p>
+}
+else if (!AllProducts.Any())
+{
+    <p>Inga produkter hittades.</p>
+}
+else
+{
+    <div class="product-list">
+        @foreach (var product in AllProducts)
+        {
+            <ProductComponent Product="product" OnAddToCart="HandleAddToCart" />
+        }
+    </div>
 }
 
 @code {
     [Inject]
     private NavigationManager Navigation { get; set; }
 
-    public string Category { get; set; }
+    public string CategoryName { get; set; }
+    private List<Category> Categories { get; set; }
+    private Category Category { get; set; }
 
-    protected override void OnInitialized()
+    public List<Product> AllProducts { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
     {
+        Categories = await ProductService.GetCategories();
         Navigation.LocationChanged += OnLocationChanged;
+        await LoadProducts();
         ExtractCategoryFromUri();
     }
+
 
     protected override async Task OnParametersSetAsync()
     {
         ExtractCategoryFromUri();
+        await LoadProducts();
         await base.OnParametersSetAsync();
     }
 
-    private void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
     {
         ExtractCategoryFromUri();
+        await LoadProducts();
     }
 
     private void ExtractCategoryFromUri()
@@ -41,13 +71,32 @@ else
         if (!string.IsNullOrEmpty(query) && query.Contains("category"))
         {
             var queryParams = System.Web.HttpUtility.ParseQueryString(query);
-            Category = queryParams["category"];
+            CategoryName = queryParams["category"];
+            Category = Categories.FirstOrDefault(c => c.Name.ToLower() == CategoryName.ToLower());
         }
         else
         {
-            Category = null;
+            CategoryName = null;
         }
 
         StateHasChanged();
+    }
+    private async Task LoadProducts()
+    {
+        if (string.IsNullOrEmpty(CategoryName))
+        {
+            AllProducts = await ProductService.GetAll();
+        }
+        else
+        {
+            AllProducts = await ProductService.GetByCategory(Category);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task HandleAddToCart(Product product)
+    {
+
     }
 }
