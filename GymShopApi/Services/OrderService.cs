@@ -232,7 +232,7 @@ public class OrderService(IUnitOfWork unitOfWork) : IOrderService
         var entity = await GetEntity(keyValues);
         if (entity == null)
         {
-            throw new ArgumentException("Order not found.");
+            throw new KeyNotFoundException("Order not found.");
         }
         if (entity.OrderStatus?.Name == "Completed")
         {

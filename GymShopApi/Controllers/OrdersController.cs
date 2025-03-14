@@ -71,8 +71,8 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     {
         try
         {
-            var category = await orderService.Update(updatedOrderResponse, id);
-            return Ok(category);
+            var order = await orderService.Update(updatedOrderResponse, id);
+            return Ok(order);
         }
         catch (ArgumentException ex)
         {
@@ -95,6 +95,14 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         catch (KeyNotFoundException)
         {
             return NotFound("Order not found");
+        }
+        catch (ArgumentException)
+        {
+            return NotFound("Order not found");
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
         }
     }
 }

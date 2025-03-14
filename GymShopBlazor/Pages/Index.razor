@@ -1,30 +1,76 @@
 ﻿@page "/"
+@using GymShopBlazor.ApiService
+@using GymShopBlazor.Models
 
 <head>
     <link href="css/product.css" rel="stylesheet" />
 </head>
 
-<h3>Index</h3>
+<h1>Välkommen till Gym Shop!</h1>
 
-<div class="product-list">
-    @foreach (var item in demoItems)
-    {
-        //<ProductComponent Product="item" OnAddToCart="HandleAddToCart" />
-    }
-</div>
+@if (isLoading)
+{
+    <p>Laddar produkter...</p>
+}
+else
+{
+    <div class="product-container">
+        @foreach (var category in categories)
+        {
+            // Create nowrap function adapting to screen size
+            var productsInCategory = products
+            .Where(p => p.Category.Id == category.Id)
+            .Take(11)
+            .ToList();
 
+            if (productsInCategory.Any())
+            {
+                <div class="category-section">
+                    <h4>@GetTranslatedCategoryName(category.Name)</h4>
+                    <div class="product-list">
+                        @foreach (var product in productsInCategory)
+                        {
+                            <ProductComponent Product="product" OnAddToCart="HandleAddToCart" />
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+}
 
 @code {
-    private List<Cart.DemoItems> demoItems = new()
+    private List<Product> products = new();
+    private List<Category> categories = new();
+    private bool isLoading = true;
+
+    [Inject] private ProductService ProductService { get; set; } = default!;
+
+    private Dictionary<string, string> categoryTranslations = new()
     {
-        new Cart.DemoItems { Name = "Löpartröja dam", Price = 299.00, ImageUrl = "https://03.cdn37.se/zY/images/2.2443182/craft-lopartroja-pro-hypervent-tee-2-dam-black.jpeg" },
-        new Cart.DemoItems { Name = "Träningsbyxor adidas dam", Price = 499.00, ImageUrl = "https://sannadal.com/content/uploads/2022/12/377154_102_ADIDAS_TIRO23-L-TRG-PNT-W.jpg" }
+        { "Clothens", "Träningskläder" },
+        { "Supplements", "Kosttillskott" },
+        { "Equipments", "Träningstillbehör" },
     };
 
-    private void HandleAddToCart(Cart.DemoItems item)
+    protected override async Task OnInitializedAsync()
     {
-        // Lägg till produkten i varukorgen
-        Console.WriteLine($"{item.Name} tillagd i varukorgen!");
+        products = await ProductService.GetAll();
+        categories = await ProductService.GetCategories();
+        isLoading = false;
     }
-    [Parameter] public EventCallback<Cart.DemoItems> OnAddToCart { get; set; }
+
+    private string GetTranslatedCategoryName(string categoryName)
+    {
+        if (categoryTranslations.ContainsKey(categoryName))
+        {
+            return categoryTranslations[categoryName];
+        }
+        return categoryName;
+    }
+
+    private void HandleAddToCart(Product product)
+    {
+        Console.WriteLine($"{product.Name} tillagd i varukorgen!");
+    }
 }
