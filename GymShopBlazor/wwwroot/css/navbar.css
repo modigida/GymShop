@@ -1,9 +1,4 @@
-﻿.top-nav-links, .top-navbar-icons {
-    display: flex;
-    gap: 20px;
-}
-
-.navbar {
+﻿.navbar {
     margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
@@ -11,62 +6,77 @@
     padding: 10px 20px;
     background-color: black;
     color: white;
+    width: 100%;
+    position: relative;
 }
 
-    .navbar .navbar-icons {
-        display: flex;
-        gap: 15px;
+.top-nav-links, .top-navbar-icons {
+    display: flex;
+    gap: 20px;
+}
+
+.brand {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.navbar .brand img {
+    height: 60px;
+    width: auto;
+    margin: 0;
+}
+
+.navbar .navbar-icons {
+    display: flex;
+    gap: 15px;
+    text-decoration: none;
+}
+
+.navbar .top-navbar-icons .user-icon,
+.navbar .top-navbar-icons .cart-icons,
+.navbar .top-navbar-icons .admin-icon {
+    font-size: 2rem;
+    padding: 10px;
+    text-decoration: none;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+    .navbar .top-navbar-icons .user-icon:hover,
+    .navbar .top-navbar-icons .cart-icons:hover,
+    .navbar .top-navbar-icons .admin-icon:hover {
+        color: #b32121;
         text-decoration: none;
     }
 
-    .navbar .top-navbar-icons .user-icon,
-    .navbar .top-navbar-icons .cart-icons,
-    .navbar .top-navbar-icons .admin-icon {
-        font-size: 2rem;
-        padding: 10px;
-        text-decoration: none;
-    }
+.navbar .top-nav-links a {
+    color: white;
+    text-decoration: none;
+}
 
-        .navbar .top-navbar-icons .user-icon:hover,
-        .navbar .top-navbar-icons .cart-icons:hover,
-        .navbar .top-navbar-icons .admin-icon {
-            color: #b32121;
-            text-decoration: none;
-        }
-
-
-    .navbar .top-nav-links a {
+    .navbar .top-nav-links a:hover,
+    .navbar .top-nav-links a:active,
+    .navbar .top-nav-links a:focus {
         color: white;
         text-decoration: none;
     }
 
-        .navbar .top-nav-links a:hover,
-        .navbar .top-nav-links a:active,
-        .navbar .top-nav-links a:focus {
-            color: white;
-            text-decoration: none;
-        }
-
-        .navbar .top-nav-links a:first-child {
-            font-weight: bold;
-        }
-
-            .navbar .top-nav-links a:first-child:hover,
-            .navbar .top-nav-links a:first-child:active,
-            .navbar .top-nav-links a:first-child:focus {
-                color: white;
-                background: transparent;
-            }
-
-    .navbar .brand a {
-        text-decoration: none;
-    }
-
-    .navbar .brand h1 {
-        color: white;
-        text-decoration: none;
+    .navbar .top-nav-links a:first-child {
         font-weight: bold;
     }
+
+        .navbar .top-nav-links a:first-child:hover,
+        .navbar .top-nav-links a:first-child:active,
+        .navbar .top-nav-links a:first-child:focus {
+            color: white;
+            background: transparent;
+        }
+
+.navbar .brand a {
+    text-decoration: none;
+}
 
     .navbar .brand a:hover,
     .navbar .brand a:active,
@@ -75,10 +85,8 @@
         text-decoration: none !important;
     }
 
-
 @media (max-width: 768px) {
     .top-nav-links {
         display: none;
     }
-
 }
