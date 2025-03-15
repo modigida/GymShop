@@ -1,9 +1,10 @@
 ﻿@page "/products"
 @using GymShopBlazor.ApiService
+@using GymShopBlazor.Helpers
 @using GymShopBlazor.Models
 @inject ProductService ProductService
 
-<h3>@(string.IsNullOrEmpty(CategoryName) ? "Alla produkter" : GetTranslatedCategoryName(category.Name))</h3>
+<h3>@(string.IsNullOrEmpty(CategoryName) ? "Alla produkter" : Translations.GetTranslatedCategoryName(category.Name))</h3>
 
 
 @if (AllProducts == null)
@@ -28,13 +29,6 @@ else
     [Inject]
     private NavigationManager Navigation { get; set; }
 
-    private Dictionary<string, string> categoryTranslations = new()
-    {
-        { "Clothes", "Träningskläder" },
-        { "Supplements", "Kosttillskott" },
-        { "Equipments", "Träningstillbehör" },
-    };
-
     public string CategoryName { get; set; }
     private List<Category> categories { get; set; }
     private Category category { get; set; }
@@ -48,7 +42,6 @@ else
         await LoadProducts();
         ExtractCategoryFromUri();
     }
-
 
     protected override async Task OnParametersSetAsync()
     {
@@ -93,15 +86,6 @@ else
         }
 
         StateHasChanged();
-    }
-
-    private string GetTranslatedCategoryName(string categoryName)
-    {
-        if (categoryTranslations.ContainsKey(categoryName))
-        {
-            return categoryTranslations[categoryName];
-        }
-        return categoryName;
     }
 
     private async Task HandleAddToCart(Product product)

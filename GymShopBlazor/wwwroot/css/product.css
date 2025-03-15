@@ -80,11 +80,10 @@
     max-width: 2200px;
 }
 
-.category-section h4 {
+.category-section h3 {
     text-align: center;
     font-size: 1.8em;
     margin-bottom: 10px;
-    text-transform: uppercase;
     padding-bottom: 5px;
 }
 
