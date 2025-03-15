@@ -4,16 +4,24 @@
 @using GymShopBlazor.Models
 @inject ProductService ProductService
 
+<head>
+    <link href="css/product.css" rel="stylesheet" />
+</head>
+
 <h3>@(string.IsNullOrEmpty(CategoryName) ? "Alla produkter" : Translations.GetTranslatedCategoryName(category.Name))</h3>
 
 
 @if (AllProducts == null)
 {
-    <p>Laddar produkter...</p>
+    <div class="loading-info">
+        <h3>Laddar produkter...</h3>
+    </div>
 }
 else if (!AllProducts.Any())
 {
-    <p>Inga produkter hittades.</p>
+    <div class="loading-info">
+        <h3>Inga produkter hittades.</h3>
+    </div>
 }
 else
 {

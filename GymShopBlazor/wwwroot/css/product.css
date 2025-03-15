@@ -87,6 +87,11 @@
     padding-bottom: 5px;
 }
 
+.loading-info h3 {
+    text-align: center;
+    font-size: 1.8em;
+}
+
 .index-header {
     display: flex;
     justify-content: center;

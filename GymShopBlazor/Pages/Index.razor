@@ -15,7 +15,15 @@
 
 @if (isLoading)
 {
-    <p>Laddar produkter...</p>
+    <div class="loading-info">
+        <h3>Laddar produkter...</h3>
+    </div>
+}
+else if (!isLoading && !products.Any())
+{
+    <div class="loading-info">
+        <h3>Inga produkter hittades.</h3>
+    </div>
 }
 else
 {
