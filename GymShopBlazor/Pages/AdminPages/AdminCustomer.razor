@@ -4,10 +4,17 @@
 @inject UserService UserService
 @inherits LayoutComponentBase
 
+<head>
+    <link href="css/admin.css" rel="stylesheet" />
+</head>
 
 <h3>Användare</h3>
 
-<table class="table">
+<div class="form-group">
+    <input type="text" class="form-control" placeholder="Sök efter e-postadress..." @bind="searchQuery" @oninput="FilterUsers" />
+</div>
+
+<table class="table fixed-table">
     <thead>
         <tr>
             <th>Id</th>
@@ -17,7 +24,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in users)
+        @foreach (var user in filteredUsers)
         {
             <tr @onclick="() => OpenModal(user)" style="cursor: pointer;">
                 <td>@user.Id</td>
@@ -82,9 +89,20 @@
     private UserResponse selectedUser;
     private bool isModalOpen = false;
 
+    private List<UserResponse> filteredUsers = new List<UserResponse>();
+    private string searchQuery = "";
+
     protected override async Task OnInitializedAsync()
     {
         users = await UserService.GetAll();
+        filteredUsers = users;
+    }
+    private void FilterUsers(ChangeEventArgs e)
+    {
+        searchQuery = e.Value?.ToString() ?? "";
+        filteredUsers = users
+            .Where(u => u.Email.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+            .ToList();
     }
 
     private void OpenModal(UserResponse user)
@@ -122,6 +140,7 @@
 
         // await UserService.UpdateUser(selectedUser);
         // users = await UserService.GetAll(); Uppdatera listan efter ändring
+        // FilterUsers();
         // CloseModal();
     }
     private async Task DeleteUser()
@@ -130,6 +149,7 @@
 
         // await UserService.DeleteUser(selectedUser.Id);
         // users = await UserService.GetAll();
+        // FilterUsers();
         // CloseModal();
     }
 }

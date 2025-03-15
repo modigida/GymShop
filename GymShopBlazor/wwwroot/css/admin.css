@@ -1,4 +1,16 @@
 ﻿.admin-nav .admin-nav-link {
     color: black;
-
 }
+
+.fixed-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+    .fixed-table th, .fixed-table td {
+        width: 25%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
