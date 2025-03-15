@@ -1,0 +1,135 @@
+﻿@page "/admin/customers"
+@using GymShopBlazor.ApiService
+@using GymShopBlazor.Models
+@inject UserService UserService
+@inherits LayoutComponentBase
+
+
+<h3>Användare</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Förnamn</th>
+            <th>Efternamn</th>
+            <th>E-post</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in users)
+        {
+            <tr @onclick="() => OpenModal(user)" style="cursor: pointer;">
+                <td>@user.Id</td>
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+                <td>@user.Email</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="modal fade @(isModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Redigera användare</h5>
+                <button type="button" class="close" @onclick="CloseModal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @if (selectedUser != null)
+                {
+                    <div class="form-group">
+                        <label>Id</label>
+                        <label class="form-control">@selectedUser.Id</label>
+                    </div>
+                    <div class="form-group">
+                        <label>Förnamn</label>
+                        <input class="form-control" @bind="selectedUser.FirstName" />
+                    </div>
+                    <div class="form-group">
+                        <label>Efternamn</label>
+                        <input class="form-control" @bind="selectedUser.LastName" />
+                    </div>
+                    <div class="form-group">
+                        <label>E-post</label>
+                        <input class="form-control" @bind="selectedUser.Email" />
+                    </div>
+                    <div class="form-group">
+                        <label>Telefonnummer</label>
+                        <input class="form-control" @bind="selectedUser.Phone" />
+                    </div>
+                    <div class="form-group">
+                        <label>Adress</label>
+                        <input class="form-control" @bind="selectedUser.Address" />
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CloseModal">Stäng</button>
+                <button type="button" class="btn btn-success" @onclick="SaveChanges">Spara</button>
+                <button type="button" class="btn btn-danger" @onclick="DeleteUser">Radera</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private List<UserResponse> users = new List<UserResponse>();
+    private UserResponse selectedUser;
+    private bool isModalOpen = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserService.GetAll();
+    }
+
+    private void OpenModal(UserResponse user)
+    {
+        selectedUser = new UserResponse
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            Phone = user.Phone,
+            Address = user.Address
+        };
+        isModalOpen = true;
+    }
+
+    private void CloseModal()
+    {
+        isModalOpen = false;
+        selectedUser = null;
+    }
+
+    private async Task SaveChanges()
+    {
+        var user = new UserCreate
+            {
+                FirstName = selectedUser.FirstName,
+                LastName = selectedUser.LastName,
+                Email = selectedUser.Email,
+                Phone = selectedUser.Phone,
+                Address = selectedUser.Address
+            };
+        // id id == null, update user (selectedUser.Id, user);
+        // Manage passwords???
+
+        // await UserService.UpdateUser(selectedUser);
+        // users = await UserService.GetAll(); Uppdatera listan efter ändring
+        // CloseModal();
+    }
+    private async Task DeleteUser()
+    {
+        // Sure to delete?
+
+        // await UserService.DeleteUser(selectedUser.Id);
+        // users = await UserService.GetAll();
+        // CloseModal();
+    }
+}
