@@ -140,6 +140,7 @@
             .Where(p => p.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
             .ToList();
     }
+
     private void OpenModal(Product product)
     {
         selectedProduct = new Product()

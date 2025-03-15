@@ -11,13 +11,13 @@
 <h3>@(string.IsNullOrEmpty(CategoryName) ? "Alla produkter" : Translations.GetTranslatedCategoryName(category.Name))</h3>
 
 
-@if (AllProducts == null)
+@if (allProducts == null)
 {
     <div class="loading-info">
         <h3>Laddar produkter...</h3>
     </div>
 }
-else if (!AllProducts.Any())
+else if (!allProducts.Any())
 {
     <div class="loading-info">
         <h3>Inga produkter hittades.</h3>
@@ -25,8 +25,12 @@ else if (!AllProducts.Any())
 }
 else
 {
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="Sök efter produkt..." @bind="searchQuery" @oninput="FilterProducts" />
+    </div>
+
     <div class="product-list">
-        @foreach (var product in AllProducts)
+        @foreach (var product in filteredProducts)
         {
             <ProductComponent Product="product" OnAddToCart="HandleAddToCart" />
         }
@@ -41,7 +45,10 @@ else
     private List<Category> categories { get; set; }
     private Category category { get; set; }
 
-    public List<Product> AllProducts { get; set; } = new();
+    private List<Product> allProducts { get; set; } = new();
+
+    private List<Product> filteredProducts = new List<Product>();
+    private string searchQuery = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,6 +56,14 @@ else
         Navigation.LocationChanged += OnLocationChanged;
         await LoadProducts();
         ExtractCategoryFromUri();
+    }
+
+    private void FilterProducts(ChangeEventArgs e)
+    {
+        searchQuery = e.Value?.ToString() ?? "";
+        filteredProducts = allProducts
+            .Where(p => p.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+            .ToList();
     }
 
     protected override async Task OnParametersSetAsync()
@@ -86,11 +101,13 @@ else
     {
         if (string.IsNullOrEmpty(CategoryName))
         {
-            AllProducts = await ProductService.GetAll();
+            allProducts = await ProductService.GetAll();
+            filteredProducts = allProducts;
         }
         else
         {
-            AllProducts = await ProductService.GetByCategory(category);
+            allProducts = await ProductService.GetByCategory(category);
+            filteredProducts = allProducts;
         }
 
         StateHasChanged();
