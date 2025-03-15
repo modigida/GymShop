@@ -33,4 +33,19 @@ public static class Translations
         }
         return produtstatus;
     }
+
+    public static string GetTranslatedOrderStatus(string orderstatus)
+    {
+        Dictionary<string, string> statusTranslations = new()
+        {
+            { "Pending", "Väntande" },
+            { "Processing", "Behandlas" },
+            { "Completed", "Avslutad" }
+        };
+        if (statusTranslations.ContainsKey(orderstatus))
+        {
+            return statusTranslations[orderstatus];
+        }
+        return orderstatus;
+    }
 }

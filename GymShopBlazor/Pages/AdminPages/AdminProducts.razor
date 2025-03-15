@@ -57,17 +57,16 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Id</label>
-                        <label class="form-control">@selectedProduct.Id</label>
+                        <label><strong>Id: </strong>@selectedProduct.Id</label>
                     </div>
                     <div class="form-group">
-                        <label>Produktnamn</label>
+                        <label><strong>Produktnamn:</strong></label>
                         <input class="form-control" @bind="selectedProduct.Name" />
                     </div>
 
-                     <div class="form-group"> 
-                         <label>Kategori</label> 
-                         <select class="form-control" @bind="selectedProduct.Category.Id"> 
+                     <div class="form-group">
+                        <label><strong>Kategori:</strong></label>
+                        <select class="form-control" @bind="selectedProduct.Category.Id"> 
                              <option value="">Välj kategori</option> 
                              @foreach (var category in categories) 
                              {
@@ -76,9 +75,9 @@
                          </select> 
                      </div> 
 
-                     <div class="form-group"> 
-                         <label>Lagerstatus</label> 
-                         <select class="form-control" @bind="selectedProduct.ProductStatus.Id"> 
+                     <div class="form-group">
+                        <label><strong>Lagerstatus:</strong></label>
+                        <select class="form-control" @bind="selectedProduct.ProductStatus.Id"> 
                              <option value="">Välj lagerstatus</option> 
                              @foreach (var status in productStatuses)
                              {
@@ -89,19 +88,19 @@
                     </div> 
 
                     <div class="form-group">
-                        <label>Lagersaldo</label>
+                        <label><strong>Lagersaldo:</strong></label>
                         <input class="form-control" @bind="selectedProduct.Balance" type="number" />
                     </div>
                     <div class="form-group">
-                        <label>Pris</label>
+                        <label><strong>Pris:</strong></label>
                         <input class="form-control" @bind="selectedProduct.Price" type="number" step="0.01" />
                     </div>
                     <div class="form-group">
-                        <label>Produktbeskrivning</label>
+                        <label><strong>Produktbeskrivning:</strong></label>
                         <textarea class="form-control" @bind="selectedProduct.Description"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Bild</label>
+                        <label><strong>Bildlänk:</strong></label>
                         <input class="form-control" @bind="selectedProduct.ImageUrl" />
                     </div>
                 }

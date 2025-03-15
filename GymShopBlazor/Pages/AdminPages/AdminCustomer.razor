@@ -1,8 +1,10 @@
 ﻿@page "/admin/customers"
 @layout Admin
 @using GymShopBlazor.ApiService
+@using GymShopBlazor.Helpers
 @using GymShopBlazor.Models
 @inject UserService UserService
+@inject OrderService OrderService
 @inherits LayoutComponentBase
 
 <head>
@@ -51,29 +53,47 @@
                 {
                     <p>Endast kunden själv kan uppdatera sina uppgifter.</p>
                     <div class="form-group">
-                        <label>Id</label>
-                        <label class="form-control">@selectedUser.Id</label>
+                        <label><strong>Id: </strong> @selectedUser.Id</label>
                     </div>
                     <div class="form-group">
-                        <label>Förnamn</label>
-                        <label class="form-control">@selectedUser.FirstName</label>
+                        <label><strong>Namn:</strong> @selectedUser.ToString()</label>
                     </div>
                     <div class="form-group">
-                        <label>Efternamn</label>
-                        <label class="form-control">@selectedUser.LastName</label>
+                        <label><strong>E-post: </strong>@selectedUser.Email</label>
                     </div>
                     <div class="form-group">
-                        <label>E-post</label>
-                        <label class="form-control">@selectedUser.Email</label>
+                        <label><strong>Telefonnummer: </strong>@selectedUser.Phone</label>
                     </div>
                     <div class="form-group">
-                        <label>Telefonnummer</label>
-                        <label class="form-control">@selectedUser.Phone</label>
+                        <label><strong>Adress: </strong>@selectedUser.Address</label>
                     </div>
-                    <div class="form-group">
-                        <label>Adress</label>
-                        <label class="form-control">@selectedUser.Address</label>
-                    </div>
+
+                    if (orders.Any())
+                    {
+                        <div class="form-group">
+                            <table class="table table-sm">
+                                <thead>
+                                <tr>
+                                    <th>Order Id</th>
+                                    <th>Pris</th>
+                                    <th>Datum</th>
+                                    <th>Orderstatus</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var order in orders)
+                                {
+                                    <tr>
+                                        <td>@order.Id</td>
+                                        <td>@order.TotalPrice.ToString() SEK</td>
+                                        <td>@order.PurchaseDate</td>
+                                        <td>@Translations.GetTranslatedOrderStatus(order.OrderStatus.Name)</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
                 }
             </div>
             <div class="modal-footer">
@@ -89,6 +109,7 @@
     private List<UserResponse> users = new List<UserResponse>();
     private UserResponse selectedUser;
     private bool isModalOpen = false;
+    private List<OrderResponse>? orders = new List<OrderResponse>();
 
     private List<UserResponse> filteredUsers = new List<UserResponse>();
     private string searchQuery = "";
@@ -106,7 +127,7 @@
             .ToList();
     }
 
-    private void OpenModal(UserResponse user)
+    private async Task OpenModal(UserResponse user)
     {
         selectedUser = new UserResponse
         {
@@ -117,6 +138,7 @@
             Phone = user.Phone,
             Address = user.Address
         };
+        orders = await OrderService.GetOrdersByUserEmail(selectedUser.Email);
         isModalOpen = true;
     }
 

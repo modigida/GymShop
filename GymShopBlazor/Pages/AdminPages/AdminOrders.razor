@@ -1,12 +1,21 @@
 ﻿@page "/admin/orders"
 @layout Admin
 @using GymShopBlazor.ApiService
+@using GymShopBlazor.Helpers
 @using GymShopBlazor.Models
 @inject OrderService OrderService
 @inherits LayoutComponentBase
 
+<head>
+    <link href="css/admin.css" rel="stylesheet" />
+</head>
 
 <h3>Ordrar</h3>
+
+<div class="form-group">
+    <input type="text" class="form-control" placeholder="Sök efter kund id..." @bind="searchQuery" @oninput="FilterOrders" />
+</div>
+
 <table class="table fixed-table">
     <thead>
         <tr>
@@ -17,9 +26,9 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var order in orders)
+        @foreach (var order in filteredOrders)
         {
-            <tr>
+            <tr @onclick="() => OpenModal(order)" style="cursor: pointer;">
                 <td>@order.Id</td>
                 <td></td>
                 <td>@order.PurchaseDate</td>
@@ -29,10 +38,134 @@
     </tbody>
 </table>
 
+<div class="modal fade @(isModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Orderinformation</h5>
+                <button type="button" class="close" @onclick="CloseModal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @if (selectedOrder != null)
+                {
+                    <p>Du kan endast uppdatera orderstatus. <br/> Vid felaktig order skall den raderas. <br/>
+                        Kunden får skapa en ny order.</p>
+                    <div class="form-group">
+                        <label><strong>Order Id:</strong> @selectedOrder.Id</label>
+                    </div>
+                    <div class="form-group">
+                        <label><strong>Kund Id:</strong> @selectedOrder.User.Id</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label><strong>Orderstatus:</strong></label>
+                        <select class="form-control" @bind="selectedOrder.OrderStatus.Id">
+                            <option value="">Välj kategori</option> 
+                            @foreach (var status in orderStatuses) 
+                            {
+                                <option value="@status.Id">@Translations.GetTranslatedOrderStatus(status.Name)</option>
+                            } 
+                        </select> 
+                    </div> 
+
+                    <div class="form-group">
+                        <label><strong>Datum:</strong> @selectedOrder.PurchaseDate</label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <table class="table table-sm">
+                            <thead>
+                            <tr>
+                                <th>Produkt</th>
+                                <th>Pris</th>
+                                <th>Antal</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var product in selectedOrder.OrderProducts)
+                            {
+                                <tr>
+                                    <td>@product.ProductName</td>
+                                    <td>@product.CurrentPrice.ToString() SEK</td>
+                                    <td>@product.Quantity</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="form-group">
+                        <label><strong>Totalpris:</strong> @selectedOrder.TotalPrice SEK</label>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CloseModal">Stäng</button>
+                <button type="button" class="btn btn-success" @onclick="UpdateOrder">Uppdatera</button>
+                <button type="button" class="btn btn-danger" @onclick="DeleteOrder">Radera order</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @code {
     private List<OrderResponse> orders { get; set; } = new();
+    private OrderResponse selectedOrder { get; set; }
+    private bool isModalOpen = false;
+
+    private List<OrderResponse> filteredOrders = new List<OrderResponse>();
+    private string searchQuery = "";
+
+    private List<OrderStatus> orderStatuses = new List<OrderStatus>();
+
     protected override async Task OnInitializedAsync()
     {
         orders = await OrderService.GetAll();
+        orderStatuses = await OrderService.GetOrderStatuses();
+        filteredOrders = orders;
     }
+
+    private void FilterOrders(ChangeEventArgs e)
+    {
+        searchQuery = e.Value?.ToString() ?? "";
+        filteredOrders = orders
+            .Where(o => o.User.Id.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+    private void OpenModal(OrderResponse order)
+    {
+        selectedOrder = new OrderResponse
+        {
+            Id = order.Id,
+            User = order.User,
+            PurchaseDate = order.PurchaseDate,
+            OrderStatus = order.OrderStatus,
+            TotalPrice = order.TotalPrice,
+            OrderProducts = order.OrderProducts
+        };
+        isModalOpen = true;
+    }
+    private void CloseModal()
+    {
+        isModalOpen = false;
+        selectedOrder = null;
+    }
+
+    private void UpdateOrder()
+    {
+        if (selectedOrder.OrderStatus.Id == 3)
+        {
+            // Message saying Completed order cant be updated
+        }
+    }
+    private void DeleteOrder()
+    {
+        if (selectedOrder.OrderStatus.Id == 3)
+        {
+            // Message saying Completed order cant be deleted
+        }
+    }   
+
 }

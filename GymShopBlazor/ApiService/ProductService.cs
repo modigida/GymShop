@@ -7,31 +7,67 @@ public class ProductService(HttpClient httpClient)
 {
     public async Task<List<Product?>> GetAll()
     {
-        var products = await httpClient.GetFromJsonAsync<List<Product>>("https://localhost:7097/api/Products");
-        return products ?? new List<Product>();
+        try
+        {
+            return await httpClient.GetFromJsonAsync<List<Product>>("https://localhost:7097/api/Products")
+                   ?? new List<Product?>();
+        }
+        catch
+        {
+            return new List<Product?>();
+        }
     }
 
     public async Task<Product?> GetUserById(int id)
     {
-        var product = await httpClient.GetFromJsonAsync<Product>($"https://localhost:7097/api/Products/{id}");
-        return product ?? null;
+        try
+        {
+            return await httpClient.GetFromJsonAsync<Product>($"https://localhost:7097/api/Products/{id}")
+                   ?? null;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     public async Task<List<Product?>> GetByCategory(Category category)
     {
-        var products = await httpClient.GetFromJsonAsync<List<Product>>($"https://localhost:7097/api/Products/category/{category.Id}");
-        return products ?? new List<Product>();
+        try
+        {
+            return await httpClient.GetFromJsonAsync<List<Product>>(
+                       $"https://localhost:7097/api/Products/category/{category.Id}")
+                   ?? new List<Product?>();
+        }
+        catch
+        {
+            return new List<Product?>();
+        }
     }
 
     public async Task<List<Category>> GetCategories()
     {
-        var categories = await httpClient.GetFromJsonAsync<List<Category>>("https://localhost:7097/api/Categories");
-        return categories ?? new List<Category>();
+        try
+        {
+            return await httpClient.GetFromJsonAsync<List<Category>>("https://localhost:7097/api/Categories")
+                   ?? new List<Category>();
+        }
+        catch
+        {
+            return new List<Category>();
+        }
     }
 
     public async Task<List<ProductStatus>> GetProductStatuses()
     {
-        var productstatuses = await httpClient.GetFromJsonAsync<List<ProductStatus>>("https://localhost:7097/api/ProductStatuses");
-        return productstatuses ?? new List<ProductStatus>();
+        try
+        {
+            return await httpClient.GetFromJsonAsync<List<ProductStatus>>("https://localhost:7097/api/ProductStatuses")
+                   ?? new List<ProductStatus>();
+        }
+        catch
+        {
+            return new List<ProductStatus>();
+        }
     }
 }
