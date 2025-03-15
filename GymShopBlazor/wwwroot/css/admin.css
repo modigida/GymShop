@@ -1,6 +1,30 @@
-﻿.admin-nav .admin-nav-link {
-    color: black;
+﻿.admin-nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
 }
+
+.admin-nav-link {
+    text-decoration: none;
+    color: black;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    margin-left: 25px;
+    margin-right: 25px;
+    font-size: 2rem;
+}
+
+    .admin-nav-link:hover,
+    .admin-nav-link:active,
+    .admin-nav-link:focus {
+        color: black;
+        text-decoration: underline;
+    }
+
+.admin-content {
+    padding: 20px;
+}
+
 
 .fixed-table {
     table-layout: fixed;

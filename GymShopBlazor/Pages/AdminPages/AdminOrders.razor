@@ -1,4 +1,5 @@
 ﻿@page "/admin/orders"
+@layout Admin
 @using GymShopBlazor.ApiService
 @using GymShopBlazor.Models
 @inject OrderService OrderService
@@ -6,10 +7,11 @@
 
 
 <h3>Ordrar</h3>
-<table class="table">
+<table class="table fixed-table">
     <thead>
         <tr>
             <th>Id</th>
+            <th></th>
             <th>Datum</th>
             <th>Status</th>
         </tr>
@@ -19,6 +21,7 @@
         {
             <tr>
                 <td>@order.Id</td>
+                <td></td>
                 <td>@order.PurchaseDate</td>
                 <td>@order.OrderStatus.Name</td>
             </tr>
