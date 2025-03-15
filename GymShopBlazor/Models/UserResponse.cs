@@ -8,4 +8,8 @@ public class UserResponse
     public string Phone { get; set; }
     public string Address { get; set; }
     public Role Role { get; set; }
+    public override string ToString()
+    {
+        return $"{LastName.ToUpper()}, {FirstName}";
+    }
 }

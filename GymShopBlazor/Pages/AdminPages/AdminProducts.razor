@@ -4,22 +4,31 @@
 @inject ProductService ProductService
 @inherits LayoutComponentBase
 
+<head>
+    <link href="css/admin.css" rel="stylesheet" />
+</head>
 
 <h3>Produkter</h3>
 
-<table class="table">
+<div class="form-group">
+    <input type="text" class="form-control" placeholder="Sök efter produkt..." @bind="searchQuery" @oninput="FilterProducts" />
+</div>
+
+<table class="table fixed-table">
     <thead>
     <tr>
         <th>Namn</th>
+        <th></th>
         <th>Pris</th>
         <th>Antal i lager</th>
     </tr>
     </thead>
     <tbody>
-    @foreach (var product in products)
+    @foreach (var product in filteredProducts)
     {
-        <tr>
+        <tr @onclick="() => OpenModal(product)" style="cursor: pointer;">
             <td>@product.Name</td>
+            <td></td>
             <td>@product.Price</td>
             <td>@product.Balance</td>
         </tr>
@@ -27,11 +36,176 @@
     </tbody>
 </table>
 
+<div class="modal fade @(isModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Produktinformation</h5>
+                <button type="button" class="close" @onclick="CloseModal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @if (selectedProduct != null)
+                {
+                    <div class="form-group">
+                        <div>
+                            <img src="@selectedProduct.ImageUrl" alt="Produktbild" class="img-fluid" style="max-width: 200px; height: auto;" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Id</label>
+                        <label class="form-control">@selectedProduct.Id</label>
+                    </div>
+                    <div class="form-group">
+                        <label>Produktnamn</label>
+                        <input class="form-control" @bind="selectedProduct.Name" />
+                    </div>
+
+                     <div class="form-group"> 
+                         <label>Kategori</label> 
+                         <select class="form-control" @bind="selectedProduct.Category.Id"> 
+                             <option value="">Välj kategori</option> 
+                             @foreach (var category in categories) 
+                             {
+                                <option value="@category.Id">@GetTranslatedCategoryName(category.Name)</option>
+                             } 
+                         </select> 
+                     </div> 
+
+                     <div class="form-group"> 
+                         <label>Lagerstatus</label> 
+                         <select class="form-control" @bind="selectedProduct.ProductStatus.Id"> 
+                             <option value="">Välj lagerstatus</option> 
+                             @foreach (var status in productStatuses)
+                             {
+                                <option value="@status.Id">@GetTranslatedProductStatus(status.Name)</option>
+                             
+                             } 
+                        </select>
+                    </div> 
+
+                    <div class="form-group">
+                        <label>Lagersaldo</label>
+                        <input class="form-control" @bind="selectedProduct.Balance" type="number" />
+                    </div>
+                    <div class="form-group">
+                        <label>Pris</label>
+                        <input class="form-control" @bind="selectedProduct.Price" type="number" step="0.01" />
+                    </div>
+                    <div class="form-group">
+                        <label>Produktbeskrivning</label>
+                        <textarea class="form-control" @bind="selectedProduct.Description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Bild</label>
+                        <input class="form-control" @bind="selectedProduct.ImageUrl" />
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CloseModal">Stäng</button>
+                <button type="button" class="btn btn-success" @onclick="UpdateProduct">Spara</button>
+                <button type="button" class="btn btn-danger" @onclick="DeleteProduct">Radera produkt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @code {
     private List<Product> products = new List<Product>();
+    private Product selectedProduct;
+    private bool isModalOpen = false;
+
+    private List<Product> filteredProducts = new List<Product>();
+    private string searchQuery = "";
+
+    private List<Category> categories = new List<Category>();
+    private List<ProductStatus> productStatuses = new List<ProductStatus>();
+
+    private Dictionary<string, string> categoryTranslations = new()
+    {
+        { "Clothes", "Träningskläder" },
+        { "Supplements", "Kosttillskott" },
+        { "Equipments", "Träningstillbehör" },
+    };
+    
+    private Dictionary<string, string> statusTranslations = new()
+    {
+        { "Available", "Tillgänglig" },
+        { "Out of Stock", "Slut i lager" },
+        { "Discontinued", "Utgången" },
+        { "Pre-Order", "Förbeställning" },
+        { "Limited Edition", "Begränsad upplaga" }
+    };
 
     protected override async Task OnInitializedAsync()
     {
         products = await ProductService.GetAll();
+        categories = await ProductService.GetCategories();
+        productStatuses = await ProductService.GetProductStatuses();
+        filteredProducts = products;
+    }
+
+    private void FilterProducts(ChangeEventArgs e)
+    {
+        searchQuery = e.Value?.ToString() ?? "";
+        filteredProducts = products
+            .Where(p => p.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+    private void OpenModal(Product product)
+    {
+        selectedProduct = new Product()
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Category = product.Category,
+                ProductStatus = product.ProductStatus,
+                Balance = product.Balance,
+                Price = product.Price,
+                Description = product.Description,
+                ImageUrl = product.ImageUrl
+            };
+        isModalOpen = true;
+    }
+    private void CloseModal()
+    {
+        isModalOpen = false;
+        selectedProduct = null;
+    }
+    private async Task UpdateProduct()
+    {
+        // await ProductService.Update(selectedProduct);
+        // products = await ProductService.GetAll();
+        // filteredProducts = products;
+        // isModalOpen = false;
+        // selectedProduct = null;
+    }
+    private async Task DeleteProduct()
+    {
+        // Sure to delete?
+        // await ProductService.Delete(selectedProduct.Id);
+        // products = await ProductService.GetAll();
+        // filteredProducts = products;
+        // isModalOpen = false;
+        // selectedProduct = null;
+    }
+    private string GetTranslatedCategoryName(string categoryName)
+    {
+        if (categoryTranslations.ContainsKey(categoryName))
+        {
+            return categoryTranslations[categoryName];
+        }
+        return categoryName;
+    }
+    private string GetTranslatedProductStatus(string produtstatus)
+    {
+        if (statusTranslations.ContainsKey(produtstatus))
+        {
+            return statusTranslations[produtstatus];
+        }
+        return produtstatus;
     }
 }

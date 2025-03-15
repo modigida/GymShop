@@ -28,4 +28,10 @@ public class ProductService(HttpClient httpClient)
         var categories = await httpClient.GetFromJsonAsync<List<Category>>("https://localhost:7097/api/Categories");
         return categories ?? new List<Category>();
     }
+
+    public async Task<List<ProductStatus>> GetProductStatuses()
+    {
+        var productstatuses = await httpClient.GetFromJsonAsync<List<ProductStatus>>("https://localhost:7097/api/ProductStatuses");
+        return productstatuses ?? new List<ProductStatus>();
+    }
 }

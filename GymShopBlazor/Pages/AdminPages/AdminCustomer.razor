@@ -8,7 +8,7 @@
     <link href="css/admin.css" rel="stylesheet" />
 </head>
 
-<h3>Användare</h3>
+<h3>Kunder</h3>
 
 <div class="form-group">
     <input type="text" class="form-control" placeholder="Sök efter e-postadress..." @bind="searchQuery" @oninput="FilterUsers" />
@@ -18,8 +18,8 @@
     <thead>
         <tr>
             <th>Id</th>
-            <th>Förnamn</th>
-            <th>Efternamn</th>
+            <th></th>
+            <th>Namn</th>
             <th>E-post</th>
         </tr>
     </thead>
@@ -28,8 +28,8 @@
         {
             <tr @onclick="() => OpenModal(user)" style="cursor: pointer;">
                 <td>@user.Id</td>
-                <td>@user.FirstName</td>
-                <td>@user.LastName</td>
+                <td></td>
+                <td>@user.ToString()</td>
                 <td>@user.Email</td>
             </tr>
         }
@@ -40,7 +40,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Redigera användare</h5>
+                <h5 class="modal-title">Kundinformation</h5>
                 <button type="button" class="close" @onclick="CloseModal">
                     <span>&times;</span>
                 </button>
@@ -48,36 +48,36 @@
             <div class="modal-body">
                 @if (selectedUser != null)
                 {
+                    <p>Endast kunden själv kan uppdatera sina uppgifter.</p>
                     <div class="form-group">
                         <label>Id</label>
                         <label class="form-control">@selectedUser.Id</label>
                     </div>
                     <div class="form-group">
                         <label>Förnamn</label>
-                        <input class="form-control" @bind="selectedUser.FirstName" />
+                        <label class="form-control">@selectedUser.FirstName</label>
                     </div>
                     <div class="form-group">
                         <label>Efternamn</label>
-                        <input class="form-control" @bind="selectedUser.LastName" />
+                        <label class="form-control">@selectedUser.LastName</label>
                     </div>
                     <div class="form-group">
                         <label>E-post</label>
-                        <input class="form-control" @bind="selectedUser.Email" />
+                        <label class="form-control">@selectedUser.Email</label>
                     </div>
                     <div class="form-group">
                         <label>Telefonnummer</label>
-                        <input class="form-control" @bind="selectedUser.Phone" />
+                        <label class="form-control">@selectedUser.Phone</label>
                     </div>
                     <div class="form-group">
                         <label>Adress</label>
-                        <input class="form-control" @bind="selectedUser.Address" />
+                        <label class="form-control">@selectedUser.Address</label>
                     </div>
                 }
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" @onclick="CloseModal">Stäng</button>
-                <button type="button" class="btn btn-success" @onclick="SaveChanges">Spara</button>
-                <button type="button" class="btn btn-danger" @onclick="DeleteUser">Radera</button>
+                <button type="button" class="btn btn-danger" @onclick="DeleteUser">Radera användare</button>
             </div>
         </div>
     </div>
@@ -125,24 +125,6 @@
         selectedUser = null;
     }
 
-    private async Task SaveChanges()
-    {
-        var user = new UserCreate
-            {
-                FirstName = selectedUser.FirstName,
-                LastName = selectedUser.LastName,
-                Email = selectedUser.Email,
-                Phone = selectedUser.Phone,
-                Address = selectedUser.Address
-            };
-        // id id == null, update user (selectedUser.Id, user);
-        // Manage passwords???
-
-        // await UserService.UpdateUser(selectedUser);
-        // users = await UserService.GetAll(); Uppdatera listan efter ändring
-        // FilterUsers();
-        // CloseModal();
-    }
     private async Task DeleteUser()
     {
         // Sure to delete?
