@@ -17,6 +17,19 @@ namespace GymShopBlazor.ApiService
                 return new List<OrderResponse>();
             }
         }
+
+        public async Task<OrderResponse> GetById(int id)
+        {
+            try
+            {
+                return await httpClient.GetFromJsonAsync<OrderResponse>($"https://localhost:7097/api/Orders/id/{id}")
+                       ?? new OrderResponse();
+            }
+            catch
+            {
+                return new OrderResponse();
+            }
+        }
         public async Task<List<OrderResponse>> GetOrdersByUserEmail(string email)
         {
             try

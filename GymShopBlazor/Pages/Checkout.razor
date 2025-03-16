@@ -19,16 +19,15 @@
 </div>
 
 @code {
+    public OrderResponse NewOrder { get; set; }
 
     private async Task CompleteOrder()
     {
+        // check if user is logged in and e-mail matches 
+        // else force to create user to put order
         var statuses = await OrderService.GetOrderStatuses();
         Guid id = new Guid("779308D9-1016-40B9-2C02-08DD6079F5B4");
         var user = await UserService.GetUserById(id);
-        // var user = new UserResponse()
-        // {
-
-        // };
         var orderProducts = CartService.CartItems.Select(item => new OrderProduct()
             {
                 ProductId = item.ProductId,
@@ -45,7 +44,8 @@
             OrderStatus = statuses.FirstOrDefault(os => os.Id == 1)
 
         };
-        await OrderService.CreateOrder(order);
-        Navigation.NavigateTo("/orderConfirmation");
+        NewOrder = await OrderService.CreateOrder(order);
+        var orderId = NewOrder.Id;
+        Navigation.NavigateTo($"/orderConfirmation/{orderId}");
     }
 }

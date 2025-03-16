@@ -1,73 +1,73 @@
-﻿@page "/orderConfirmation"
+﻿@page "/orderConfirmation/{OrderId:int}"
+@using GymShopBlazor.ApiService
+@using GymShopBlazor.Models
+@inject NavigationManager Navigation
+@inject OrderService OrderService
 
 <head>
     <link href="css/cart.css" rel="stylesheet" />
 </head>
 
 <div class="order-confirmation">
-    <h3>OrderResponsebekräftelse</h3>
+    <h3>Orderbekräftelse</h3>
     
-    
-    <div class="order-details">
-        <div class="order-info">
-            <div class="order-text">
-                <p><strong>OrderResponsedatum:</strong> @PurchaseDate.ToString("yyyy-MM-dd HH:mm")</p>
-                <p><strong>OrderResponsenummer:</strong> @OrderId</p>
+    @if (Order != null)
+    {
+        <div class="order-details">
+            <div class="order-info">
+                <div class="order-text">
+                    <p><strong>Orderdatum:</strong> @Order.PurchaseDate.ToString("yyyy-MM-dd HH:mm")</p>
+                    <p><strong>Ordernummer:</strong> @Order.Id</p>
+                </div>
+
+                <div class="logo-container">
+                    <img src="logo.png" alt="GymShop Logo" class="logo" />
+                </div>
             </div>
 
-            <div class="logo-container">
-                <img src="logo.png" alt="GymShop Logo" class="logo" />
-            </div>
-        </div>
-
-        <table class="order-table">
-            <thead>
-            <tr>
-                <th>Produkt-ID</th>
-                <th>Produktnamn</th>
-                <th>Antal</th>
-                <th>Pris</th>
-                <th>Totalt pris</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach (var item in OrderItems)
-            {
+            <table class="order-table">
+                <thead>
                 <tr>
-                    <td>@item.ProductId</td>
-                    <td>@item.ProductName</td>
-                    <td>@item.Quantity</td>
-                    <td>@item.Price.ToString("0.00") SEK</td>
-                    <td>@(item.TotalPrice.ToString("0.00")) SEK</td>
+                    <th>Produkt-ID</th>
+                    <th>Produktnamn</th>
+                    <th>Antal</th>
+                    <th>Pris</th>
+                    <th>Totalt pris</th>
                 </tr>
-            }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                @foreach (var item in Order.OrderProducts)
+                {
+                    <tr>
+                        <td>@item.ProductId</td>
+                        <td>@item.ProductName</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.CurrentPrice.ToString("0.00") SEK</td>
+                        <td>@((item.CurrentPrice * item.Quantity).ToString("0.00")) SEK</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
 
-        <p class="total-price"><strong>Totalsumma:</strong> @TotalPrice.ToString("0.00") SEK</p>
+            <p class="total-price"><strong>Totalsumma:</strong> @Order.TotalPrice.ToString("0.00") SEK</p>
     </div>
+
+    }
+    else
+    {
+    <p>Laddar orderinformation...</p>
+    }
 </div>
 
 @code {
-    // Simulerad orderdata
-    private DateTime PurchaseDate = DateTime.Now;
-    private int OrderId = 1;
+    [Parameter] public int OrderId { get; set; }
+    public OrderResponse? Order { get; set; }
 
-    private List<OrderItem> OrderItems = new()
+    protected override async Task OnInitializedAsync()
     {
-        new OrderItem { ProductId = 101, ProductName = "Proteinpulver", Price = 299.00, Quantity = 2 },
-        new OrderItem { ProductId = 202, ProductName = "Kreatin Monohydrat", Price = 199.00, Quantity = 1 },
-        new OrderItem { ProductId = 303, ProductName = "BCAA", Price = 149.00, Quantity = 3 }
-    };
-
-    private double TotalPrice => OrderItems.Sum(item => item.TotalPrice);
-
-    private class OrderItem
-    {
-        public int ProductId { get; set; }
-        public string ProductName { get; set; }
-        public double Price { get; set; }
-        public int Quantity { get; set; }
-        public double TotalPrice => Price * Quantity;
+        if (OrderId != 0)
+        {
+            Order = await OrderService.GetById(OrderId);
+        }
     }
 }

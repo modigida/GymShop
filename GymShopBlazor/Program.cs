@@ -1,5 +1,6 @@
 using GymShopBlazor;
 using GymShopBlazor.ApiService;
+using GymShopBlazor.Pages;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -13,5 +14,6 @@ builder.Services.AddSingleton<CartService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<Checkout>();
 
 await builder.Build().RunAsync();
