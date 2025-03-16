@@ -32,7 +32,7 @@ else
         {
             var productsInCategory = products
             .Where(p => p.Category.Id == category.Id)
-            .Take(6)
+            .Take(5)
             .ToList();
 
             if (productsInCategory.Any())
