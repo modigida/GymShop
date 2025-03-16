@@ -30,6 +30,19 @@ namespace GymShopBlazor.ApiService
             }
         }
 
+        public async Task<OrderResponse> CreateOrder(OrderCreate order)
+        {
+            try
+            {
+                var response = await httpClient.PostAsJsonAsync("https://localhost:7097/api/Orders", order);
+                return await response.Content.ReadFromJsonAsync<OrderResponse>();
+            }
+            catch
+            {
+                return new OrderResponse();
+            }
+        }
+
         public async Task<List<OrderStatus>> GetOrderStatuses()
         {
             try

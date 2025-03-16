@@ -42,7 +42,7 @@ else
                     <div class="product-list">
                         @foreach (var product in productsInCategory)
                         {
-                            <ProductComponent Product="product" OnAddToCart="HandleAddToCart" OnProductClick="OpenModal" />
+                            <ProductComponent Product="product" OnProductClick="OpenModal" />
                         }
                     </div>
                 </div>
@@ -107,6 +107,7 @@ else
     private bool isModalOpen = false;
 
     [Inject] private ProductService ProductService { get; set; } = default!;
+    [Inject] private CartService CartService { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -129,8 +130,11 @@ else
 
     private void HandleAddToCart(Product product)
     {
-        selectedProduct = product;
-        // cant by more than selectedProduct.Balance
-        Console.WriteLine($"{product.Name} tillagd i varukorgen!");
+        if (product.Balance > 0)
+        {
+            CartService.AddToCart(product);
+            Console.WriteLine($"{product.Name} tillagd i varukorgen!");
+            CloseModal();
+        }
     }
 }

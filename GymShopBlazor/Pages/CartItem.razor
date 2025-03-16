@@ -1,9 +1,10 @@
-﻿<div class="cart-item">
-    <img src="@Item.ImageUrl" alt="@Item.Name" class="product-image" />
+﻿@using GymShopBlazor.Models
+<div class="cart-item">
+    <img src="@Item.ImageUrl" alt="@Item.ProductName" class="product-image" />
 
     <div class="product-details">
-        <h4>@Item.Name</h4>
-        <p>@Item.Price.ToString("0.00") SEK</p>
+        <h4>@Item.ProductName</h4>
+        <p>@Item.CurrentPrice.ToString() SEK</p>
 
         <div class="quantity-controls">
             <button class="btn btn-outline-secondary" @onclick="DecreaseQuantity">-</button>
@@ -14,9 +15,9 @@
 </div>
 
 @code {
-    [Parameter] public Cart.DemoItems Item { get; set; }
+    [Parameter] public OrderProduct Item { get; set; }
     [Parameter] public EventCallback<int> OnQuantityChanged { get; set; }
-    [Parameter] public EventCallback<Cart.DemoItems> OnRemove { get; set; }
+    [Parameter] public EventCallback<OrderProduct> OnRemove { get; set; }
 
     private async Task IncreaseQuantity()
     {

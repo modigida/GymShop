@@ -1,4 +1,9 @@
-﻿@inject NavigationManager Navigation
+﻿@using GymShopBlazor.ApiService
+@using GymShopBlazor.Models
+@inject NavigationManager Navigation
+@inject CartService CartService
+@inject OrderService OrderService
+@inject UserService UserService
 
 <div class="checkout-container">
     <h3>Slutför ditt köp</h3>
@@ -10,13 +15,37 @@
         <input type="tel" placeholder="Mobiltelefonnummer" />
     </div>
 
-    <button class="btn btn-success" @onclick="OpenOrderConfirmation">Beställ</button>
+    <button class="btn btn-success" @onclick="CompleteOrder">Beställ</button>
 </div>
 
 @code {
 
-    private void OpenOrderConfirmation()
+    private async Task CompleteOrder()
     {
+        var statuses = await OrderService.GetOrderStatuses();
+        Guid id = new Guid("779308D9-1016-40B9-2C02-08DD6079F5B4");
+        var user = await UserService.GetUserById(id);
+        // var user = new UserResponse()
+        // {
+
+        // };
+        var orderProducts = CartService.CartItems.Select(item => new OrderProduct()
+            {
+                ProductId = item.ProductId,
+                Quantity = item.Quantity,
+                CurrentPrice = item.CurrentPrice,
+                ProductName = item.ProductName
+            }).ToList();
+
+        var order = new OrderCreate
+        {
+            PurchaseDate = DateTime.Now,
+            User = user,
+            OrderProducts = orderProducts,
+            OrderStatus = statuses.FirstOrDefault(os => os.Id == 1)
+
+        };
+        await OrderService.CreateOrder(order);
         Navigation.NavigateTo("/orderConfirmation");
     }
 }

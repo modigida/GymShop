@@ -11,16 +11,10 @@
         <p class="product-price">@Product.Price.ToString() SEK</p>
     </div>
     
-    <button class="add-to-cart-button" @onclick="AddToCart">Köp</button>
 </div>
 
 @code {
     [Parameter] public Product Product { get; set; }
-    [Parameter] public EventCallback<Product> OnAddToCart { get; set; }
     [Parameter] public EventCallback<Product> OnProductClick { get; set; }
 
-    private async Task AddToCart()
-    {
-        await OnAddToCart.InvokeAsync(Product);
-    }
 }

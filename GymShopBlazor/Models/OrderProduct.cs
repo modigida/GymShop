@@ -9,4 +9,6 @@ public class OrderProduct
     public double CurrentPrice { get; set; }
     public string ProductName { get; set; }
     public int ProductId { get; set; }
+    [JsonIgnore]
+    public string? ImageUrl { get; set; }
 }
