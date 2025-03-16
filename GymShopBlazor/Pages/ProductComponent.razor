@@ -3,7 +3,7 @@
     <link href="css/product.css" rel="stylesheet" />
 </head>
 
-<div class="product-card">
+<div class="product-card" @onclick="() => OnProductClick.InvokeAsync(Product)">
     <img src="@Product.ImageUrl" alt="@Product.Name" class="product-image" />
     
     <div class="product-info">
@@ -17,6 +17,7 @@
 @code {
     [Parameter] public Product Product { get; set; }
     [Parameter] public EventCallback<Product> OnAddToCart { get; set; }
+    [Parameter] public EventCallback<Product> OnProductClick { get; set; }
 
     private async Task AddToCart()
     {
