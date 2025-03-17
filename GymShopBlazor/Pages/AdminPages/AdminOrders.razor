@@ -32,7 +32,7 @@
                 <td>@order.Id</td>
                 <td></td>
                 <td>@order.PurchaseDate</td>
-                <td>@order.OrderStatus.Name</td>
+                <td>@Translations.GetTranslatedOrderStatus(order.OrderStatus.Name)</td>
             </tr>
         }
     </tbody>

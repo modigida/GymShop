@@ -20,7 +20,7 @@
 
     <div class="top-navbar-icons">
         <NavLink href="/login" class="user-icon">👤</NavLink>
-        @if (isAdmin)
+        @if (!isAdmin)
         {
             <NavLink href="/admin" class="admin-icon">⚙️</NavLink>
         }
