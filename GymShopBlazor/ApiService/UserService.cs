@@ -66,4 +66,28 @@ public class UserService(HttpClient httpClient)
             return string.Empty;
         }
     }
+    public async Task<bool> DeleteUser(Guid id)
+    {
+        try
+        {
+            var response = await httpClient.DeleteAsync($"https://localhost:7097/api/Users/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Fel vid borttagning av användare: {response.StatusCode} - {errorMessage}");
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ett undantag uppstod vid borttagning av användare: {ex.Message}");
+            return false;
+        }
+    }
+
 }

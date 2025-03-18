@@ -38,3 +38,13 @@
         white-space: nowrap;
     }
 
+
+.modal.fade {
+    display: none;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.modal.show {
+    display: block;
+    opacity: 1;
+}
