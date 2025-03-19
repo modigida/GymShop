@@ -19,12 +19,20 @@
 
     <div class="brand">
         <NavLink href="/">
-            <img src="textlogo.png" alt="Logga"/>
+            <img src="textlogo.png" alt="Logga" />
         </NavLink>
     </div>
 
     <div class="top-navbar-icons">
-        <NavLink href="/login" class="user-icon">👤</NavLink>
+        @if (IsOffline)
+        {
+            <NavLink href="/login" class="user-icon">👤</NavLink>
+
+        }
+        else
+        {
+            <NavLink href="/user" class="user-icon">👤</NavLink>
+        }
         @if (IsAdmin)
         {
             <NavLink href="/admin" class="admin-icon">⚙️</NavLink>
@@ -45,26 +53,26 @@
 @code
 {
     public bool IsAdmin = false;
+    public bool IsOffline = true;
 
     protected override async Task OnInitializedAsync()
     {
-        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authenticationState.User;
-        IsAdmin = user.Identity.IsAuthenticated && user.IsInRole("Admin");
-        if (IsAdmin == true){ Console.WriteLine("Inloggad som admin");}
-
+        await UpdateUserStatusAsync();
         AuthenticationStateNotifier.StateChanged += OnStateChanged;
     }
     private void OnStateChanged()
     {
-        _ = UpdateAdminStatusAsync();
+        _ = UpdateUserStatusAsync();
     }
 
-    private async Task UpdateAdminStatusAsync()
+    private async Task UpdateUserStatusAsync()
     {
         var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authenticationState.User;
+
         IsAdmin = user.Identity.IsAuthenticated && user.IsInRole("Admin");
+        IsOffline = !user.Identity.IsAuthenticated;
+
         StateHasChanged();
     }
 

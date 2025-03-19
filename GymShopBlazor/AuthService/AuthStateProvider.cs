@@ -61,6 +61,16 @@ public class AuthStateProvider : AuthenticationStateProvider
         return user.IsInRole("Admin");
     }
 
+    public async Task LogoutUser()
+    {
+        await _localStorage.RemoveItemAsync("authToken");
+
+        var anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
+
+        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(anonymousUser)));
+
+        _authenticationStateNotifier.NotifyStateChanged();
+    }
 
     public void NotifyUserLogout()
     {

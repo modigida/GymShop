@@ -1,0 +1,25 @@
+﻿@page "/user"
+@using GymShopBlazor.AuthService
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<h3>Du är nu inloggad</h3>
+
+<p>Här kommer du kunna se och redigera innehållet i ditt medlemskap</p>
+
+<button @onclick="Logout" class="logout-btn">Logga ut</button>
+
+@code {
+    private async Task Logout()
+    {
+        await JS.InvokeVoidAsync("localStorage.removeItem", "authToken");
+
+        if (AuthenticationStateProvider is AuthStateProvider authProvider)
+        {
+            await authProvider.LogoutUser();
+        }
+
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+}

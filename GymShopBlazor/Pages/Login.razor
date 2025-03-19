@@ -97,7 +97,7 @@
             showSuccessMessage = true;
             StateHasChanged();
 
-            // await Task.Delay(2500);
+            await Task.Delay(2000);
 
             Navigation.NavigateTo("/");
         }
@@ -105,6 +105,5 @@
         {
             showErrorMessage = true;
         }
-
     }
 }
