@@ -1,9 +1,12 @@
-﻿@using GymShopBlazor.ApiService
+﻿@using System.Security.Claims
+@using GymShopBlazor.ApiService
 @using GymShopBlazor.Models
+@using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager Navigation
 @inject CartService CartService
 @inject OrderService OrderService
 @inject UserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="checkout-container">
     <h3>Slutför ditt köp</h3>
@@ -11,23 +14,68 @@
     <h5>Dina uppgifter</h5>
 
     <div class="input-group">
-        <input type="email" placeholder="E-postadress" />
-        <input type="tel" placeholder="Mobiltelefonnummer" />
+        <input type="email" placeholder="E-postadress" @bind=enteredEmail/>
+        <input type="tel" placeholder="Mobiltelefonnummer" @bind="enteredPhone"/>
     </div>
+    
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <p class="text-danger">@ErrorMessage</p>
+    }
 
-    <button class="btn btn-success" @onclick="CompleteOrder">Beställ</button>
+    @if (IsCustomer)
+    {
+        <button class="btn btn-success" @onclick="CompleteOrder">Beställ</button>
+
+    }
+    else
+    {
+        <p>Endast registrerade kunder kan genomföra köp.</p>
+        <button class="btn-btn-secondary" @onclick="BecomeMember">Bli medlem</button>
+    }
+
 </div>
 
 @code {
+    private bool IsCustomer = false;
+    private string enteredEmail = "";
+    private string enteredPhone = "";
+    private string ErrorMessage = "";
+    private UserResponse LoggedInUser { get; set; }
     public OrderResponse NewOrder { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            var userIdClaim = user.FindFirst("sub")?.Value;
+        
+            if (Guid.TryParse(userIdClaim, out Guid userId))
+            {
+                LoggedInUser = await UserService.GetUserById(userId);
+                IsCustomer = user.IsInRole("Customer");
+            }
+        }
+
+        StateHasChanged();
+    }
 
     private async Task CompleteOrder()
     {
-        // check if user is logged in and e-mail matches 
-        // else force to create user to put order
+        if (LoggedInUser == null)
+        {
+            return;
+        }
+        if (!string.Equals(enteredEmail, LoggedInUser.Email, StringComparison.OrdinalIgnoreCase) ||
+            !string.Equals(enteredPhone, LoggedInUser.Phone, StringComparison.OrdinalIgnoreCase))
+        {
+            ErrorMessage = "E-post eller telefonnummer matchar inte dina registrerade uppgifter.";
+            return;
+        }
         var statuses = await OrderService.GetOrderStatuses();
-        Guid id = new Guid("779308D9-1016-40B9-2C02-08DD6079F5B4");
-        var user = await UserService.GetUserById(id);
         var orderProducts = CartService.CartItems.Select(item => new OrderProduct()
             {
                 ProductId = item.ProductId,
@@ -39,7 +87,7 @@
         var order = new OrderCreate
         {
             PurchaseDate = DateTime.Now,
-            User = user,
+                User = LoggedInUser,
             OrderProducts = orderProducts,
             OrderStatus = statuses.FirstOrDefault(os => os.Id == 1)
 
@@ -47,5 +95,9 @@
         NewOrder = await OrderService.CreateOrder(order);
         var orderId = NewOrder.Id;
         Navigation.NavigateTo($"/orderConfirmation/{orderId}");
+    }
+    private async Task BecomeMember()
+    {
+        Navigation.NavigateTo("/register");
     }
 }
