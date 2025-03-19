@@ -180,11 +180,12 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
     {
         //var user = await unitOfWork.Users.FindAsync(u => u.Email == dto.Email);
         var user = (await unitOfWork.Users.GetAllAsync()).FirstOrDefault(u => u.Email == dto.Email);
-        user.Role = await unitOfWork.Roles.GetByIdAsync(user.RoleId);
         if (user == null)
         {
             return null;
         }
+        user.Role = await unitOfWork.Roles.GetByIdAsync(user.RoleId);
+
         var isPasswordValid = PasswordHasher.VerifyPassword(dto.Password, user.PasswordHash, user.PasswordSalt);
         if (!isPasswordValid)
         {

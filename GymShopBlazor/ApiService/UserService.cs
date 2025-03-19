@@ -54,8 +54,9 @@ public class UserService(HttpClient httpClient)
             var response = await httpClient.PostAsJsonAsync("https://localhost:7097/api/Users/login", user);
             if (response.IsSuccessStatusCode)
             {
-                var token = await response.Content.ReadAsStringAsync();
-                return token;
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                return responseContent.Trim('"');
 
             }
 

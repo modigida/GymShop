@@ -1,8 +1,17 @@
 ﻿@page "/login"
+@using System.ComponentModel.Design
 @using ApiService
+@using Blazored.LocalStorage
+@using GymShopBlazor.AuthService
+@using GymShopBlazor.Event
+@using Microsoft.AspNetCore.Components.Authorization
 @using Models
 @inject UserService UserService
 @inject NavigationManager Navigation
+@inject ILocalStorageService _localStorage
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AuthenticationStateNotifier AuthenticationStateNotifier
+@inject MainLayout MainLayout
 
 <head>
     <link href="css/userstyling.css" rel="stylesheet" />
@@ -28,11 +37,16 @@
             Inloggad!
         </div>
     }
-    else
+    else if (showErrorMessage)
     {
-        <button class="btn btn-primary" @onclick="LoginUser" disabled="@(!IsFormValid)"
-        style="background-color: @(IsFormValid ? "black" : "gray"); color: white;">Logga in</button>
+        <div class="alert alert-danger" role="alert">
+            Fel användarnamn eller lösenord!
+        </div>
     }
+    <button class="btn btn-primary" @onclick="LoginUser" disabled="@(!IsFormValid)"
+            style="background-color: @(IsFormValid ? "black" : "gray"); color: white;">
+        Logga in
+    </button>
 
     <div class="reset-password-link">
         <NavLink href="/resetPassword"><a>Jag har glömt mitt lösenord!</a></NavLink>
@@ -45,10 +59,21 @@
 @code {
     private UserLogin user = new();
     private bool showSuccessMessage = false;
+    private bool showErrorMessage = false;
 
     private bool IsFormValid =>
         !string.IsNullOrWhiteSpace(user.Email) &&
         !string.IsNullOrWhiteSpace(user.Password);
+
+    protected override void OnInitialized()
+    {
+        AuthenticationStateNotifier.StateChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        AuthenticationStateNotifier.StateChanged -= StateHasChanged;
+    }
 
     private async Task LoginUser()
     {
@@ -58,14 +83,27 @@
         }
 
         var token = await UserService.LoginUser(user);
-        if (token != null)
+        if (!string.IsNullOrEmpty(token))
         {
+            await _localStorage.SetItemAsync("authToken", token);
+
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authenticationState.User;
+            MainLayout.IsAdmin = user.Identity.IsAuthenticated && user.IsInRole("Admin");
+            if (MainLayout.IsAdmin == true) { Console.WriteLine("Inloggad som admin"); }
+
+            ((AuthStateProvider)AuthenticationStateProvider).NotifyUserAuthentication(token);
+
             showSuccessMessage = true;
             StateHasChanged();
 
-            await Task.Delay(2500);
+            // await Task.Delay(2500);
 
             Navigation.NavigateTo("/");
+        }
+        else
+        {
+            showErrorMessage = true;
         }
 
     }

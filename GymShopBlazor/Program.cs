@@ -1,6 +1,11 @@
+using Blazored.LocalStorage;
 using GymShopBlazor;
 using GymShopBlazor.ApiService;
+using GymShopBlazor.AuthService;
+using GymShopBlazor.Event;
+using GymShopBlazor.Layout;
 using GymShopBlazor.Pages;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -15,5 +20,13 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<Checkout>();
+builder.Services.AddScoped<MainLayout>();
+builder.Services.AddScoped<AuthenticationStateNotifier>();
+
+builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
+
+
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddAuthorizationCore();
 
 await builder.Build().RunAsync();

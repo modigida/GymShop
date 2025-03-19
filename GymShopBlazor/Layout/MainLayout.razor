@@ -1,4 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿@using GymShopBlazor.Event
+@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AuthenticationStateNotifier AuthenticationStateNotifier
+@inject NavigationManager Navigation
 
 <head>
     <link href="css/navbar.css" rel="stylesheet" />
@@ -20,7 +25,7 @@
 
     <div class="top-navbar-icons">
         <NavLink href="/login" class="user-icon">👤</NavLink>
-        @if (!isAdmin)
+        @if (IsAdmin)
         {
             <NavLink href="/admin" class="admin-icon">⚙️</NavLink>
         }
@@ -39,10 +44,32 @@
 
 @code
 {
-    private bool isAdmin = false;
+    public bool IsAdmin = false;
 
     protected override async Task OnInitializedAsync()
     {
-        // Kontrollera om användaren är administratör
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+        IsAdmin = user.Identity.IsAuthenticated && user.IsInRole("Admin");
+        if (IsAdmin == true){ Console.WriteLine("Inloggad som admin");}
+
+        AuthenticationStateNotifier.StateChanged += OnStateChanged;
+    }
+    private void OnStateChanged()
+    {
+        _ = UpdateAdminStatusAsync();
+    }
+
+    private async Task UpdateAdminStatusAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+        IsAdmin = user.Identity.IsAuthenticated && user.IsInRole("Admin");
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        AuthenticationStateNotifier.StateChanged -= OnStateChanged;
     }
 }

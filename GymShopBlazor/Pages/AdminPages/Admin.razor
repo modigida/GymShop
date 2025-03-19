@@ -1,5 +1,7 @@
 ﻿@page "/admin"
 @layout MainLayout
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
 @inherits LayoutComponentBase
 
 <head>
