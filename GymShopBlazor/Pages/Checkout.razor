@@ -1,11 +1,14 @@
 ﻿@using System.Security.Claims
+@using Blazored.LocalStorage
 @using GymShopBlazor.ApiService
+@using GymShopBlazor.AuthService
 @using GymShopBlazor.Models
 @using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager Navigation
 @inject CartService CartService
 @inject OrderService OrderService
 @inject UserService UserService
+@inject ILocalStorageService _localStorage
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="checkout-container">
@@ -14,8 +17,8 @@
     <h5>Dina uppgifter</h5>
 
     <div class="input-group">
-        <input type="email" placeholder="E-postadress" @bind=enteredEmail/>
-        <input type="tel" placeholder="Mobiltelefonnummer" @bind="enteredPhone"/>
+        <input type="email" placeholder="E-postadress" @bind="user.Email" @bind:event="oninput" />
+        <input type="password" placeholder="Lösenord" @bind="user.Password" @bind:event="oninput" />
     </div>
     
     @if (!string.IsNullOrEmpty(ErrorMessage))
@@ -26,20 +29,18 @@
     @if (IsCustomer)
     {
         <button class="btn btn-success" @onclick="CompleteOrder">Beställ</button>
-
     }
     else
     {
-        <p>Endast registrerade kunder kan genomföra köp.</p>
-        <button class="btn-btn-secondary" @onclick="BecomeMember">Bli medlem</button>
+        <button class="btn-btn-success" @onclick="Login">Logga in</button>
+        <button class="btn-btn-success" @onclick="BecomeMember">Bli medlem</button>
     }
 
 </div>
 
 @code {
+    private UserLogin user = new();
     private bool IsCustomer = false;
-    private string enteredEmail = "";
-    private string enteredPhone = "";
     private string ErrorMessage = "";
     private UserResponse LoggedInUser { get; set; }
     public OrderResponse NewOrder { get; set; }
@@ -69,12 +70,12 @@
         {
             return;
         }
-        if (!string.Equals(enteredEmail, LoggedInUser.Email, StringComparison.OrdinalIgnoreCase) ||
-            !string.Equals(enteredPhone, LoggedInUser.Phone, StringComparison.OrdinalIgnoreCase))
-        {
-            ErrorMessage = "E-post eller telefonnummer matchar inte dina registrerade uppgifter.";
-            return;
-        }
+        // if (!string.Equals(enteredEmail, LoggedInUser.Email, StringComparison.OrdinalIgnoreCase) ||
+        //     !string.Equals(enteredPassword, LoggedInUser., StringComparison.OrdinalIgnoreCase))
+        // {
+        //     ErrorMessage = "Felaktiga användaruppgifter.";
+        //     return;
+        // }
         var statuses = await OrderService.GetOrderStatuses();
         var orderProducts = CartService.CartItems.Select(item => new OrderProduct()
             {
@@ -95,6 +96,28 @@
         NewOrder = await OrderService.CreateOrder(order);
         var orderId = NewOrder.Id;
         Navigation.NavigateTo($"/orderConfirmation/{orderId}");
+    }
+    private async Task Login()
+    {
+        var token = await UserService.LoginUser(user);
+        if (!string.IsNullOrEmpty(token))
+        {
+            await _localStorage.SetItemAsync("authToken", token);
+
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authenticationState.User;
+            var userIdClaim = user.FindFirst("sub")?.Value;
+
+            if (Guid.TryParse(userIdClaim, out Guid userId))
+            {
+                LoggedInUser = await UserService.GetUserById(userId);
+                IsCustomer = user.IsInRole("Customer");
+            }
+
+            ((AuthStateProvider)AuthenticationStateProvider).NotifyUserAuthentication(token);
+
+            StateHasChanged();
+        }
     }
     private async Task BecomeMember()
     {
