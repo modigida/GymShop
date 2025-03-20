@@ -1,16 +1,181 @@
 ﻿@page "/user"
+@using GymShopBlazor.ApiService
 @using GymShopBlazor.AuthService
+@using GymShopBlazor.Models
 @using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserService UserService
 
-<h3>Du är nu inloggad</h3>
+<head>
+    <link href="css/userstyling.css" rel="stylesheet" />
+</head>
 
-<p>Här kommer du kunna se och redigera innehållet i ditt medlemskap</p>
+@if (currentUser != null)
+{
+    <div class="user-form">
+        <h3>Välkommen @currentUser.FirstName @currentUser.LastName</h3>
 
-<button @onclick="Logout" class="logout-btn">Logga ut</button>
+        <div class="mb-3">
+            <label for="firstname" class="form-label">Förnamn</label>
+            <input type="text" class="form-control" id="firstname" placeholder="Förnamn" @bind="currentUser.FirstName" @oninput="SetUpdated" />
+        </div>
+
+        <div class="mb-3">
+            <label for="lastname" class="form-label">Efternamn</label>
+            <input type="text" class="form-control" id="lastname" placeholder="Efternamn" @bind="currentUser.LastName" @oninput="SetUpdated" />
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">E-post</label>
+            <input type="email" class="form-control" id="email" placeholder="E-post" @bind="currentUser.Email" @oninput="SetUpdated" />
+        </div>
+
+        <div class="mb-3">
+            <label for="phone" class="form-label">Telefonnummer</label>
+            <input type="text" class="form-control" id="phone" placeholder="Telefonnummer" @bind="currentUser.Phone" @oninput="SetUpdated" />
+        </div>
+
+        <div class="mb-3">
+            <label for="address" class="form-label">Adress</label>
+            <input type="text" class="form-control" id="address" placeholder="Adress" @bind="currentUser.Address" @oninput="SetUpdated" />
+        </div>
+
+        @if (IsUpdated)
+        {
+            <div class="mb-3">
+                <label for="password" class="form-label">Lösenord</label>
+                <input type="password" class="form-control" id="password" placeholder="Lösenord" @bind="UpdatedUser.Password" @bind:event="oninput" />
+            </div>
+
+            @if (showSuccessMessage)
+            {
+                <div class="alert alert-success" role="alert">
+                    Användarinformationen är uppdaterad!
+                </div>
+            }
+            else if (showErrorMessage)
+            {
+                <div class="alert alert-danger" role="alert">
+                    Fel vid uppdatering. Ange rätt lösenord.
+                </div>
+            }
+        }
+
+        <div class="mb-3">
+            <div class="reset-password-link">
+                <NavLink href="/resetPassword"><a>Jag har glömt mitt lösenord!</a></NavLink>
+            </div>
+        </div>
+
+
+        <button class="btn btn-primary" disabled="@(!IsUpdated)"
+                style="background-color: @(IsUpdated ? "black" : "gray"); color: white;" @onclick="UpdateUserInfo">
+            Spara
+        </button>
+
+        <button @onclick="Logout" class="btn btn-primary">Logga ut</button>
+    </div>
+
+    @if (IsOrdersShown)
+    {
+
+    }
+}
+else
+{
+    <p>Laddar användarinformation...</p>
+}
 
 @code {
+    private UserResponse? currentUser { get; set; }
+    private bool IsUpdated = false;
+    private bool IsOrdersShown = false;
+    private UserCreate UpdatedUser { get; set; } = new();
+    private bool showSuccessMessage = false;
+    private bool showErrorMessage = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            var userIdClaim = user.FindFirst("sub")?.Value;
+
+            if (Guid.TryParse(userIdClaim, out Guid userId))
+            {
+                currentUser = await UserService.GetUserById(userId);
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    private void SetUpdated()
+    {
+        IsUpdated = true;
+    }
+    private async Task UpdateUserInfo()
+    {
+        var roles = await UserService.GetAllRoles();
+
+        UpdatedUser.FirstName = currentUser.FirstName;
+        UpdatedUser.LastName = currentUser.LastName;
+        UpdatedUser.Email = currentUser.Email;
+        UpdatedUser.Phone = currentUser.Phone;
+        UpdatedUser.Address = currentUser.Address;
+        UpdatedUser.RoleId = roles.FirstOrDefault(r => r.Name == currentUser.Role.Name).Id;
+
+        var returnedUpdatedUser = await UserService.UpdateUser(currentUser.Id, UpdatedUser);
+
+        var returnedIsUpdated = await CheckIfUpdated(returnedUpdatedUser);
+
+        if (returnedIsUpdated)
+        {
+            currentUser = returnedUpdatedUser;
+            IsUpdated = false;
+        }
+        else
+        {
+            IsUpdated = true;
+        }
+    }
+
+    private async Task<bool> CheckIfUpdated(UserResponse returnedUser)
+    {
+        var returnedIsUpdated = false;
+
+        if (returnedUser.FirstName == UpdatedUser.FirstName &&
+            returnedUser.LastName == UpdatedUser.LastName &&
+            returnedUser.Email == UpdatedUser.Email &&
+            returnedUser.Phone == UpdatedUser.Phone &&
+            returnedUser.Address == UpdatedUser.Address)
+        {
+            showSuccessMessage = true;
+            returnedIsUpdated = true;
+        }
+        else
+        {
+            showErrorMessage = true;
+        }
+
+        await InvokeAsync(StateHasChanged);
+
+        await Task.Delay(2500);
+        showSuccessMessage = false;
+        showErrorMessage = false;
+    
+        await InvokeAsync(StateHasChanged);
+        return returnedIsUpdated;
+    }
+
+    private async Task ShowOrders()
+    {
+
+    }
+
     private async Task Logout()
     {
         await JS.InvokeVoidAsync("localStorage.removeItem", "authToken");

@@ -67,6 +67,29 @@ public class UserService(HttpClient httpClient)
             return string.Empty;
         }
     }
+
+    public async Task<UserResponse> UpdateUser(Guid userId, UserCreate updatedUser)
+    {
+        try
+        {
+            var response = await httpClient.PutAsJsonAsync($"https://localhost:7097/api/Users/{userId}", updatedUser);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<UserResponse>();
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Fel vid uppdatering: {errorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ett fel uppstod: {ex.Message}");
+            throw;
+        }
+    }
     public async Task<bool> DeleteUser(Guid id)
     {
         try
@@ -91,4 +114,16 @@ public class UserService(HttpClient httpClient)
         }
     }
 
+    public async Task<List<Role>> GetAllRoles()
+    {
+        try
+        {
+            return await httpClient.GetFromJsonAsync<List<Role>>("https://localhost:7097/api/Roles")
+                   ?? new List<Role>();
+        }
+        catch
+        {
+            return new List<Role>();
+        }
+    }
 }

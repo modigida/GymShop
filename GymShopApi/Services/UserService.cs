@@ -75,6 +75,21 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
             throw new ArgumentException("User not found.");
         }
 
+        var isPasswordValid = PasswordHasher.VerifyPassword(entity.Password, user.PasswordHash, user.PasswordSalt);
+        if (!isPasswordValid)
+        {
+            var scopedRole = await unitOfWork.Roles.GetByIdAsync(user.RoleId);
+            return new UserResponseDto
+            {
+                Id = user.Id,
+                Address = user.Address,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Phone = user.Phone,
+                Role = scopedRole
+            };
+        }
         if (!string.IsNullOrEmpty(entity.FirstName) && entity.FirstName != user.FirstName)
         {
             user.FirstName = entity.FirstName;
@@ -84,13 +99,6 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
         {
             user.LastName = entity.LastName;
         }
-
-        //if (!string.IsNullOrEmpty(entity.Password))
-        //{
-        //    PasswordHasher.CreatePasswordHash(entity.Password, out string newHash, out string newSalt);
-        //    user.PasswordHash = newHash;
-        //    user.PasswordSalt = newSalt;
-        //}
 
         if (!string.IsNullOrEmpty(entity.Email) && entity.Email != user.Email)
         {
