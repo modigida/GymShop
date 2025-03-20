@@ -229,4 +229,16 @@ public class UserService(IUnitOfWork unitOfWork, JwtService jwtService) : IUserS
         await unitOfWork.Users.Delete(user);
         await unitOfWork.CompleteAsync();
     }
+
+    public async Task<bool> ValidatePasswordAsync(string email, string password)
+    {
+        var user = (await unitOfWork.Users.GetAllAsync()).FirstOrDefault(u => u.Email == email);
+        if (user == null)
+        {
+            return false;
+        }
+
+        return PasswordHasher.VerifyPassword(password, user.PasswordHash, user.PasswordSalt);
+    }
+
 }

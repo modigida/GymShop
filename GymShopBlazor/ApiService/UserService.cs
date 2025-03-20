@@ -1,9 +1,23 @@
-﻿using System.Net.Http.Json;
+﻿using System.ComponentModel.Design;
+using System.Net.Http.Json;
+using System.Reflection.Metadata;
 using GymShopBlazor.Models;
 
 namespace GymShopBlazor.ApiService;
 public class UserService(HttpClient httpClient)
 {
+    public async Task<bool> ValidatePassword(string email, string password)
+    {
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync("https://localhost:7097/api/Users/validate", new { Email = email, Password = password });
+            return await response.Content.ReadFromJsonAsync<bool>();
+        }
+        catch
+        {
+            return false;
+        }
+    }
     public async Task<List<UserResponse?>> GetAll()
     {
         try

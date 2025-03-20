@@ -12,5 +12,6 @@ namespace GymShopApi.Services.Interfaces
         Task Delete(params object[] keyValues);
         Task<UserResponseDto> RegisterUserAsync(UserCreateDto dto);
         Task<string?> LoginUserAsync(UserLoginDto dto);
+        Task<bool> ValidatePasswordAsync(string email, string password);
     }
 }

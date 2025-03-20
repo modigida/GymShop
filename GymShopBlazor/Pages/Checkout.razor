@@ -17,10 +17,10 @@
     <h5>Dina uppgifter</h5>
 
     <div class="input-group">
-        <input type="email" placeholder="E-postadress" @bind="user.Email" @bind:event="oninput" />
-        <input type="password" placeholder="Lösenord" @bind="user.Password" @bind:event="oninput" />
+        <input type="email" placeholder="E-postadress" @bind="enteredEmail" @bind:event="oninput" />
+        <input type="password" placeholder="Lösenord" @bind="enteredPassword" @bind:event="oninput" />
     </div>
-    
+
     @if (!string.IsNullOrEmpty(ErrorMessage))
     {
         <p class="text-danger">@ErrorMessage</p>
@@ -42,6 +42,8 @@
     private UserLogin user = new();
     private bool IsCustomer = false;
     private string ErrorMessage = "";
+    private string enteredEmail = "";
+    private string enteredPassword = "";
     private UserResponse LoggedInUser { get; set; }
     public OrderResponse NewOrder { get; set; }
 
@@ -53,7 +55,7 @@
         if (user.Identity.IsAuthenticated)
         {
             var userIdClaim = user.FindFirst("sub")?.Value;
-        
+
             if (Guid.TryParse(userIdClaim, out Guid userId))
             {
                 LoggedInUser = await UserService.GetUserById(userId);
@@ -70,33 +72,43 @@
         {
             return;
         }
-        // if (!string.Equals(enteredEmail, LoggedInUser.Email, StringComparison.OrdinalIgnoreCase) ||
-        //     !string.Equals(enteredPassword, LoggedInUser., StringComparison.OrdinalIgnoreCase))
-        // {
-        //     ErrorMessage = "Felaktiga användaruppgifter.";
-        //     return;
-        // }
-        var statuses = await OrderService.GetOrderStatuses();
-        var orderProducts = CartService.CartItems.Select(item => new OrderProduct()
-            {
-                ProductId = item.ProductId,
-                Quantity = item.Quantity,
-                CurrentPrice = item.CurrentPrice,
-                ProductName = item.ProductName
-            }).ToList();
 
-        var order = new OrderCreate
+        if (!string.IsNullOrEmpty(enteredEmail) && enteredEmail == LoggedInUser.Email && !string.IsNullOrEmpty(enteredPassword))
         {
-            PurchaseDate = DateTime.Now,
-                User = LoggedInUser,
-            OrderProducts = orderProducts,
-            OrderStatus = statuses.FirstOrDefault(os => os.Id == 1)
+            if (await UserService.ValidatePassword(LoggedInUser.Email, enteredPassword))
+            {
+                var statuses = await OrderService.GetOrderStatuses();
+                var orderProducts = CartService.CartItems.Select(item => new OrderProduct()
+                {
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    CurrentPrice = item.CurrentPrice,
+                    ProductName = item.ProductName
+                }).ToList();
 
-        };
-        NewOrder = await OrderService.CreateOrder(order);
-        var orderId = NewOrder.Id;
-        Navigation.NavigateTo($"/orderConfirmation/{orderId}");
-        CartService.CartItems.Clear();
+                var order = new OrderCreate
+                {
+                    PurchaseDate = DateTime.Now,
+                    User = LoggedInUser,
+                    OrderProducts = orderProducts,
+                    OrderStatus = statuses.FirstOrDefault(os => os.Id == 1)
+
+                };
+                NewOrder = await OrderService.CreateOrder(order);
+                var orderId = NewOrder.Id;
+                Navigation.NavigateTo($"/orderConfirmation/{orderId}");
+                CartService.CartItems.Clear();
+            }
+        }
+        else
+        {
+            ErrorMessage = "Felaktig email eller lösenord.";
+            StateHasChanged();
+            await Task.Delay(2500);
+            ErrorMessage = "";
+            StateHasChanged();
+        }
+        
     }
     private async Task Login()
     {

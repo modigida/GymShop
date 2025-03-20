@@ -114,4 +114,11 @@ public class UsersController(IUserService userService) : ControllerBase
         }
     }
 
+    [HttpPost("validate")]
+    public async Task<IActionResult> ValidatePassword([FromBody] UserLoginDto dto)
+    {
+        var isValid = await userService.ValidatePasswordAsync(dto.Email, dto.Password);
+        return Ok(isValid);
+    }
+
 }
