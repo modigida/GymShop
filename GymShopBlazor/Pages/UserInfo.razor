@@ -53,13 +53,13 @@
             @if (showSuccessMessage)
             {
                 <div class="alert alert-success" role="alert">
-                    Användarinformationen är uppdaterad!
+                    @UpdatedMessage
                 </div>
             }
             else if (showErrorMessage)
             {
                 <div class="alert alert-danger" role="alert">
-                    Fel vid uppdatering. Ange rätt lösenord.
+                    @UpdatedMessage
                 </div>
             }
         }
@@ -72,7 +72,7 @@
 
 
         <button class="btn btn-primary" disabled="@(!IsUpdated || string.IsNullOrEmpty(UpdatedUser.Password))"
-                style="background-color: @((IsUpdated && !string.IsNullOrEmpty(UpdatedUser.Password)) ? "black" : "gray"); color: white;" @onclick="UpdateUserInfo">
+        style="background-color: @((IsUpdated && !string.IsNullOrEmpty(UpdatedUser.Password)) ? "black" : "gray"); color: white;" @onclick="UpdateUserInfo">
             Spara
         </button>
         <button @onclick="Logout" class="btn btn-primary">Logga ut</button>
@@ -177,6 +177,7 @@ else
     private UserCreate UpdatedUser { get; set; } = new UserCreate { Password = "" };
     private bool showSuccessMessage = false;
     private bool showErrorMessage = false;
+    private string UpdatedMessage = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -215,9 +216,11 @@ else
         var IsCorrectPassword = await UserService.ValidatePassword(currentUser.Email, UpdatedUser.Password);
         if (IsCorrectPassword == false)
         {
+            UpdatedMessage = "Ange rätt lösenord.";
             showErrorMessage = true;
             await InvokeAsync(StateHasChanged);
             await Task.Delay(2500);
+            UpdatedMessage = "Ange rätt lösenord.";
             showErrorMessage = false;
             await InvokeAsync(StateHasChanged);
             return;
@@ -257,11 +260,13 @@ else
             returnedUser.Phone == UpdatedUser.Phone &&
             returnedUser.Address == UpdatedUser.Address)
         {
+            UpdatedMessage = "Användaruppgifterna är uppdaterade!";
             showSuccessMessage = true;
             returnedIsUpdated = true;
         }
         else
         {
+            UpdatedMessage = "Fel vid uppdatering."; 
             showErrorMessage = true;
         }
 
