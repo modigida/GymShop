@@ -4,7 +4,7 @@ using GymShopBlazor.Models;
 
 namespace GymShopBlazor.ApiService
 {
-    public class OrderService(HttpClient httpClient)
+    public class OrderService(HttpClient httpClient, UserService userService)
     {
         public async Task<List<OrderResponse>> GetAll()
         {
@@ -74,7 +74,16 @@ namespace GymShopBlazor.ApiService
         {
             try
             {
-                var response = await httpClient.PostAsJsonAsync($"https://localhost:7097/api/Orders/{updatedOrder.Id}", updatedOrder);
+                updatedOrder.User = await userService.GetUserById(updatedOrder.User.Id);
+                var response = await httpClient.PutAsJsonAsync($"https://localhost:7097/api/Orders/{updatedOrder.Id}", updatedOrder);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"UpdateOrder failed: {errorMessage}");
+                    return null;
+                }
+
                 return await response.Content.ReadFromJsonAsync<OrderResponse>();
             }
             catch

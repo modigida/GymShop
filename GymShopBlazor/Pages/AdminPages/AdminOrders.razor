@@ -61,8 +61,8 @@
 
                     <div class="form-group">
                         <label><strong>Orderstatus:</strong></label>
-                        <select class="form-control" @bind="selectedOrder.OrderStatus.Id">
-                            <option value="">Välj kategori</option> 
+                        <select class="form-control" @bind="selectedStatusId">
+                            <option value="" >Välj kategori</option> 
                             @foreach (var status in orderStatuses) 
                             {
                                 <option value="@status.Id">@Translations.GetTranslatedOrderStatus(status.Name)</option>
@@ -108,6 +108,12 @@
                     @message
                 </div>
             }
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success" role="alert">
+                    @successMessage
+                </div>
+            }
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" @onclick="CloseModal">Stäng</button>
                 <button type="button" class="btn btn-success" @onclick="UpdateOrder">Uppdatera</button>
@@ -140,11 +146,13 @@
 @code {
     private List<OrderResponse> orders { get; set; } = new();
     private OrderResponse selectedOrder { get; set; }
+    private int selectedStatusId { get; set; }
     private bool isModalOpen = false;
     private bool isDeleteModalOpen = false;
     private List<OrderResponse> filteredOrders = new List<OrderResponse>();
     private string searchQuery = "";
     private string message = "";
+    private string successMessage = "";
 
     private List<OrderStatus> orderStatuses = new List<OrderStatus>();
 
@@ -173,6 +181,7 @@
             TotalPrice = order.TotalPrice,
             OrderProducts = order.OrderProducts
         };
+        selectedStatusId = order.OrderStatus.Id;
         isModalOpen = true;
     }
     private void CloseModal()
@@ -189,10 +198,8 @@
         if (selectedOrder.OrderStatus.Id == 3)
         {
             message = "Du kan inte ta bort ordrar som är markerade som \"Avslutad\"";
-            StateHasChanged();
             await Task.Delay(2500);
             message = "";
-            StateHasChanged();
             return;
         }
 
@@ -204,11 +211,38 @@
         if (selectedOrder.OrderStatus.Id == 3)
         {
             message = "Du kan inte uppdatera ordrar som är markerade som \"Avslutad\"";
-            StateHasChanged();
             await Task.Delay(2500);
             message = "";
-            StateHasChanged();
             return;
+        }
+        var newStatus = orderStatuses.FirstOrDefault(s => s.Id == selectedStatusId);
+        if (newStatus != null && newStatus != selectedOrder.OrderStatus)
+        {
+            var updatedOrder = new OrderCreate
+            {
+                Id = selectedOrder.Id,
+                User = selectedOrder.User,
+                PurchaseDate = selectedOrder.PurchaseDate,
+                    OrderStatus = newStatus,
+                OrderProducts = selectedOrder.OrderProducts
+            };
+            var responseOrderUpdate = await OrderService.UpdateOrder(updatedOrder);
+            if (responseOrderUpdate.Id != 0)
+            {
+                var orderIndex = orders.FindIndex(o => o.Id == responseOrderUpdate.Id);
+                if (orderIndex != -1)
+                {
+                    orders[orderIndex] = responseOrderUpdate;
+                }
+
+                filteredOrders = new List<OrderResponse>(orders);
+
+                successMessage = "Ordern har uppdaterats";
+                StateHasChanged();
+                await Task.Delay(2500);
+                successMessage = "";
+            }
+            StateHasChanged();
         }
     }
     private async Task DeleteOrder()
@@ -220,19 +254,15 @@
             filteredOrders = new List<OrderResponse>(orders);
             StateHasChanged();
             message = "Ordern har raderats";
-            StateHasChanged();
             await Task.Delay(2500);
             message = "";
-            StateHasChanged();
             CloseModal();
         }
         else
         {
             message = "Kunde inte radera ordern"; 
-            StateHasChanged();
             await Task.Delay(2500);
             message = "";
-            StateHasChanged();
         }
     }   
 }

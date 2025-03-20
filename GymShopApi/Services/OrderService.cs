@@ -167,7 +167,7 @@ public class OrderService(IUnitOfWork unitOfWork) : IOrderService
         {
             throw new ArgumentException("Invalid input.");
         }
-        if (entity.OrderStatus?.Name == "Completed")
+        if (order.OrderStatus?.Name == "Completed")
         {
             throw new InvalidOperationException("Order cannot be updated after it has been completed.");
         }
