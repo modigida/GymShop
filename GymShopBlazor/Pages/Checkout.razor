@@ -96,6 +96,7 @@
         NewOrder = await OrderService.CreateOrder(order);
         var orderId = NewOrder.Id;
         Navigation.NavigateTo($"/orderConfirmation/{orderId}");
+        CartService.CartItems.Clear();
     }
     private async Task Login()
     {
