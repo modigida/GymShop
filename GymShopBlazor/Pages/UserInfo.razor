@@ -1,11 +1,13 @@
 ﻿@page "/user"
 @using GymShopBlazor.ApiService
 @using GymShopBlazor.AuthService
+@using GymShopBlazor.Helpers
 @using GymShopBlazor.Models
 @using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserService UserService
+@inject OrderService OrderService
 
 <head>
     <link href="css/userstyling.css" rel="stylesheet" />
@@ -70,17 +72,95 @@
 
 
         <button class="btn btn-primary" disabled="@(!IsUpdated)"
-                style="background-color: @(IsUpdated ? "black" : "gray"); color: white;" @onclick="UpdateUserInfo">
+        style="background-color: @(IsUpdated ? "black" : "gray"); color: white;" @onclick="UpdateUserInfo">
             Spara
         </button>
-
         <button @onclick="Logout" class="btn btn-primary">Logga ut</button>
+
+        <table class="table fixed-table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th></th>
+                    <th>Datum</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Orders)
+                {
+                    <tr @onclick="() => OpenModal(order)" style="cursor: pointer;">
+                        <td>@order.Id</td>
+                        <td></td>
+                        <td>@order.PurchaseDate</td>
+                        <td>@Translations.GetTranslatedOrderStatus(order.OrderStatus.Name)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="mb-3">
+            <label class="form-label">Totalt ordervärde: <a>@TotalOrderValue SEK</a></label>
+        </div>
+
+        <div class="modal fade @(isModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Orderinformation</h5>
+                        <button type="button" class="close" @onclick="CloseModal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @if (selectedOrder != null)
+                        {
+                            <div class="form-group">
+                                <label><strong>Order Id:</strong> @selectedOrder.Id</label>
+                            </div>
+
+                            <div class="form-group">
+                                <label><strong>Orderstatus:</strong> @Translations.GetTranslatedOrderStatus(selectedOrder.OrderStatus.Name)</label>
+                            </div>
+
+                            <div class="form-group">
+                                <label><strong>Datum:</strong> @selectedOrder.PurchaseDate</label>
+                            </div>
+
+                            <div class="form-group">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Produkt</th>
+                                            <th>Pris</th>
+                                            <th>Antal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var product in selectedOrder.OrderProducts)
+                                        {
+                                            <tr>
+                                                <td>@product.ProductName</td>
+                                                <td>@product.CurrentPrice.ToString() SEK</td>
+                                                <td>@product.Quantity</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="form-group">
+                                <label><strong>Totalpris:</strong> @selectedOrder.TotalPrice SEK</label>
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseModal">Stäng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    @if (IsOrdersShown)
-    {
-
-    }
 }
 else
 {
@@ -89,8 +169,11 @@ else
 
 @code {
     private UserResponse? currentUser { get; set; }
+    private List<OrderResponse> Orders { get; set; } = new();
+    private OrderResponse selectedOrder { get; set; }
+    private double TotalOrderValue = 0.0;
     private bool IsUpdated = false;
-    private bool IsOrdersShown = false;
+    private bool isModalOpen = false;
     private UserCreate UpdatedUser { get; set; } = new();
     private bool showSuccessMessage = false;
     private bool showErrorMessage = false;
@@ -110,9 +193,18 @@ else
             }
         }
 
+        Orders = await OrderService.GetOrdersByUserEmail(currentUser.Email);
+        GetTotalOrderValue();
         StateHasChanged();
     }
 
+    private void GetTotalOrderValue()
+    {
+        foreach (var order in Orders)
+        {
+            TotalOrderValue += order.TotalPrice;
+        }
+    }
     private void SetUpdated()
     {
         IsUpdated = true;
@@ -166,14 +258,9 @@ else
         await Task.Delay(2500);
         showSuccessMessage = false;
         showErrorMessage = false;
-    
+
         await InvokeAsync(StateHasChanged);
         return returnedIsUpdated;
-    }
-
-    private async Task ShowOrders()
-    {
-
     }
 
     private async Task Logout()
@@ -186,5 +273,23 @@ else
         }
 
         Navigation.NavigateTo("/", forceLoad: true);
+    }
+    private void OpenModal(OrderResponse order)
+    {
+        selectedOrder = new OrderResponse
+            {
+                Id = order.Id,
+                User = order.User,
+                PurchaseDate = order.PurchaseDate,
+                OrderStatus = order.OrderStatus,
+                TotalPrice = order.TotalPrice,
+                OrderProducts = order.OrderProducts
+            };
+        isModalOpen = true;
+    }
+    private void CloseModal()
+    {
+        isModalOpen = false;
+        selectedOrder = null;
     }
 }
