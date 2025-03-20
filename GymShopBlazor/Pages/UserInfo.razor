@@ -71,8 +71,8 @@
         </div>
 
 
-        <button class="btn btn-primary" disabled="@(!IsUpdated)"
-        style="background-color: @(IsUpdated ? "black" : "gray"); color: white;" @onclick="UpdateUserInfo">
+        <button class="btn btn-primary" disabled="@(!IsUpdated || string.IsNullOrEmpty(UpdatedUser.Password))"
+                style="background-color: @((IsUpdated && !string.IsNullOrEmpty(UpdatedUser.Password)) ? "black" : "gray"); color: white;" @onclick="UpdateUserInfo">
             Spara
         </button>
         <button @onclick="Logout" class="btn btn-primary">Logga ut</button>
@@ -174,7 +174,7 @@ else
     private double TotalOrderValue = 0.0;
     private bool IsUpdated = false;
     private bool isModalOpen = false;
-    private UserCreate UpdatedUser { get; set; } = new();
+    private UserCreate UpdatedUser { get; set; } = new UserCreate { Password = "" };
     private bool showSuccessMessage = false;
     private bool showErrorMessage = false;
 
@@ -209,8 +209,20 @@ else
     {
         IsUpdated = true;
     }
+   
     private async Task UpdateUserInfo()
     {
+        var IsCorrectPassword = await UserService.ValidatePassword(currentUser.Email, UpdatedUser.Password);
+        if (IsCorrectPassword == false)
+        {
+            showErrorMessage = true;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(2500);
+            showErrorMessage = false;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
         var roles = await UserService.GetAllRoles();
 
         UpdatedUser.FirstName = currentUser.FirstName;
