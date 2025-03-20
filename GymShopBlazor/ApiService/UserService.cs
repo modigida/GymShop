@@ -114,12 +114,9 @@ public class UserService(HttpClient httpClient)
             {
                 return true;
             }
-            else
-            {
-                var errorMessage = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Fel vid borttagning av användare: {response.StatusCode} - {errorMessage}");
-                return false;
-            }
+            var errorMessage = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Fel vid borttagning av användare: {response.StatusCode} - {errorMessage}");
+            return false;
         }
         catch (Exception ex)
         {

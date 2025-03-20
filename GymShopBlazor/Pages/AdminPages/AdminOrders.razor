@@ -73,25 +73,25 @@
                     <div class="form-group">
                         <label><strong>Datum:</strong> @selectedOrder.PurchaseDate</label>
                     </div>
-                    
+
                     <div class="form-group">
                         <table class="table table-sm">
                             <thead>
-                            <tr>
-                                <th>Produkt</th>
-                                <th>Pris</th>
-                                <th>Antal</th>
-                            </tr>
+                                <tr>
+                                    <th>Produkt</th>
+                                    <th>Pris</th>
+                                    <th>Antal</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            @foreach (var product in selectedOrder.OrderProducts)
-                            {
-                                <tr>
-                                    <td>@product.ProductName</td>
-                                    <td>@product.CurrentPrice.ToString() SEK</td>
-                                    <td>@product.Quantity</td>
-                                </tr>
-                            }
+                                @foreach (var product in selectedOrder.OrderProducts)
+                                {
+                                    <tr>
+                                        <td>@product.ProductName</td>
+                                        <td>@product.CurrentPrice.ToString() SEK</td>
+                                        <td>@product.Quantity</td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -101,10 +101,37 @@
                     </div>
                 }
             </div>
+
+            @if (!string.IsNullOrEmpty(message))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @message
+                </div>
+            }
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" @onclick="CloseModal">Stäng</button>
                 <button type="button" class="btn btn-success" @onclick="UpdateOrder">Uppdatera</button>
-                <button type="button" class="btn btn-danger" @onclick="DeleteOrder">Radera order</button>
+                <button type="button" class="btn btn-danger" @onclick="ConfirmDelete">Radera order</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade @(isDeleteModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bekräfta borttagning</h5>
+                <button type="button" class="close" @onclick="CloseDeleteModal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Vill du verkligen radera order: <strong>@selectedOrder?.Id</strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" @onclick="DeleteOrder">Ja, radera</button>
+                <button class="btn btn-secondary" @onclick="CloseDeleteModal">Stäng</button>
             </div>
         </div>
     </div>
@@ -114,9 +141,10 @@
     private List<OrderResponse> orders { get; set; } = new();
     private OrderResponse selectedOrder { get; set; }
     private bool isModalOpen = false;
-
+    private bool isDeleteModalOpen = false;
     private List<OrderResponse> filteredOrders = new List<OrderResponse>();
     private string searchQuery = "";
+    private string message = "";
 
     private List<OrderStatus> orderStatuses = new List<OrderStatus>();
 
@@ -152,20 +180,59 @@
         isModalOpen = false;
         selectedOrder = null;
     }
-
-    private void UpdateOrder()
+    private void CloseDeleteModal()
+    {
+        isDeleteModalOpen = false;
+    }
+    private async Task ConfirmDelete()
     {
         if (selectedOrder.OrderStatus.Id == 3)
         {
-            // Message saying Completed order cant be updated
+            message = "Du kan inte ta bort ordrar som är markerade som \"Avslutad\"";
+            StateHasChanged();
+            await Task.Delay(2500);
+            message = "";
+            StateHasChanged();
+            return;
+        }
+
+        isDeleteModalOpen = true;
+    }
+
+    private async Task UpdateOrder()
+    {
+        if (selectedOrder.OrderStatus.Id == 3)
+        {
+            message = "Du kan inte uppdatera ordrar som är markerade som \"Avslutad\"";
+            StateHasChanged();
+            await Task.Delay(2500);
+            message = "";
+            StateHasChanged();
+            return;
         }
     }
-    private void DeleteOrder()
+    private async Task DeleteOrder()
     {
-        if (selectedOrder.OrderStatus.Id == 3)
+        CloseDeleteModal();
+        if (await OrderService.DeleteOrder(selectedOrder.Id))
         {
-            // Message saying Completed order cant be deleted
+            orders = orders.Where(o => o.Id != selectedOrder.Id).ToList();
+            filteredOrders = new List<OrderResponse>(orders);
+            StateHasChanged();
+            message = "Ordern har raderats";
+            StateHasChanged();
+            await Task.Delay(2500);
+            message = "";
+            StateHasChanged();
+            CloseModal();
+        }
+        else
+        {
+            message = "Kunde inte radera ordern"; 
+            StateHasChanged();
+            await Task.Delay(2500);
+            message = "";
+            StateHasChanged();
         }
     }   
-
 }
