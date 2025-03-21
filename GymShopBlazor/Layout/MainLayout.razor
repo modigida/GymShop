@@ -19,27 +19,35 @@
 
     <div class="brand">
         <NavLink href="/">
-            <img src="textlogo.png" alt="Logga" />
+            <img src="textlogo.png" alt="Företagslogga" />
         </NavLink>
     </div>
 
     <div class="top-navbar-icons">
         @if (IsOffline)
         {
-            <NavLink href="/login" class="user-icon">👤</NavLink>
+            <NavLink href="/login" class="user-icon">
+                <img src="user-round.svg" alt="Logga in" />
+            </NavLink>
 
         }
         else
         {
-            <NavLink href="/user" class="user-icon">👤</NavLink>
+            <NavLink href="/user" class="user-icon">
+                <img src="user-round-cog.svg" alt="Användarinformation" />
+            </NavLink>
         }
         @if (IsAdmin)
         {
-            <NavLink href="/admin" class="admin-icon">⚙️</NavLink>
+            <NavLink href="/admin" class="admin-icon">
+                <img src="folder-cog.svg" alt="Adminsidor" />
+            </NavLink>
         }
         else
         {
-            <NavLink href="/cart" class="cart-icons">🛒</NavLink>
+            <NavLink href="/cart" class="cart-icons">
+                <img src="shopping-cart.svg" alt="Varukorg" />
+            </NavLink>
         }
     </div>
 </div>

@@ -15,6 +15,7 @@
     gap: 20px;
 }
 
+
 .brand {
     position: absolute;
     left: 50%;
@@ -37,7 +38,6 @@
 .navbar .top-navbar-icons .user-icon,
 .navbar .top-navbar-icons .cart-icons,
 .navbar .top-navbar-icons .admin-icon {
-    font-size: 2rem;
     padding: 10px;
     text-decoration: none;
     margin-left: 15px;
@@ -47,7 +47,6 @@
     .navbar .top-navbar-icons .user-icon:hover,
     .navbar .top-navbar-icons .cart-icons:hover,
     .navbar .top-navbar-icons .admin-icon:hover {
-        color: #b32121;
         text-decoration: none;
     }
 
