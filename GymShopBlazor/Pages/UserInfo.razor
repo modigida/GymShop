@@ -163,7 +163,52 @@
                 </div>
             </div>
         }
+        else
+        {
+            <br />
+            <br />
+        }
+        <button @onclick="ConfirmDelete" class="btn btn-primary">Radera konto</button>
 
+    </div>
+
+    <div class="modal fade @(IsDeleteModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bekräfta kontoradering</h5>
+                    <button type="button" class="close" @onclick="CloseDeleteModal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Vill du verkligen radera ditt konto? <br/>Din orderinformation kommer försvinna.</p>
+
+                    <div class="form-group">
+                        <label for="password">Bekräfta med ditt lösenord:</label>
+                        <input type="password" id="password" class="form-control" @bind="password" placeholder="Ange ditt lösenord" />
+                    </div>
+                </div>
+
+                @if (showSuccessMessage)
+                {
+                    <div class="alert alert-success" role="alert">
+                        @UpdatedMessage
+                    </div>
+                }
+                else if (showErrorMessage)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @UpdatedMessage
+                    </div>
+                }
+
+                <div class="modal-footer">
+                    <button class="btn btn-danger" @onclick="DeleteUser" disabled="@string.IsNullOrEmpty(password)">Ja, radera</button>
+                    <button class="btn btn-secondary" @onclick="CloseDeleteModal">Stäng</button>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
@@ -174,11 +219,13 @@
     private double TotalOrderValue = 0.0;
     private bool IsUpdated = false;
     private bool isModalOpen = false;
+    private bool IsDeleteModalOpen = false;
     private bool IsAdmin = false;
     private UserCreate UpdatedUser { get; set; } = new UserCreate { Password = "" };
     private bool showSuccessMessage = false;
     private bool showErrorMessage = false;
     private string UpdatedMessage = "";
+    private string password;
 
     protected override async Task OnInitializedAsync()
     {
@@ -212,6 +259,33 @@
     private void SetUpdated()
     {
         IsUpdated = true;
+    }
+
+    private void ConfirmDelete()
+    {
+        IsDeleteModalOpen = true;
+    }
+    private async Task DeleteUser()
+    {
+        var isPasswordValid = await UserService.ValidatePassword(currentUser.Email, password);
+
+        if (!isPasswordValid)
+        {
+            showErrorMessage = true;
+            UpdatedMessage = "Fel lösenord.";
+            StateHasChanged();
+            await Task.Delay(2500);
+            showErrorMessage = false;
+            UpdatedMessage = "";
+            return;
+        }
+
+        await UserService.DeleteUser(currentUser.Id);
+        await Logout();
+    }
+    private void CloseDeleteModal()
+    {
+        IsDeleteModalOpen = false;
     }
    
     private async Task UpdateUserInfo()
