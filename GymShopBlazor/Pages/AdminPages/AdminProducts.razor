@@ -11,6 +11,7 @@
 </head>
 
 <h3>Produkter</h3>
+<button @onclick="OpenAddProductModal">Skapa ny produkt</button>
 
 <div class="form-group">
     <input type="text" class="form-control" placeholder="Sök efter produkt..." @bind="searchQuery" @oninput="FilterProducts" />
@@ -105,7 +106,7 @@
                     </div>
                 }
             </div>
-            
+
             @if (!string.IsNullOrEmpty(errorMessage))
             {
                 <div class="alert alert-danger" role="alert">
@@ -120,8 +121,36 @@
             }
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" @onclick="CloseModal">Stäng</button>
-                <button type="button" class="btn btn-success" @onclick="UpdateProduct">Spara</button>
-                <button type="button" class="btn btn-danger" @onclick="DeleteProduct">Radera produkt</button>
+                @if (selectedProduct?.Id != 0)
+                {
+                    <button type="button" class="btn btn-success" @onclick="UpdateProduct">Spara</button>
+                    <button type="button" class="btn btn-danger" @onclick="ConfirmDelete">Radera produkt</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-success" @onclick="CreateProduct">Spara</button>
+                }
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade @(IsDeleteModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bekräfta borttagning</h5>
+                <button type="button" class="close" @onclick="CloseDeleteModal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Vill du verkligen radera order: <strong>@selectedProduct?.Id</strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" @onclick="DeleteProduct">Ja, radera</button>
+                <button class="btn btn-secondary" @onclick="CloseDeleteModal">Stäng</button>
             </div>
         </div>
     </div>
@@ -131,6 +160,7 @@
     private List<Product> products = new List<Product>();
     private Product selectedProduct;
     private bool isModalOpen = false;
+    private bool IsDeleteModalOpen = false;
     private string errorMessage = "";
     private string successMessage = "";
 
@@ -177,6 +207,53 @@
         isModalOpen = false;
         selectedProduct = null;
     }
+    private void CloseDeleteModal()
+    {
+        IsDeleteModalOpen = false;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        IsDeleteModalOpen = true;
+    }
+
+    private async Task OpenAddProductModal()
+    {
+        selectedProduct = new Product
+        {
+            Id = 0,
+            Name = "Ny produkt",
+            Category = categories.FirstOrDefault(),
+            ProductStatus = productStatuses.FirstOrDefault(),
+            Balance = 0,
+            Price = 0,
+            Description = string.Empty,
+            ImageUrl = string.Empty
+        };
+        isModalOpen = true;
+    }
+
+    private async Task CreateProduct()
+    {
+        var responseProductCreate = await ProductService.CreateProduct(selectedProduct);
+        if (responseProductCreate.Id != 0)
+        {
+            products.Add(responseProductCreate);
+            filteredProducts = new List<Product>(products);
+            successMessage = "Produkten har skapats";
+            StateHasChanged();
+            await Task.Delay(2500);
+            successMessage = "";
+        }
+        else
+        {
+            errorMessage = "Fel vid skapande av produkt";
+            StateHasChanged();
+            await Task.Delay(2500);
+            errorMessage = "";
+        }
+        CloseModal();
+    }
     private async Task UpdateProduct()
     {
         var responseProductUpdate = await ProductService.UpdateProduct(selectedProduct);
@@ -205,24 +282,23 @@
     }
     private async Task DeleteProduct()
     {
-        return;
-        // CloseDeleteModal();
-        if (await ProductService.DeleteProduct(selectedProduct.Id))
-        {
-            products = products.Where(p => p.Id != selectedProduct.Id).ToList();
-            filteredProducts = new List<Product>(products);
-            StateHasChanged();
-            // successMessage = "Produkten har raderats";
-            // await Task.Delay(2500);
-            // successMessage = "";
-            CloseModal();
-        }
-        else
-        {
-            // errorMessage = "Kunde inte radera produkten";
-            // await Task.Delay(2500);
-            // errorMessage = "";
-        }
+        CloseDeleteModal();
+        // if (await ProductService.DeleteProduct(selectedProduct.Id))
+        // {
+        //     products = products.Where(p => p.Id != selectedProduct.Id).ToList();
+        //     filteredProducts = new List<Product>(products);
+        //     StateHasChanged();
+        //     successMessage = "Produkten har raderats";
+        //     await Task.Delay(2500);
+        //     successMessage = "";
+        //     CloseModal();
+        // }
+        // else
+        // {
+        //     errorMessage = "Kunde inte radera produkten";
+        //     await Task.Delay(2500);
+        //     errorMessage = "";
+        // }
     }
 
 }

@@ -45,6 +45,24 @@ public class ProductService(HttpClient httpClient)
         }
     }
 
+    public async Task<Product> CreateProduct(Product product)
+    {
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync("https://localhost:7097/api/Products", product);
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"CreateOrder failed: {errorMessage}");
+                return new Product();
+            }
+            return await response.Content.ReadFromJsonAsync<Product>();
+        }
+        catch
+        {
+            return new Product();
+        }
+    }
     public async Task<Product> UpdateProduct(Product product)
     {
         try
