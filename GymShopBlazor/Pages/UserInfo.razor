@@ -77,94 +77,94 @@
         </button>
         <button @onclick="Logout" class="btn btn-primary">Logga ut</button>
 
-        <table class="table fixed-table">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th></th>
-                    <th>Datum</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var order in Orders)
-                {
-                    <tr @onclick="() => OpenModal(order)" style="cursor: pointer;">
-                        <td>@order.Id</td>
-                        <td></td>
-                        <td>@order.PurchaseDate</td>
-                        <td>@Translations.GetTranslatedOrderStatus(order.OrderStatus.Name)</td>
+        @if (!IsAdmin)
+        {
+            <table class="table fixed-table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th></th>
+                        <th>Datum</th>
+                        <th>Status</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var order in Orders)
+                    {
+                        <tr @onclick="() => OpenModal(order)" style="cursor: pointer;">
+                            <td>@order.Id</td>
+                            <td></td>
+                            <td>@order.PurchaseDate</td>
+                            <td>@Translations.GetTranslatedOrderStatus(order.OrderStatus.Name)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
 
-        <div class="mb-3">
-            <label class="form-label">Totalt ordervärde: <a>@TotalOrderValue SEK</a></label>
-        </div>
+            <div class="mb-3">
+                <label class="form-label">Totalt ordervärde: <a>@TotalOrderValue SEK</a></label>
+            </div>
 
-        <div class="modal fade @(isModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Orderinformation</h5>
-                        <button type="button" class="close" @onclick="CloseModal">
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        @if (selectedOrder != null)
-                        {
-                            <div class="form-group">
-                                <label><strong>Order Id:</strong> @selectedOrder.Id</label>
-                            </div>
+            <div class="modal fade @(isModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Orderinformation</h5>
+                            <button type="button" class="close" @onclick="CloseModal">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @if (selectedOrder != null)
+                            {
+                                <div class="form-group">
+                                    <label><strong>Order Id:</strong> @selectedOrder.Id</label>
+                                </div>
 
-                            <div class="form-group">
-                                <label><strong>Orderstatus:</strong> @Translations.GetTranslatedOrderStatus(selectedOrder.OrderStatus.Name)</label>
-                            </div>
+                                <div class="form-group">
+                                    <label><strong>Orderstatus:</strong> @Translations.GetTranslatedOrderStatus(selectedOrder.OrderStatus.Name)</label>
+                                </div>
 
-                            <div class="form-group">
-                                <label><strong>Datum:</strong> @selectedOrder.PurchaseDate</label>
-                            </div>
+                                <div class="form-group">
+                                    <label><strong>Datum:</strong> @selectedOrder.PurchaseDate</label>
+                                </div>
 
-                            <div class="form-group">
-                                <table class="table table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Produkt</th>
-                                            <th>Pris</th>
-                                            <th>Antal</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var product in selectedOrder.OrderProducts)
-                                        {
+                                <div class="form-group">
+                                    <table class="table table-sm">
+                                        <thead>
                                             <tr>
-                                                <td>@product.ProductName</td>
-                                                <td>@product.CurrentPrice.ToString() SEK</td>
-                                                <td>@product.Quantity</td>
+                                                <th>Produkt</th>
+                                                <th>Pris</th>
+                                                <th>Antal</th>
                                             </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var product in selectedOrder.OrderProducts)
+                                            {
+                                                <tr>
+                                                    <td>@product.ProductName</td>
+                                                    <td>@product.CurrentPrice.ToString() SEK</td>
+                                                    <td>@product.Quantity</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
 
-                            <div class="form-group">
-                                <label><strong>Totalpris:</strong> @selectedOrder.TotalPrice SEK</label>
-                            </div>
-                        }
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @onclick="CloseModal">Stäng</button>
+                                <div class="form-group">
+                                    <label><strong>Totalpris:</strong> @selectedOrder.TotalPrice SEK</label>
+                                </div>
+                            }
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Stäng</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
+
     </div>
-}
-else
-{
-    <p>Laddar användarinformation...</p>
 }
 
 @code {
@@ -174,6 +174,7 @@ else
     private double TotalOrderValue = 0.0;
     private bool IsUpdated = false;
     private bool isModalOpen = false;
+    private bool IsAdmin = false;
     private UserCreate UpdatedUser { get; set; } = new UserCreate { Password = "" };
     private bool showSuccessMessage = false;
     private bool showErrorMessage = false;
@@ -192,6 +193,8 @@ else
             {
                 currentUser = await UserService.GetUserById(userId);
             }
+
+            IsAdmin = user.Identity.IsAuthenticated && user.IsInRole("Admin");
         }
 
         Orders = await OrderService.GetOrdersByUserEmail(currentUser.Email);
