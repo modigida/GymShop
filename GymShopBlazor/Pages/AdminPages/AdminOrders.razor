@@ -102,10 +102,10 @@
                 }
             </div>
 
-            @if (!string.IsNullOrEmpty(message))
+            @if (!string.IsNullOrEmpty(errorMessage))
             {
                 <div class="alert alert-danger" role="alert">
-                    @message
+                    @errorMessage
                 </div>
             }
             @if (!string.IsNullOrEmpty(successMessage))
@@ -151,7 +151,7 @@
     private bool isDeleteModalOpen = false;
     private List<OrderResponse> filteredOrders = new List<OrderResponse>();
     private string searchQuery = "";
-    private string message = "";
+    private string errorMessage = "";
     private string successMessage = "";
 
     private List<OrderStatus> orderStatuses = new List<OrderStatus>();
@@ -197,9 +197,9 @@
     {
         if (selectedOrder.OrderStatus.Id == 3)
         {
-            message = "Du kan inte ta bort ordrar som är markerade som \"Avslutad\"";
+            errorMessage = "Du kan inte ta bort ordrar som är markerade som \"Avslutad\"";
             await Task.Delay(2500);
-            message = "";
+            errorMessage = "";
             return;
         }
 
@@ -210,9 +210,9 @@
     {
         if (selectedOrder.OrderStatus.Id == 3)
         {
-            message = "Du kan inte uppdatera ordrar som är markerade som \"Avslutad\"";
+            errorMessage = "Du kan inte uppdatera ordrar som är markerade som \"Avslutad\"";
             await Task.Delay(2500);
-            message = "";
+            errorMessage = "";
             return;
         }
         var newStatus = orderStatuses.FirstOrDefault(s => s.Id == selectedStatusId);
@@ -253,16 +253,16 @@
             orders = orders.Where(o => o.Id != selectedOrder.Id).ToList();
             filteredOrders = new List<OrderResponse>(orders);
             StateHasChanged();
-            message = "Ordern har raderats";
+            successMessage = "Ordern har raderats";
             await Task.Delay(2500);
-            message = "";
+            successMessage = "";
             CloseModal();
         }
         else
         {
-            message = "Kunde inte radera ordern"; 
+            errorMessage = "Kunde inte radera ordern"; 
             await Task.Delay(2500);
-            message = "";
+            errorMessage = "";
         }
     }   
 }

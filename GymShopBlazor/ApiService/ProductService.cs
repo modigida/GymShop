@@ -45,6 +45,45 @@ public class ProductService(HttpClient httpClient)
         }
     }
 
+    public async Task<Product> UpdateProduct(Product product)
+    {
+        try
+        {
+            var response = await httpClient.PutAsJsonAsync($"https://localhost:7097/api/Products/{product.Id}", product);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"UpdateOrder failed: {errorMessage}");
+                return null;
+            }
+            return await response.Content.ReadFromJsonAsync<Product>();
+        }
+        catch
+        {
+            return new Product();
+        }
+    }
+
+    public async Task<bool> DeleteProduct(int id)
+    {
+        try
+        {
+            var response = await httpClient.DeleteAsync($"https://localhost:7097/api/Products/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            var errorMessage = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Fel vid borttagning: {response.StatusCode} - {errorMessage}");
+            return false;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public async Task<List<Category>> GetCategories()
     {
         try

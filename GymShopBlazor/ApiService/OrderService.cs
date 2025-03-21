@@ -102,7 +102,7 @@ namespace GymShopBlazor.ApiService
                     return true;
                 }
                 var errorMessage = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Fel vid borttagning av användare: {response.StatusCode} - {errorMessage}");
+                Console.WriteLine($"Fel vid borttagning: {response.StatusCode} - {errorMessage}");
                 return false;
             }
             catch
