@@ -56,7 +56,7 @@
                 {
                     <div class="form-group">
                         <div>
-                            @if (selectedProduct.Id != 0)
+                            @if (selectedProduct.Id != 0 && !string.IsNullOrEmpty(selectedProduct.ImageUrl))
                             {
                                 <img src="@selectedProduct.ImageUrl" alt="Produktbild" class="img-fluid" style="max-width: 200px; height: auto;" />
                             }
@@ -293,22 +293,22 @@
     private async Task DeleteProduct()
     {
         CloseDeleteModal();
-        // if (await ProductService.DeleteProduct(selectedProduct.Id))
-        // {
-        //     products = products.Where(p => p.Id != selectedProduct.Id).ToList();
-        //     filteredProducts = new List<Product>(products);
-        //     StateHasChanged();
-        //     successMessage = "Produkten har raderats";
-        //     await Task.Delay(2500);
-        //     successMessage = "";
-        //     CloseModal();
-        // }
-        // else
-        // {
-        //     errorMessage = "Kunde inte radera produkten";
-        //     await Task.Delay(2500);
-        //     errorMessage = "";
-        // }
+        if (await ProductService.DeleteProduct(selectedProduct.Id))
+        {
+            products = products.Where(p => p.Id != selectedProduct.Id).ToList();
+            filteredProducts = new List<Product>(products);
+            StateHasChanged();
+            successMessage = "Produkten har raderats";
+            await Task.Delay(2500);
+            successMessage = "";
+            CloseModal();
+        }
+        else
+        {
+            errorMessage = "Kunde inte radera produkten";
+            await Task.Delay(2500);
+            errorMessage = "";
+        }
     }
 
 }
