@@ -35,6 +35,33 @@
     text-decoration: none;
 }
 
+.cart-icons {
+    display: flex;
+    align-items: flex-start;
+    text-decoration: none;
+}
+
+.cart-icon {
+    margin-right: 5px;
+}
+
+.cart-count {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.cart-icons .cart-count {
+    text-decoration: none;
+    color: white;
+}
+
+    .cart-icons .cart-count:hover {
+        color: white;
+        text-decoration: none;
+    }
+
+
 .navbar .top-navbar-icons .user-icon,
 .navbar .top-navbar-icons .cart-icons,
 .navbar .top-navbar-icons .admin-icon {

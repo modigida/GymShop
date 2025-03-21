@@ -4,6 +4,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject AuthenticationStateNotifier AuthenticationStateNotifier
 @inject NavigationManager Navigation
+@inject CartService CartService
 
 <head>
     <link href="css/navbar.css" rel="stylesheet" />
@@ -46,7 +47,8 @@
         else
         {
             <NavLink href="/cart" class="cart-icons">
-                <img src="shopping-cart.svg" alt="Varukorg" />
+                <img src="shopping-cart.svg" alt="Varukorg" class="cart-icon" />
+                <a class="cart-count">@CartService.CartItems.Count</a>
             </NavLink>
         }
     </div>
