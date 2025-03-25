@@ -69,6 +69,7 @@
     text-decoration: none;
     margin-left: 15px;
     margin-right: 15px;
+    cursor: pointer;
 }
 
     .navbar .top-navbar-icons .user-icon:hover,
@@ -80,6 +81,7 @@
 .navbar .top-nav-links a {
     color: white;
     text-decoration: none;
+    cursor: pointer;
 }
 
     .navbar .top-nav-links a:hover,
@@ -87,6 +89,7 @@
     .navbar .top-nav-links a:focus {
         color: white;
         text-decoration: none;
+        cursor: pointer;
     }
 
     .navbar .top-nav-links a:first-child {

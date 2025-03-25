@@ -40,9 +40,9 @@
         }
         @if (IsAdmin)
         {
-            <NavLink href="/admin" class="admin-icon">
+            <a class="admin-icon" @onclick="NavigateToAdmin">
                 <img src="folder-cog.svg" alt="Adminsidor" />
-            </NavLink>
+            </a>
         }
         else
         {
@@ -70,6 +70,19 @@
         await UpdateUserStatusAsync();
         AuthenticationStateNotifier.StateChanged += OnStateChanged;
         CartService.OnCartUpdated += HandleCartUpdated;
+    }
+    private void NavigateToAdmin()
+    {
+        var currentUri = new Uri(Navigation.Uri).AbsolutePath.Trim('/');
+
+        if (!currentUri.StartsWith("admin"))
+        {
+            Navigation.NavigateTo("/admin/products", forceLoad: true);
+        }
+        else
+        {
+            Navigation.NavigateTo(currentUri, forceLoad: false);
+        }
     }
 
     private void HandleCartUpdated()
