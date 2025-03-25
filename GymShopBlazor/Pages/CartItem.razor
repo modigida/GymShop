@@ -1,4 +1,6 @@
 ﻿@using GymShopBlazor.Models
+@inject CartService CartService
+
 <div class="cart-item">
     <img src="@Item.ImageUrl" alt="@Item.ProductName" class="product-image" />
 
@@ -7,9 +9,9 @@
         <p>@Item.CurrentPrice.ToString() SEK</p>
 
         <div class="quantity-controls">
-            <button class="btn btn-outline-secondary" @onclick="DecreaseQuantity">-</button>
+            <button class="btn btn-outline-secondary" @onclick="() => CartService.DecreaseQuantity(Item)">-</button>
             <span class="quantity">@Item.Quantity</span>
-            <button class="btn btn-outline-secondary" @onclick="IncreaseQuantity">+</button>
+            <button class="btn btn-outline-secondary" @onclick="() => CartService.IncreaseQuantity(Item)">+</button>
         </div>
     </div>
 </div>
@@ -18,23 +20,4 @@
     [Parameter] public OrderProduct Item { get; set; }
     [Parameter] public EventCallback<int> OnQuantityChanged { get; set; }
     [Parameter] public EventCallback<OrderProduct> OnRemove { get; set; }
-
-    private async Task IncreaseQuantity()
-    {
-        Item.Quantity++;
-        await OnQuantityChanged.InvokeAsync();
-    }
-
-    private async Task DecreaseQuantity()
-    {
-        if (Item.Quantity > 1)
-        {
-            Item.Quantity--;
-            await OnQuantityChanged.InvokeAsync();
-        }
-        else
-        {
-            await OnRemove.InvokeAsync(Item);
-        }
-    }
 }

@@ -36,17 +36,54 @@ public class CartService
             return;
         }
 
-        OnCartUpdated?.Invoke();
+        NotifyCartUpdated();
     }
 
     public void RemoveFromCart(OrderProduct item)
     {
-        CartItems.Remove(item);
-        OnCartUpdated?.Invoke();
+        var existingItem = CartItems.FirstOrDefault(p => p.ProductId == item.ProductId);
+        if (existingItem != null)
+        {
+            existingItem.Quantity--;
+            if (existingItem.Quantity <= 0)
+            {
+                CartItems.Remove(existingItem);
+            }
+        }
+
+        NotifyCartUpdated();
+    }
+
+    public void IncreaseQuantity(OrderProduct item)
+    {
+        var existingItem = CartItems.FirstOrDefault(p => p.ProductId == item.ProductId);
+        if (existingItem != null && existingItem.Quantity < 99)
+        {
+            existingItem.Quantity++;
+            NotifyCartUpdated();
+        }
+    }
+    public void DecreaseQuantity(OrderProduct item)
+    {
+        var existingItem = CartItems.FirstOrDefault(p => p.ProductId == item.ProductId);
+        if (existingItem != null && existingItem.Quantity > 1)
+        {
+            existingItem.Quantity--;
+        }
+        else
+        {
+            CartItems.Remove(existingItem);
+        }
+        NotifyCartUpdated();
     }
 
     public double GetTotalPrice()
     {
         return CartItems.Sum(p => p.CurrentPrice * p.Quantity);
+    }
+
+    private void NotifyCartUpdated()
+    {
+        OnCartUpdated?.Invoke();
     }
 }

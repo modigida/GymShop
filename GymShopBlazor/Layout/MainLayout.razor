@@ -48,7 +48,7 @@
         {
             <NavLink href="/cart" class="cart-icons">
                 <img src="shopping-cart.svg" alt="Varukorg" class="cart-icon" />
-                <a class="cart-count">@CartService.CartItems.Count</a>
+                <a class="cart-count">@CartService.CartItems.Sum(i => i.Quantity)</a>
             </NavLink>
         }
     </div>
@@ -69,6 +69,18 @@
     {
         await UpdateUserStatusAsync();
         AuthenticationStateNotifier.StateChanged += OnStateChanged;
+        CartService.OnCartUpdated += HandleCartUpdated;
+    }
+
+    private void HandleCartUpdated()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        AuthenticationStateNotifier.StateChanged -= OnStateChanged;
+        CartService.OnCartUpdated -= HandleCartUpdated;
     }
     private void OnStateChanged()
     {
@@ -84,10 +96,5 @@
         IsOffline = !user.Identity.IsAuthenticated;
 
         StateHasChanged();
-    }
-
-    public void Dispose()
-    {
-        AuthenticationStateNotifier.StateChanged -= OnStateChanged;
     }
 }
