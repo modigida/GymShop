@@ -140,6 +140,19 @@ public class OrderService(IUnitOfWork unitOfWork) : IOrderService
             await unitOfWork.CompleteAsync();
         }
 
+        foreach (var orderProduct in orderProducts)
+        {
+            var product = await unitOfWork.Products.GetByIdAsync(orderProduct.ProductId);
+            if (product != null)
+            {
+                product.Balance -= orderProduct.Quantity;
+
+                await unitOfWork.Products.Update(product);
+            }
+        }
+
+        await unitOfWork.CompleteAsync();
+
         return new OrderResponseDto
         {
             Id = order.Id,
