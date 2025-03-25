@@ -51,8 +51,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Register Interfaces
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-builder.Services.AddScoped<IGenericRepository<CampaignProduct>, CampaignProductRepository>();
-builder.Services.AddScoped<IGenericRepository<Campaign>, CampaignRepository>();
 builder.Services.AddScoped<IGenericRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderProductRepository, OrderProductRepository>();
@@ -64,8 +62,6 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-builder.Services.AddScoped<IGenericService<CampaignProduct>, CampaignProductService>();
-builder.Services.AddScoped<IGenericService<Campaign>, CampaignService>();
 builder.Services.AddScoped<IGenericService<Category>, CategoryService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IGenericService<OrderProduct>, OrderProductService>();
