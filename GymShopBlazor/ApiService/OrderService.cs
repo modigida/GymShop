@@ -10,7 +10,7 @@ namespace GymShopBlazor.ApiService
         {
             try
             {
-                return await httpClient.GetFromJsonAsync<List<OrderResponse>>("https://localhost:7097/api/Orders")
+                return await httpClient.GetFromJsonAsync<List<OrderResponse>>("api/Orders")
                     ?? new List<OrderResponse>();
             }
             catch
