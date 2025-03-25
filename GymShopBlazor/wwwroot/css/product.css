@@ -1,12 +1,21 @@
-﻿.product-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    align-content: center;
+﻿h3 {
     margin-left: 10%;
     margin-right: 10%;
 }
+.form-group {
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-bottom: 5px;
+}
 
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    margin-left: 10%;
+    margin-right: 10%;
+    justify-content: space-between;
+}
 
 .product-card {
     width: 250px;
@@ -21,7 +30,8 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    margin: 5px;
+    margin-bottom: 5px;
+    margin-top: 5px;
 }
 
 .product-image {
