@@ -10,7 +10,7 @@ public class UserService(HttpClient httpClient)
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync("https://localhost:7097/api/Users/validate", new { Email = email, Password = password });
+            var response = await httpClient.PostAsJsonAsync("api/Users/validate", new { Email = email, Password = password });
             return await response.Content.ReadFromJsonAsync<bool>();
         }
         catch
@@ -18,11 +18,11 @@ public class UserService(HttpClient httpClient)
             return false;
         }
     }
-    public async Task<List<UserResponse?>> GetAll()
+    public async Task<List<UserResponse>> GetAll()
     {
         try
         {
-            return await httpClient.GetFromJsonAsync<List<UserResponse>>("https://localhost:7097/api/Users/customers")
+            return await httpClient.GetFromJsonAsync<List<UserResponse>>("api/Users/customers")
                 ?? new List<UserResponse>();
         }
         catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -34,7 +34,7 @@ public class UserService(HttpClient httpClient)
     {
         try
         {
-            return await httpClient.GetFromJsonAsync<UserResponse>($"https://localhost:7097/api/Users/{id}")
+            return await httpClient.GetFromJsonAsync<UserResponse>($"api/Users/{id}")
                    ?? null;
         }
         catch
@@ -47,7 +47,7 @@ public class UserService(HttpClient httpClient)
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync("https://localhost:7097/api/Users/register", user);
+            var response = await httpClient.PostAsJsonAsync("api/Users/register", user);
 
             if (response.IsSuccessStatusCode)
             {
@@ -65,7 +65,7 @@ public class UserService(HttpClient httpClient)
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync("https://localhost:7097/api/Users/login", user);
+            var response = await httpClient.PostAsJsonAsync("api/Users/login", user);
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
@@ -86,7 +86,7 @@ public class UserService(HttpClient httpClient)
     {
         try
         {
-            var response = await httpClient.PutAsJsonAsync($"https://localhost:7097/api/Users/{userId}", updatedUser);
+            var response = await httpClient.PutAsJsonAsync($"api/Users/{userId}", updatedUser);
 
             if (response.IsSuccessStatusCode)
             {
@@ -108,7 +108,7 @@ public class UserService(HttpClient httpClient)
     {
         try
         {
-            var response = await httpClient.DeleteAsync($"https://localhost:7097/api/Users/{id}");
+            var response = await httpClient.DeleteAsync($"api/Users/{id}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -129,7 +129,7 @@ public class UserService(HttpClient httpClient)
     {
         try
         {
-            return await httpClient.GetFromJsonAsync<List<Role>>("https://localhost:7097/api/Roles")
+            return await httpClient.GetFromJsonAsync<List<Role>>("api/Roles")
                    ?? new List<Role>();
         }
         catch

@@ -9,7 +9,7 @@ public class ProductService(HttpClient httpClient)
     {
         try
         {
-            return await httpClient.GetFromJsonAsync<List<Product>>("https://localhost:7097/api/Products")
+            return await httpClient.GetFromJsonAsync<List<Product>>("api/Products")
                    ?? new List<Product?>();
         }
         catch
@@ -22,7 +22,7 @@ public class ProductService(HttpClient httpClient)
     {
         try
         {
-            return await httpClient.GetFromJsonAsync<Product>($"https://localhost:7097/api/Products/{id}")
+            return await httpClient.GetFromJsonAsync<Product>($"api/Products/{id}")
                    ?? null;
         }
         catch
@@ -36,7 +36,7 @@ public class ProductService(HttpClient httpClient)
         try
         {
             return await httpClient.GetFromJsonAsync<List<Product>>(
-                       $"https://localhost:7097/api/Products/category/{category.Id}")
+                       $"api/Products/category/{category.Id}")
                    ?? new List<Product?>();
         }
         catch
@@ -49,7 +49,7 @@ public class ProductService(HttpClient httpClient)
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync("https://localhost:7097/api/Products", product);
+            var response = await httpClient.PostAsJsonAsync("api/Products", product);
             if (!response.IsSuccessStatusCode)
             {
                 var errorMessage = await response.Content.ReadAsStringAsync();
@@ -67,7 +67,7 @@ public class ProductService(HttpClient httpClient)
     {
         try
         {
-            var response = await httpClient.PutAsJsonAsync($"https://localhost:7097/api/Products/{product.Id}", product);
+            var response = await httpClient.PutAsJsonAsync($"api/Products/{product.Id}", product);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -87,7 +87,7 @@ public class ProductService(HttpClient httpClient)
     {
         try
         {
-            var response = await httpClient.DeleteAsync($"https://localhost:7097/api/Products/{id}");
+            var response = await httpClient.DeleteAsync($"api/Products/{id}");
             if (response.IsSuccessStatusCode)
             {
                 return true;
@@ -106,7 +106,7 @@ public class ProductService(HttpClient httpClient)
     {
         try
         {
-            return await httpClient.GetFromJsonAsync<List<Category>>("https://localhost:7097/api/Categories")
+            return await httpClient.GetFromJsonAsync<List<Category>>("api/Categories")
                    ?? new List<Category>();
         }
         catch
@@ -119,7 +119,7 @@ public class ProductService(HttpClient httpClient)
     {
         try
         {
-            return await httpClient.GetFromJsonAsync<List<ProductStatus>>("https://localhost:7097/api/ProductStatuses")
+            return await httpClient.GetFromJsonAsync<List<ProductStatus>>("api/ProductStatuses")
                    ?? new List<ProductStatus>();
         }
         catch

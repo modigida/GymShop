@@ -23,7 +23,7 @@ namespace GymShopBlazor.ApiService
         {
             try
             {
-                return await httpClient.GetFromJsonAsync<OrderResponse>($"https://localhost:7097/api/Orders/id/{id}")
+                return await httpClient.GetFromJsonAsync<OrderResponse>($"api/Orders/id/{id}")
                        ?? new OrderResponse();
             }
             catch
@@ -35,7 +35,7 @@ namespace GymShopBlazor.ApiService
         {
             try
             {
-                return await httpClient.GetFromJsonAsync<List<OrderResponse>>($"https://localhost:7097/api/Orders/email/{email}")
+                return await httpClient.GetFromJsonAsync<List<OrderResponse>>($"api/Orders/email/{email}")
                        ?? new List<OrderResponse>();
             }
             catch
@@ -48,7 +48,7 @@ namespace GymShopBlazor.ApiService
         {
             try
             {
-                var response = await httpClient.PostAsJsonAsync("https://localhost:7097/api/Orders", order);
+                var response = await httpClient.PostAsJsonAsync("api/Orders", order);
                 return await response.Content.ReadFromJsonAsync<OrderResponse>();
             }
             catch
@@ -61,7 +61,7 @@ namespace GymShopBlazor.ApiService
         {
             try
             {
-                return await httpClient.GetFromJsonAsync<List<OrderStatus>>("https://localhost:7097/api/OrderStatuses")
+                return await httpClient.GetFromJsonAsync<List<OrderStatus>>("api/OrderStatuses")
                        ?? new List<OrderStatus>();
             }
             catch
@@ -75,7 +75,7 @@ namespace GymShopBlazor.ApiService
             try
             {
                 updatedOrder.User = await userService.GetUserById(updatedOrder.User.Id);
-                var response = await httpClient.PutAsJsonAsync($"https://localhost:7097/api/Orders/{updatedOrder.Id}", updatedOrder);
+                var response = await httpClient.PutAsJsonAsync($"api/Orders/{updatedOrder.Id}", updatedOrder);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -96,7 +96,7 @@ namespace GymShopBlazor.ApiService
         {
             try
             {
-                var response = await httpClient.DeleteAsync($"https://localhost:7097/api/Orders/{id}");
+                var response = await httpClient.DeleteAsync($"api/Orders/{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     return true;
