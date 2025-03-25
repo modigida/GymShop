@@ -79,11 +79,6 @@ public class CartService(ProductService productService)
         NotifyCartUpdated();
     }
 
-    public double GetTotalPrice()
-    {
-        return CartItems.Sum(p => p.CurrentPrice * p.Quantity);
-    }
-
     private void NotifyCartUpdated()
     {
         OnCartUpdated?.Invoke();
