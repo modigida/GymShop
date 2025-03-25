@@ -8,8 +8,6 @@ public class UnitOfWork : IUnitOfWork
     private readonly AppDbContext _context;
     private readonly Dictionary<Type, object> _repositories = new();
 
-    public IGenericRepository<CampaignProduct> CampaignProducts { get; }
-    public IGenericRepository<Campaign> Campaigns { get; }
     public IGenericRepository<Category> Categories { get; }
     public IOrderRepository Orders { get; }
     public IOrderProductRepository OrderProducts { get; }
@@ -22,8 +20,6 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(AppDbContext context)
     {
         _context = context;
-        CampaignProducts = new GenericRepository<CampaignProduct>(_context);
-        Campaigns = new GenericRepository<Campaign>(_context);
         Categories = new GenericRepository<Category>(_context);
         Orders = new OrderRepository(context);
         OrderProducts = new OrderProductRepository(_context);
