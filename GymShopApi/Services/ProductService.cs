@@ -124,6 +124,15 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
             ImageUrl = productDto.ImageUrl
         };
 
+        if (product.Balance == 0 && product.ProductStatusId != 3)
+        {
+            product.ProductStatusId = 2;
+        }
+        if (product.Balance > 0 && product.ProductStatusId == 2)
+        {
+            product.ProductStatusId = 1;
+        }
+
         await unitOfWork.Products.AddAsync(product);
         await unitOfWork.CompleteAsync();
 
@@ -167,12 +176,30 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
         {
             entity.ProductStatusId = productDto.ProductStatus.Id;
             hasChanges = true;
+
+            if (productDto.ProductStatus.Id == 2)
+            {
+                entity.Balance = 0;
+                productDto.Balance = 0;
+                hasChanges = true;
+            }
         }
 
         if (productDto.Balance != entity.Balance)
         {
             entity.Balance = productDto.Balance;
             hasChanges = true;
+
+            if (entity.Balance == 0 && entity.ProductStatusId != 3)
+            {
+                entity.ProductStatusId = 2;
+                hasChanges = true;
+            }
+            if (entity.Balance > 0 && entity.ProductStatusId == 2)
+            {
+                entity.ProductStatusId = 1;
+                hasChanges = true;
+            }
         }
 
         if (productDto.Price != entity.Price)
