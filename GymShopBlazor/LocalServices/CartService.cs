@@ -55,7 +55,7 @@ public class CartService(ProductService productService)
         NotifyCartUpdated();
     }
 
-    public async Task IncreaseQuantity(OrderProduct item)
+    public async Task<string> IncreaseQuantity(OrderProduct item)
     {
         var existingItem = CartItems.FirstOrDefault(p => p.ProductId == item.ProductId);
         var product = await productService.GetById(item.ProductId);
@@ -63,7 +63,10 @@ public class CartService(ProductService productService)
         {
             existingItem.Quantity++;
             NotifyCartUpdated();
+            return "";
         }
+
+        return "Inga fler produkter i lager";
     }
     public void DecreaseQuantity(OrderProduct item)
     {
