@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GymShopBlazor.ApiService;
 
-public class CartService
+public class CartService(ProductService productService)
 {
     public List<OrderProduct> CartItems { get; private set; } = new List<OrderProduct>();
 
@@ -54,10 +55,11 @@ public class CartService
         NotifyCartUpdated();
     }
 
-    public void IncreaseQuantity(OrderProduct item)
+    public async Task IncreaseQuantity(OrderProduct item)
     {
         var existingItem = CartItems.FirstOrDefault(p => p.ProductId == item.ProductId);
-        if (existingItem != null && existingItem.Quantity < 99)
+        var product = await productService.GetById(item.ProductId);
+        if (existingItem != null && existingItem.Quantity < 99 && existingItem.Quantity < product.Balance)
         {
             existingItem.Quantity++;
             NotifyCartUpdated();

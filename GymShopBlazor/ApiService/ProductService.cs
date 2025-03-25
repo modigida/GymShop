@@ -18,12 +18,11 @@ public class ProductService(HttpClient httpClient)
         }
     }
 
-    public async Task<Product?> GetUserById(int id)
+    public async Task<Product?> GetById(int id)
     {
         try
         {
-            return await httpClient.GetFromJsonAsync<Product>($"api/Products/{id}")
-                   ?? null;
+            return await httpClient.GetFromJsonAsync<Product?>($"api/Products/{id}");
         }
         catch
         {
