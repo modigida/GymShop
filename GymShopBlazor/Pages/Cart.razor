@@ -17,7 +17,7 @@
     @if (CartService.CartItems.Count > 0)
     {
         <div class="cart-summary">
-            <h4>Totalt ordervärde: @totalPrice.ToString("0.00") SEK</h4>
+            <h4>Totalt ordervärde: @CartService.CartItems.Sum(item => item.CurrentPrice * item.Quantity).ToString("0.00") SEK</h4>
             @if (!isCheckoutOpen)
             {
                 <button class="btn btn-success" @onclick="OpenCheckout">Betala</button>
@@ -36,9 +36,6 @@
 </div>
 
 @code {
-    private List<OrderProduct> cartItems = new();
-
-    private double totalPrice;
     private bool isCheckoutOpen = false;
 
     [Inject] private CartService CartService { get; set; } = default!;
@@ -46,7 +43,6 @@
     protected override void OnInitialized()
     {
         CartService.OnCartUpdated += StateHasChanged;
-        totalPrice = CartService.GetTotalPrice();
     }
 
     public void Dispose()
@@ -54,15 +50,8 @@
         CartService.OnCartUpdated -= StateHasChanged;
     }
 
-    private void UpdateTotalPrice()
-    {
-        totalPrice = CartService.CartItems.Sum(item => item.CurrentPrice * item.Quantity);
-        StateHasChanged();
-    }
-
     private void UpdateQuantity(int newQuantity)
     {
-        UpdateTotalPrice();
         StateHasChanged();
     }
 
