@@ -22,7 +22,7 @@ public static class Translations
         {
             { "Available", "Tillgänglig" },
             { "Out of Stock", "Slut i lager" },
-            { "Discontinued", "Utgången" },
+            { "Discontinued", "Utgående" },
             { "Pre-Order", "Förbeställning" },
             { "Limited Edition", "Begränsad upplaga" }
         };
