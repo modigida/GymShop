@@ -51,7 +51,14 @@ else
                 {
                     <div class="form-group">
                         <div>
-                            <img src="@selectedProduct.ImageUrl" alt="Produktbild" class="img-fluid" style="max-width: 200px; height: auto;" />
+                            @if (!string.IsNullOrEmpty(selectedProduct.ImageUrl))
+                            {
+                                <img src="@selectedProduct.ImageUrl" alt="Produktbild" class="img-fluid" style="max-width: 200px; height: auto;" />
+                            }
+                            else
+                            {
+                                <img src="noImage.jpg" alt="Produktbild" class="img-fluid" style="max-width: 200px; height: auto;" />
+                            }
                         </div>
                     </div>
 

@@ -4,13 +4,20 @@
 </head>
 
 <div class="product-card" @onclick="() => OnProductClick.InvokeAsync(Product)">
-    <img src="@Product.ImageUrl" alt="@Product.Name" class="product-image" />
-    
+    @if (!string.IsNullOrEmpty(Product.ImageUrl))
+    {
+        <img src="@Product.ImageUrl" alt="@Product.Name" class="product-image"/>
+    }
+    else
+    {
+        <img src="noImage.jpg" alt="Produktbild" class="product-image" />
+    }
+
     <div class="product-info">
         <h4 class="product-name">@Product.Name</h4>
         <p class="product-price">@Product.Price.ToString() SEK</p>
     </div>
-    
+
 </div>
 
 @code {
