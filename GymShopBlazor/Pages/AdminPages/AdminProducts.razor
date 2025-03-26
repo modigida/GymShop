@@ -93,9 +93,9 @@
                             @foreach (var status in productStatuses)
                             {
                                 <option value="@status.Id">@Translations.GetTranslatedProductStatus(status.Name)</option>
-
                             } 
                         </select>
+                        <p>Vald status: @selectedProduct?.ProductStatus?.Name</p>
                     </div> 
 
                     <div class="form-group">
@@ -186,6 +186,8 @@
         products = await ProductService.GetAll();
         categories = await ProductService.GetCategories();
         productStatuses = await ProductService.GetProductStatuses();
+        Console.WriteLine($"Categories Count: {categories.Count}");
+        Console.WriteLine($"ProductStatuses Count: {productStatuses.Count}");
         filteredProducts = products;
     }
 
@@ -199,12 +201,13 @@
 
     private void OpenModal(Product product)
     {
+        // TODO, fix bug with category and product status
         selectedProduct = new Product()
             {
                 Id = product.Id,
                 Name = product.Name,
-                Category = product.Category,
-                ProductStatus = product.ProductStatus,
+                Category = categories.FirstOrDefault(c => c.Id == product.Category.Id),
+                ProductStatus = productStatuses.FirstOrDefault(p => p.Id == product.ProductStatus.Id),
                 Balance = product.Balance,
                 Price = product.Price,
                 Description = product.Description,
@@ -222,12 +225,12 @@
         IsDeleteModalOpen = false;
     }
 
-    private async Task ConfirmDelete()
+    private void ConfirmDelete()
     {
         IsDeleteModalOpen = true;
     }
 
-    private async Task OpenAddProductModal()
+    private void OpenAddProductModal()
     {
         selectedProduct = new Product
         {
@@ -298,10 +301,8 @@
             products = products.Where(p => p.Id != selectedProduct.Id).ToList();
             filteredProducts = new List<Product>(products);
             StateHasChanged();
-            successMessage = "Produkten har raderats";
-            await Task.Delay(2500);
-            successMessage = "";
             CloseModal();
+            
         }
         else
         {

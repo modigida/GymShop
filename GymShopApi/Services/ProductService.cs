@@ -124,7 +124,7 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
             ImageUrl = productDto.ImageUrl
         };
 
-        if (product.Balance == 0 && product.ProductStatusId != 3)
+        if (product.Balance == 0 && product.ProductStatusId != 3 && product.ProductStatusId != 4)
         {
             product.ProductStatusId = 2;
         }

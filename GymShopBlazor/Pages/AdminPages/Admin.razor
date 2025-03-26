@@ -1,25 +1,52 @@
 ﻿@page "/admin"
 @layout MainLayout
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 @attribute [Authorize(Roles = "Admin")]
 @inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <head>
     <link href="css/admin.css" rel="stylesheet" />
 </head>
 
-<div class="admin-nav">
-    <NavLink href="/admin/customers" class="admin-nav-link">Kunder</NavLink>
-    <NavLink href="/admin/products" class="admin-nav-link">Produkter</NavLink>
-    <NavLink href="/admin/orders" class="admin-nav-link">Ordrar</NavLink>
-</div>
+@if (_isAdmin)
+{
+    <div class="admin-nav">
+        <NavLink href="/admin/customers" class="admin-nav-link">Kunder</NavLink>
+        <NavLink href="/admin/products" class="admin-nav-link">Produkter</NavLink>
+        <NavLink href="/admin/orders" class="admin-nav-link">Ordrar</NavLink>
+    </div>
 
-<main>
-    <article class="content px-4">
-        @Body
-    </article>
-</main>
+    <main>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+}
+else
+{
+    <div class="index-header">
+        <img src="404-page-not-found.png" alt="404 Page not found"/>
+    </div>
+}
+
 
 @code {
- 
+    private bool _isAdmin = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            var userIdClaim = user.FindFirst("sub")?.Value;
+
+            _isAdmin = user.Identity.IsAuthenticated && user.IsInRole("Admin");
+        }
+
+        StateHasChanged();
+    }
 }
