@@ -81,9 +81,9 @@
                             <option value="">Välj kategori</option> 
                             @foreach (var category in categories) 
                             {
-                                <option value="@category.Id">@Translations.GetTranslatedCategoryName(category.Name)</option>
+                                <option value="@category.Id">@Translations.GetTranslatedCategoryName(category.Name), @category.Id</option>
                             } 
-                        </select> 
+                        </select>
                     </div> 
 
                     <div class="form-group">
@@ -92,10 +92,9 @@
                             <option value="">Välj lagerstatus</option> 
                             @foreach (var status in productStatuses)
                             {
-                                <option value="@status.Id">@Translations.GetTranslatedProductStatus(status.Name)</option>
+                                <option value="@status.Id">@Translations.GetTranslatedProductStatus(status.Name), @status.Id</option>
                             } 
                         </select>
-                        <p>Vald status: @selectedProduct?.ProductStatus?.Name</p>
                     </div> 
 
                     <div class="form-group">
@@ -140,11 +139,12 @@
                 {
                     <button type="button" class="btn btn-success" @onclick="CreateProduct">Spara</button>
                 }
-                
+
             </div>
         </div>
     </div>
 </div>
+
 
 <div class="modal fade @(IsDeleteModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
     <div class="modal-dialog" role="document">
@@ -167,19 +167,19 @@
 </div>
 
 @code {
-    private List<Product> products = new List<Product>();
+    private List<Product> products = new();
     private Product selectedProduct;
     private bool isModalOpen = false;
     private bool IsDeleteModalOpen = false;
     private string errorMessage = "";
     private string successMessage = "";
 
-    private List<Product> filteredProducts = new List<Product>();
+    private List<Product> filteredProducts = new();
     private string searchQuery = "";
 
 
-    private List<Category> categories = new List<Category>();
-    private List<ProductStatus> productStatuses = new List<ProductStatus>();
+    private List<Category> categories = new();
+    private List<ProductStatus> productStatuses = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -201,24 +201,22 @@
 
     private void OpenModal(Product product)
     {
-        // TODO, fix bug with category and product status
-        selectedProduct = new Product()
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Category = categories.FirstOrDefault(c => c.Id == product.Category.Id),
-                ProductStatus = productStatuses.FirstOrDefault(p => p.Id == product.ProductStatus.Id),
-                Balance = product.Balance,
-                Price = product.Price,
-                Description = product.Description,
-                ImageUrl = product.ImageUrl
-            };
+        selectedProduct = new Product
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Category = product.Category,
+            ProductStatus = product.ProductStatus,
+            Balance = product.Balance,
+            Price = product.Price,
+            Description = product.Description,
+            ImageUrl = product.ImageUrl
+        };
         isModalOpen = true;
     }
     private void CloseModal()
     {
         isModalOpen = false;
-        selectedProduct = null;
     }
     private void CloseDeleteModal()
     {
@@ -252,6 +250,7 @@
         if (responseProductCreate.Id != 0)
         {
             products.Add(responseProductCreate);
+            selectedProduct = responseProductCreate;
             filteredProducts = new List<Product>(products);
             successMessage = "Produkten har skapats";
             StateHasChanged();
@@ -266,6 +265,7 @@
             errorMessage = "";
         }
         CloseModal();
+        await OnInitializedAsync();
     }
     private async Task UpdateProduct()
     {
