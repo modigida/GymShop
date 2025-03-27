@@ -99,6 +99,14 @@
                 Navigation.NavigateTo($"/orderConfirmation/{orderId}");
                 CartService.CartItems.Clear();
             }
+            else
+            {
+                ErrorMessage = "Felaktig email eller lösenord.";
+                StateHasChanged();
+                await Task.Delay(2500);
+                ErrorMessage = "";
+                StateHasChanged();
+            }
         }
         else
         {
@@ -108,7 +116,6 @@
             ErrorMessage = "";
             StateHasChanged();
         }
-        
     }
     private async Task Login()
     {
