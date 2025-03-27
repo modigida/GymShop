@@ -146,6 +146,10 @@ public class OrderService(IUnitOfWork unitOfWork) : IOrderService
             if (product != null)
             {
                 product.Balance -= orderProduct.Quantity;
+                if (product.Balance == 0)
+                {
+                    product.ProductStatusId = 2;
+                }
 
                 await unitOfWork.Products.Update(product);
             }

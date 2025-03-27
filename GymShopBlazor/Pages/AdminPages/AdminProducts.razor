@@ -81,7 +81,7 @@
                             <option value="">Välj kategori</option> 
                             @foreach (var category in categories) 
                             {
-                                <option value="@category.Id">@Translations.GetTranslatedCategoryName(category.Name), @category.Id</option>
+                                <option value="@category.Id">@Translations.GetTranslatedCategoryName(category.Name)</option>
                             } 
                         </select>
                     </div> 
@@ -92,7 +92,7 @@
                             <option value="">Välj lagerstatus</option> 
                             @foreach (var status in productStatuses)
                             {
-                                <option value="@status.Id">@Translations.GetTranslatedProductStatus(status.Name), @status.Id</option>
+                                <option value="@status.Id">@Translations.GetTranslatedProductStatus(status.Name)</option>
                             } 
                         </select>
                     </div> 
