@@ -11,6 +11,13 @@ with secure JWT-based authentication.
 
 <img src="Images/LogIn.png" alt="Login page" width="500" >
 
+Usrs can log in as either administrators or customers. New customers can register directly on the website. Administrators have acecss 
+to management features such as editing products and monitoring orders. To test the admin featurs, you can use the following credentials:
+
+**Email:** admin@admin.com
+
+**Password:** Lösenord
+
 <img src="Images/Customers.png" alt="View all customers on admin page" width="1000" >
 
 Data is stored in SQL Server, following the three normal forms to ensure performance and integrity. The backend is structured using the 
