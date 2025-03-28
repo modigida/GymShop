@@ -28,6 +28,13 @@ public class UsersController(IUserService userService) : ControllerBase
         }
     }
 
+    [HttpPost("validate")]
+    public async Task<IActionResult> ValidatePassword([FromBody] UserLoginDto dto)
+    {
+        var isValid = await userService.ValidatePasswordAsync(dto.Email, dto.Password);
+        return Ok(isValid);
+    }
+
     [HttpPost("login")]
     public async Task<ActionResult> Login(UserLoginDto dto)
     {
@@ -112,13 +119,6 @@ public class UsersController(IUserService userService) : ControllerBase
         {
             return NotFound("User not found");
         }
-    }
-
-    [HttpPost("validate")]
-    public async Task<IActionResult> ValidatePassword([FromBody] UserLoginDto dto)
-    {
-        var isValid = await userService.ValidatePasswordAsync(dto.Email, dto.Password);
-        return Ok(isValid);
     }
 
 }

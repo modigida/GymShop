@@ -49,18 +49,18 @@ public class ProductsController(IProductService productService) : ControllerBase
         return Ok(products);
     }
 
-    [HttpGet("status/{statusId}")]
-    public async Task<IActionResult> GetByStatus(int statusId)
+[HttpGet("status/{statusId}")]
+public async Task<IActionResult> GetByStatus(int statusId)
+{
+    var products = await productService.GetByStatusAsync(statusId);
+    if (!products.Any())
     {
-        var products = await productService.GetByStatusAsync(statusId);
-        if (!products.Any())
-        {
-            return NotFound($"No products found for status with ID: {statusId}");
-        }
-        return Ok(products);
+        return NotFound($"No products found for status with ID: {statusId}");
     }
+    return Ok(products);
+}
 
-    [HttpPost]
+[HttpPost]
     public async Task<IActionResult> Post([FromBody] ProductDto product)
     {
         try

@@ -39,18 +39,18 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         return Ok(order);
     }
 
-    [HttpGet("email/{email}")]
-    public async Task<IActionResult> GetByEmail(string email)
-    {
-        var orders = await orderService.GetByEmailAsync(email);
+    //[HttpGet("email/{email}")]
+    //public async Task<IActionResult> GetByEmail(string email)
+    //{
+    //    var orders = await orderService.GetByEmailAsync(email);
 
-        if (!orders.Any())
-        {
-            return NotFound($"No orders found for email: {email}");
-        }
+    //    if (!orders.Any())
+    //    {
+    //        return NotFound($"No orders found for email: {email}");
+    //    }
 
-        return Ok(orders);
-    }
+    //    return Ok(orders);
+    //}
 
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] OrderCreateDto orderResponse)

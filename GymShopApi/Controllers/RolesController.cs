@@ -13,12 +13,10 @@ namespace GymShopApi.Controllers;
 [Route("api/[controller]")]
 public class RolesController(IGenericService<Role> roleService) : ControllerBase
 {
-    private readonly IGenericService<Role> _roleService = roleService;
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var roles = await _roleService.GetAllAsync();
+        var roles = await roleService.GetAllAsync();
 
         if (!roles.Any())
         {
@@ -31,7 +29,7 @@ public class RolesController(IGenericService<Role> roleService) : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var role = await _roleService.GetByIdAsync(id);
+        var role = await roleService.GetByIdAsync(id);
 
         if (role == null)
         {
@@ -41,50 +39,50 @@ public class RolesController(IGenericService<Role> roleService) : ControllerBase
         return Ok(role);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Role role)
-    {
-        try
-        {
-            var newRole = await _roleService.AddAsync(role);
-            return CreatedAtAction(nameof(Get), new { id = newRole.Id }, newRole);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
+    //[HttpPost]
+    //public async Task<IActionResult> Post([FromBody] Role role)
+    //{
+    //    try
+    //    {
+    //        var newRole = await roleService.AddAsync(role);
+    //        return CreatedAtAction(nameof(Get), new { id = newRole.Id }, newRole);
+    //    }
+    //    catch (ArgumentException ex)
+    //    {
+    //        return BadRequest(ex.Message);
+    //    }
+    //}
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] Role updatedRole)
-    {
-        try
-        {
-            var role = await _roleService.Update(updatedRole, id);
-            return Ok(role);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound("Role not found");
-        }
-    }
+    //[HttpPut("{id}")]
+    //public async Task<IActionResult> Put(int id, [FromBody] Role updatedRole)
+    //{
+    //    try
+    //    {
+    //        var role = await roleService.Update(updatedRole, id);
+    //        return Ok(role);
+    //    }
+    //    catch (ArgumentException ex)
+    //    {
+    //        return BadRequest(ex.Message);
+    //    }
+    //    catch (KeyNotFoundException)
+    //    {
+    //        return NotFound("Role not found");
+    //    }
+    //}
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        try
-        {
-            await _roleService.Delete(id);
-            return Ok("Role deleted");
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound("Role not found");
-        }
-    }
+    //[HttpDelete("{id}")]
+    //public async Task<IActionResult> Delete(int id)
+    //{
+    //    try
+    //    {
+    //        await roleService.Delete(id);
+    //        return Ok("Role deleted");
+    //    }
+    //    catch (KeyNotFoundException)
+    //    {
+    //        return NotFound("Role not found");
+    //    }
+    //}
 
 }

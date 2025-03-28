@@ -8,12 +8,10 @@ namespace GymShopApi.Controllers;
 [Route("api/[controller]")]
 public class CategoriesController(IGenericService<Category> categoryService) : ControllerBase
 {
-    private readonly IGenericService<Category> _categoryService = categoryService;
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var categories = await _categoryService.GetAllAsync();
+        var categories = await categoryService.GetAllAsync();
 
         if (!categories.Any())
         {
@@ -25,7 +23,7 @@ public class CategoriesController(IGenericService<Category> categoryService) : C
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var category = await _categoryService.GetByIdAsync(id);
+        var category = await categoryService.GetByIdAsync(id);
 
         if (category == null)
         {
@@ -35,49 +33,49 @@ public class CategoriesController(IGenericService<Category> categoryService) : C
         return Ok(category);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Category category)
-    {
-        try
-        {
-            var newCategory = await _categoryService.AddAsync(category);
-            return CreatedAtAction(nameof(Get), new { id = newCategory.Id }, newCategory);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
+    //[HttpPost]
+    //public async Task<IActionResult> Post([FromBody] Category category)
+    //{
+    //    try
+    //    {
+    //        var newCategory = await categoryService.AddAsync(category);
+    //        return CreatedAtAction(nameof(Get), new { id = newCategory.Id }, newCategory);
+    //    }
+    //    catch (ArgumentException ex)
+    //    {
+    //        return BadRequest(ex.Message);
+    //    }
+    //}
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] Category updatedCategory)
-    {
-        try
-        {
-            var category = await _categoryService.Update(updatedCategory, id);
-            return Ok(category);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound("Category not found");
-        }
-    }
+    //[HttpPut("{id}")]
+    //public async Task<IActionResult> Put(int id, [FromBody] Category updatedCategory)
+    //{
+    //    try
+    //    {
+    //        var category = await categoryService.Update(updatedCategory, id);
+    //        return Ok(category);
+    //    }
+    //    catch (ArgumentException ex)
+    //    {
+    //        return BadRequest(ex.Message);
+    //    }
+    //    catch (KeyNotFoundException)
+    //    {
+    //        return NotFound("Category not found");
+    //    }
+    //}
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        try
-        {
-            await _categoryService.Delete(id);
-            return Ok("Category deleted");
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound("Category not found");
-        }
-    }
+    //[HttpDelete("{id}")]
+    //public async Task<IActionResult> Delete(int id)
+    //{
+    //    try
+    //    {
+    //        await categoryService.Delete(id);
+    //        return Ok("Category deleted");
+    //    }
+    //    catch (KeyNotFoundException)
+    //    {
+    //        return NotFound("Category not found");
+    //    }
+    //}
 }

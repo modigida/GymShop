@@ -12,12 +12,10 @@ namespace GymShopApi.Controllers;
 [Route("api/[controller]")]
 public class OrderStatusesController(IGenericService<OrderStatus> orderStatusService) : ControllerBase
 {
-    private readonly IGenericService<OrderStatus> _orderStatusService = orderStatusService;
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var orderStatuses = await _orderStatusService.GetAllAsync();
+        var orderStatuses = await orderStatusService.GetAllAsync();
 
         if (!orderStatuses.Any())
         {
@@ -30,7 +28,7 @@ public class OrderStatusesController(IGenericService<OrderStatus> orderStatusSer
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var orderStatus = await _orderStatusService.GetByIdAsync(id);
+        var orderStatus = await orderStatusService.GetByIdAsync(id);
 
         if (orderStatus == null)
         {
@@ -40,49 +38,49 @@ public class OrderStatusesController(IGenericService<OrderStatus> orderStatusSer
         return Ok(orderStatus);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Post([FromBody] OrderStatus orderStatus)
-    {
-        try
-        {
-            var newOrderStatus = await _orderStatusService.AddAsync(orderStatus);
-            return CreatedAtAction(nameof(Get), new { id = newOrderStatus.Id }, newOrderStatus);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
+    //[HttpPost]
+    //public async Task<IActionResult> Post([FromBody] OrderStatus orderStatus)
+    //{
+    //    try
+    //    {
+    //        var newOrderStatus = await orderStatusService.AddAsync(orderStatus);
+    //        return CreatedAtAction(nameof(Get), new { id = newOrderStatus.Id }, newOrderStatus);
+    //    }
+    //    catch (ArgumentException ex)
+    //    {
+    //        return BadRequest(ex.Message);
+    //    }
+    //}
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] OrderStatus updatedOrderStatus)
-    {
-        try
-        {
-            var orderStatus = await _orderStatusService.Update(updatedOrderStatus, id);
-            return Ok(orderStatus);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound("Order status not found");
-        }
-    }
+    //[HttpPut("{id}")]
+    //public async Task<IActionResult> Put(int id, [FromBody] OrderStatus updatedOrderStatus)
+    //{
+    //    try
+    //    {
+    //        var orderStatus = await orderStatusService.Update(updatedOrderStatus, id);
+    //        return Ok(orderStatus);
+    //    }
+    //    catch (ArgumentException ex)
+    //    {
+    //        return BadRequest(ex.Message);
+    //    }
+    //    catch (KeyNotFoundException)
+    //    {
+    //        return NotFound("Order status not found");
+    //    }
+    //}
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        try
-        {
-            await _orderStatusService.Delete(id);
-            return Ok("Order status deleted");
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound("Order status not found");
-        }
-    }
+    //[HttpDelete("{id}")]
+    //public async Task<IActionResult> Delete(int id)
+    //{
+    //    try
+    //    {
+    //        await orderStatusService.Delete(id);
+    //        return Ok("Order status deleted");
+    //    }
+    //    catch (KeyNotFoundException)
+    //    {
+    //        return NotFound("Order status not found");
+    //    }
+    //}
 }

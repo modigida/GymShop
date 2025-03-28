@@ -13,12 +13,10 @@ namespace GymShopApi.Controllers;
 [Route("api/[controller]")]
 public class ProductStatusesController(IGenericService<ProductStatus> productStatusService) : ControllerBase
 {
-    private readonly IGenericService<ProductStatus> _productStatusService = productStatusService;
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var productStatuses = await _productStatusService.GetAllAsync();
+        var productStatuses = await productStatusService.GetAllAsync();
 
         if (!productStatuses.Any())
         {
@@ -31,7 +29,7 @@ public class ProductStatusesController(IGenericService<ProductStatus> productSta
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var productStatus = await _productStatusService.GetByIdAsync(id);
+        var productStatus = await productStatusService.GetByIdAsync(id);
 
         if (productStatus == null)
         {
@@ -41,49 +39,49 @@ public class ProductStatusesController(IGenericService<ProductStatus> productSta
         return Ok(productStatus);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Post([FromBody] ProductStatus productStatus)
-    {
-        try
-        {
-            var newProductStatus = await _productStatusService.AddAsync(productStatus);
-            return CreatedAtAction(nameof(Get), new { id = newProductStatus.Id }, newProductStatus);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
+    //[HttpPost]
+    //public async Task<IActionResult> Post([FromBody] ProductStatus productStatus)
+    //{
+    //    try
+    //    {
+    //        var newProductStatus = await productStatusService.AddAsync(productStatus);
+    //        return CreatedAtAction(nameof(Get), new { id = newProductStatus.Id }, newProductStatus);
+    //    }
+    //    catch (ArgumentException ex)
+    //    {
+    //        return BadRequest(ex.Message);
+    //    }
+    //}
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] ProductStatus updatedProductStatus)
-    {
-        try
-        {
-            var productStatus = await _productStatusService.Update(updatedProductStatus, id);
-            return Ok(productStatus);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound("Product status not found");
-        }
-    }
+    //[HttpPut("{id}")]
+    //public async Task<IActionResult> Put(int id, [FromBody] ProductStatus updatedProductStatus)
+    //{
+    //    try
+    //    {
+    //        var productStatus = await productStatusService.Update(updatedProductStatus, id);
+    //        return Ok(productStatus);
+    //    }
+    //    catch (ArgumentException ex)
+    //    {
+    //        return BadRequest(ex.Message);
+    //    }
+    //    catch (KeyNotFoundException)
+    //    {
+    //        return NotFound("Product status not found");
+    //    }
+    //}
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        try
-        {
-            await _productStatusService.Delete(id);
-            return Ok("Product status deleted");
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound("Product status not found");
-        }
-    }
+    //[HttpDelete("{id}")]
+    //public async Task<IActionResult> Delete(int id)
+    //{
+    //    try
+    //    {
+    //        await productStatusService.Delete(id);
+    //        return Ok("Product status deleted");
+    //    }
+    //    catch (KeyNotFoundException)
+    //    {
+    //        return NotFound("Product status not found");
+    //    }
+    //}
 }
