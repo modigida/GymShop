@@ -13,53 +13,53 @@
     <link href="css/userstyling.css" rel="stylesheet" />
 </head>
 
-@if (currentUser != null)
+@if (CurrentUser != null)
 {
     <div class="user-form">
-        <h3>Välkommen @currentUser.FirstName @currentUser.LastName</h3>
+        <h3>Välkommen @CurrentUser.FirstName @CurrentUser.LastName</h3>
 
         <div class="mb-3">
             <label for="firstname" class="form-label">Förnamn</label>
-            <input type="text" class="form-control" id="firstname" placeholder="Förnamn" @bind="currentUser.FirstName" @oninput="SetUpdated" />
+            <input type="text" class="form-control" id="firstname" placeholder="Förnamn" @bind="CurrentUser.FirstName" @oninput="SetUpdated" />
         </div>
 
         <div class="mb-3">
             <label for="lastname" class="form-label">Efternamn</label>
-            <input type="text" class="form-control" id="lastname" placeholder="Efternamn" @bind="currentUser.LastName" @oninput="SetUpdated" />
+            <input type="text" class="form-control" id="lastname" placeholder="Efternamn" @bind="CurrentUser.LastName" @oninput="SetUpdated" />
         </div>
 
         <div class="mb-3">
             <label for="email" class="form-label">E-post</label>
-            <input type="email" class="form-control" id="email" placeholder="E-post" @bind="currentUser.Email" @oninput="SetUpdated" />
+            <input type="email" class="form-control" id="email" placeholder="E-post" @bind="CurrentUser.Email" @oninput="SetUpdated" />
         </div>
 
         <div class="mb-3">
             <label for="phone" class="form-label">Telefonnummer</label>
-            <input type="text" class="form-control" id="phone" placeholder="Telefonnummer" @bind="currentUser.Phone" @oninput="SetUpdated" />
+            <input type="text" class="form-control" id="phone" placeholder="Telefonnummer" @bind="CurrentUser.Phone" @oninput="SetUpdated" />
         </div>
 
         <div class="mb-3">
             <label for="address" class="form-label">Adress</label>
-            <input type="text" class="form-control" id="address" placeholder="Adress" @bind="currentUser.Address" @oninput="SetUpdated" />
+            <input type="text" class="form-control" id="address" placeholder="Adress" @bind="CurrentUser.Address" @oninput="SetUpdated" />
         </div>
 
-        @if (IsUpdated)
+        @if (_isUpdated)
         {
             <div class="mb-3">
                 <label for="password" class="form-label">Lösenord</label>
                 <input type="password" class="form-control" id="password" placeholder="Lösenord" @bind="UpdatedUser.Password" @bind:event="oninput" />
             </div>
 
-            @if (showSuccessMessage)
+            @if (_showSuccessMessage)
             {
                 <div class="alert alert-success" role="alert">
-                    @UpdatedMessage
+                    @_updatedMessage
                 </div>
             }
-            else if (showErrorMessage)
+            else if (_showErrorMessage)
             {
                 <div class="alert alert-danger" role="alert">
-                    @UpdatedMessage
+                    @_updatedMessage
                 </div>
             }
         }
@@ -71,13 +71,13 @@
         </div>
 
 
-        <button class="btn btn-primary" disabled="@(!IsUpdated || string.IsNullOrEmpty(UpdatedUser.Password))"
-        style="background-color: @((IsUpdated && !string.IsNullOrEmpty(UpdatedUser.Password)) ? "black" : "gray"); color: white;" @onclick="UpdateUserInfo">
+        <button class="btn btn-primary" disabled="@(!_isUpdated || string.IsNullOrEmpty(UpdatedUser.Password))"
+        style="background-color: @((_isUpdated && !string.IsNullOrEmpty(UpdatedUser.Password)) ? "black" : "gray"); color: white;" @onclick="UpdateUserInfo">
             Spara
         </button>
         <button @onclick="Logout" class="btn btn-primary">Logga ut</button>
 
-        @if (!IsAdmin)
+        @if (!_isAdmin)
         {
             <table class="table fixed-table">
                 <thead>
@@ -102,10 +102,10 @@
             </table>
 
             <div class="mb-3">
-                <label class="form-label">Totalt ordervärde: <a>@TotalOrderValue SEK</a></label>
+                <label class="form-label">Totalt ordervärde: <a>@_totalOrderValue SEK</a></label>
             </div>
 
-            <div class="modal fade @(isModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
+            <div class="modal fade @(_isModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -115,18 +115,18 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            @if (selectedOrder != null)
+                            @if (SelectedOrder != null)
                             {
                                 <div class="form-group">
-                                    <label><strong>Order Id:</strong> @selectedOrder.Id</label>
+                                    <label><strong>Order Id:</strong> @SelectedOrder.Id</label>
                                 </div>
 
                                 <div class="form-group">
-                                    <label><strong>Orderstatus:</strong> @Translations.GetTranslatedOrderStatus(selectedOrder.OrderStatus.Name)</label>
+                                    <label><strong>Orderstatus:</strong> @Translations.GetTranslatedOrderStatus(SelectedOrder.OrderStatus.Name)</label>
                                 </div>
 
                                 <div class="form-group">
-                                    <label><strong>Datum:</strong> @selectedOrder.PurchaseDate</label>
+                                    <label><strong>Datum:</strong> @SelectedOrder.PurchaseDate</label>
                                 </div>
 
                                 <div class="form-group">
@@ -139,7 +139,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach (var product in selectedOrder.OrderProducts)
+                                            @foreach (var product in SelectedOrder.OrderProducts)
                                             {
                                                 <tr>
                                                     <td>@product.ProductName</td>
@@ -152,7 +152,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label><strong>Totalpris:</strong> @selectedOrder.TotalPrice SEK</label>
+                                    <label><strong>Totalpris:</strong> @SelectedOrder.TotalPrice SEK</label>
                                 </div>
                             }
                         </div>
@@ -172,7 +172,7 @@
 
     </div>
 
-    <div class="modal fade @(IsDeleteModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
+    <div class="modal fade @(_isDeleteModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -186,25 +186,25 @@
 
                     <div class="form-group">
                         <label for="password">Bekräfta med ditt lösenord:</label>
-                        <input type="password" id="password" class="form-control" @bind="password" placeholder="Ange ditt lösenord" />
+                        <input type="password" id="password" class="form-control" @bind="_password" placeholder="Ange ditt lösenord" />
                     </div>
                 </div>
 
-                @if (showSuccessMessage)
+                @if (_showSuccessMessage)
                 {
                     <div class="alert alert-success" role="alert">
-                        @UpdatedMessage
+                        @_updatedMessage
                     </div>
                 }
-                else if (showErrorMessage)
+                else if (_showErrorMessage)
                 {
                     <div class="alert alert-danger" role="alert">
-                        @UpdatedMessage
+                        @_updatedMessage
                     </div>
                 }
 
                 <div class="modal-footer">
-                    <button class="btn btn-danger" @onclick="DeleteUser" disabled="@string.IsNullOrEmpty(password)">Ja, radera</button>
+                    <button class="btn btn-danger" @onclick="DeleteUser" disabled="@string.IsNullOrEmpty(_password)">Ja, radera</button>
                     <button class="btn btn-secondary" @onclick="CloseDeleteModal">Stäng</button>
                 </div>
             </div>
@@ -213,19 +213,19 @@
 }
 
 @code {
-    private UserResponse? currentUser { get; set; }
+    private UserResponse? CurrentUser { get; set; }
     private List<OrderResponse> Orders { get; set; } = new();
-    private OrderResponse selectedOrder { get; set; }
-    private double TotalOrderValue = 0.0;
-    private bool IsUpdated = false;
-    private bool isModalOpen = false;
-    private bool IsDeleteModalOpen = false;
-    private bool IsAdmin = false;
+    private OrderResponse? SelectedOrder { get; set; }
+    private double _totalOrderValue = 0.0;
+    private bool _isUpdated = false;
+    private bool _isModalOpen = false;
+    private bool _isDeleteModalOpen = false;
+    private bool _isAdmin = false;
     private UserCreate UpdatedUser { get; set; } = new UserCreate { Password = "" };
-    private bool showSuccessMessage = false;
-    private bool showErrorMessage = false;
-    private string UpdatedMessage = "";
-    private string password;
+    private bool _showSuccessMessage = false;
+    private bool _showErrorMessage = false;
+    private string _updatedMessage = "";
+    private string _password = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -238,13 +238,13 @@
 
             if (Guid.TryParse(userIdClaim, out Guid userId))
             {
-                currentUser = await UserService.GetUserById(userId);
+                CurrentUser = await UserService.GetUserById(userId);
             }
 
-            IsAdmin = user.Identity.IsAuthenticated && user.IsInRole("Admin");
+            _isAdmin = user.Identity.IsAuthenticated && user.IsInRole("Admin");
         }
 
-        Orders = await OrderService.GetOrdersByUserEmail(currentUser.Email);
+        Orders = await OrderService.GetOrdersByUserEmail(CurrentUser.Email);
         GetTotalOrderValue();
         StateHasChanged();
     }
@@ -253,77 +253,77 @@
     {
         foreach (var order in Orders)
         {
-            TotalOrderValue += order.TotalPrice;
+            _totalOrderValue += order.TotalPrice;
         }
     }
     private void SetUpdated()
     {
-        IsUpdated = true;
+        _isUpdated = true;
     }
 
     private void ConfirmDelete()
     {
-        IsDeleteModalOpen = true;
+        _isDeleteModalOpen = true;
     }
     private async Task DeleteUser()
     {
-        var isPasswordValid = await UserService.ValidatePassword(currentUser.Email, password);
+        var isPasswordValid = await UserService.ValidatePassword(CurrentUser.Email, _password);
 
         if (!isPasswordValid)
         {
-            showErrorMessage = true;
-            UpdatedMessage = "Fel lösenord.";
+            _showErrorMessage = true;
+            _updatedMessage = "Fel lösenord.";
             StateHasChanged();
             await Task.Delay(2500);
-            showErrorMessage = false;
-            UpdatedMessage = "";
+            _showErrorMessage = false;
+            _updatedMessage = "";
             return;
         }
 
-        await UserService.DeleteUser(currentUser.Id);
+        await UserService.DeleteUser(CurrentUser.Id);
         await Logout();
     }
     private void CloseDeleteModal()
     {
-        IsDeleteModalOpen = false;
+        _isDeleteModalOpen = false;
     }
    
     private async Task UpdateUserInfo()
     {
-        var IsCorrectPassword = await UserService.ValidatePassword(currentUser.Email, UpdatedUser.Password);
+        var IsCorrectPassword = await UserService.ValidatePassword(CurrentUser.Email, UpdatedUser.Password);
         if (IsCorrectPassword == false)
         {
-            UpdatedMessage = "Ange rätt lösenord.";
-            showErrorMessage = true;
+            _updatedMessage = "Ange rätt lösenord.";
+            _showErrorMessage = true;
             await InvokeAsync(StateHasChanged);
             await Task.Delay(2500);
-            UpdatedMessage = "Ange rätt lösenord.";
-            showErrorMessage = false;
+            _updatedMessage = "Ange rätt lösenord.";
+            _showErrorMessage = false;
             await InvokeAsync(StateHasChanged);
             return;
         }
 
         var roles = await UserService.GetAllRoles();
 
-        UpdatedUser.FirstName = currentUser.FirstName;
-        UpdatedUser.LastName = currentUser.LastName;
-        UpdatedUser.Email = currentUser.Email;
-        UpdatedUser.Phone = currentUser.Phone;
-        UpdatedUser.Address = currentUser.Address;
-        UpdatedUser.RoleId = roles.FirstOrDefault(r => r.Name == currentUser.Role.Name).Id;
+        UpdatedUser.FirstName = CurrentUser.FirstName;
+        UpdatedUser.LastName = CurrentUser.LastName;
+        UpdatedUser.Email = CurrentUser.Email;
+        UpdatedUser.Phone = CurrentUser.Phone;
+        UpdatedUser.Address = CurrentUser.Address;
+        UpdatedUser.RoleId = roles.FirstOrDefault(r => r.Name == CurrentUser.Role.Name).Id;
 
-        var returnedUpdatedUser = await UserService.UpdateUser(currentUser.Id, UpdatedUser);
+        var returnedUpdatedUser = await UserService.UpdateUser(CurrentUser.Id, UpdatedUser);
 
         var returnedIsUpdated = await CheckIfUpdated(returnedUpdatedUser);
 
         if (returnedIsUpdated)
         {
-            currentUser = returnedUpdatedUser;
-            IsUpdated = false;
+            CurrentUser = returnedUpdatedUser;
+            _isUpdated = false;
         }
         else
         {
-            IsUpdated = true;
+            _isUpdated = true;
         }
     }
 
@@ -337,21 +337,21 @@
             returnedUser.Phone == UpdatedUser.Phone &&
             returnedUser.Address == UpdatedUser.Address)
         {
-            UpdatedMessage = "Användaruppgifterna är uppdaterade!";
-            showSuccessMessage = true;
+            _updatedMessage = "Användaruppgifterna är uppdaterade!";
+            _showSuccessMessage = true;
             returnedIsUpdated = true;
         }
         else
         {
-            UpdatedMessage = "Fel vid uppdatering."; 
-            showErrorMessage = true;
+            _updatedMessage = "Fel vid uppdatering."; 
+            _showErrorMessage = true;
         }
 
         await InvokeAsync(StateHasChanged);
 
         await Task.Delay(2500);
-        showSuccessMessage = false;
-        showErrorMessage = false;
+        _showSuccessMessage = false;
+        _showErrorMessage = false;
 
         await InvokeAsync(StateHasChanged);
         return returnedIsUpdated;
@@ -370,7 +370,7 @@
     }
     private void OpenModal(OrderResponse order)
     {
-        selectedOrder = new OrderResponse
+        SelectedOrder = new OrderResponse
             {
                 Id = order.Id,
                 User = order.User,
@@ -379,11 +379,11 @@
                 TotalPrice = order.TotalPrice,
                 OrderProducts = order.OrderProducts
             };
-        isModalOpen = true;
+        _isModalOpen = true;
     }
     private void CloseModal()
     {
-        isModalOpen = false;
-        selectedOrder = null;
+        _isModalOpen = false;
+        SelectedOrder = null;
     }
 }

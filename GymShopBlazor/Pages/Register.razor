@@ -17,35 +17,35 @@
     
     <div class="mb-3">
         <label for="firstname" class="form-label">Förnamn*</label>
-        <input type="text" class="form-control" id="firstname" placeholder="Förnamn" @bind="newUser.FirstName" @bind:event="oninput" />
+        <input type="text" class="form-control" id="firstname" placeholder="Förnamn" @bind="_newUser.FirstName" @bind:event="oninput" />
     </div>
 
     <div class="mb-3">
         <label for="lastname" class="form-label">Efternamn*</label>
-        <input type="text" class="form-control" id="lastname" placeholder="Efternamn" @bind="newUser.LastName" @bind:event="oninput" />
+        <input type="text" class="form-control" id="lastname" placeholder="Efternamn" @bind="_newUser.LastName" @bind:event="oninput" />
     </div>
 
     <div class="mb-3">
         <label for="email" class="form-label">E-post*</label>
-        <input type="email" class="form-control" id="email" placeholder="E-post" @bind="newUser.Email" @bind:event="oninput" />
+        <input type="email" class="form-control" id="email" placeholder="E-post" @bind="_newUser.Email" @bind:event="oninput" />
     </div>
 
     <div class="mb-3">
         <label for="phone" class="form-label">Telefonnummer*</label>
-        <input type="text" class="form-control" id="phone" placeholder="Telefonnummer" @bind="newUser.Phone" @bind:event="oninput" />
+        <input type="text" class="form-control" id="phone" placeholder="Telefonnummer" @bind="_newUser.Phone" @bind:event="oninput" />
     </div>
 
     <div class="mb-3">
         <label for="address" class="form-label">Adress*</label>
-        <input type="text" class="form-control" id="address" placeholder="Adress" @bind="newUser.Address" @bind:event="oninput" />
+        <input type="text" class="form-control" id="address" placeholder="Adress" @bind="_newUser.Address" @bind:event="oninput" />
     </div>
 
     <div class="mb-3">
         <label for="password" class="form-label">Lösenord*</label>
-        <input type="password" class="form-control" id="password" placeholder="Lösenord" @bind="newUser.Password" @bind:event="oninput" />
+        <input type="password" class="form-control" id="password" placeholder="Lösenord" @bind="_newUser.Password" @bind:event="oninput" />
     </div>
     
-    @if (showSuccessMessage)
+    @if (_showSuccessMessage)
     {
         <div class="alert alert-success" role="alert">
             Användare registrerad!
@@ -63,16 +63,16 @@
 </div>
 
 @code {
-    private UserCreate newUser = new UserCreate { RoleId = 1 };
-    private bool showSuccessMessage = false;
+    private UserCreate _newUser = new UserCreate { RoleId = 1 };
+    private bool _showSuccessMessage = false;
 
     private bool IsFormValid =>
-        !string.IsNullOrWhiteSpace(newUser.FirstName) &&
-        !string.IsNullOrWhiteSpace(newUser.LastName) &&
-        !string.IsNullOrWhiteSpace(newUser.Email) &&
-        !string.IsNullOrWhiteSpace(newUser.Phone) &&
-        !string.IsNullOrWhiteSpace(newUser.Address) &&
-        !string.IsNullOrWhiteSpace(newUser.Password);
+        !string.IsNullOrWhiteSpace(_newUser.FirstName) &&
+        !string.IsNullOrWhiteSpace(_newUser.LastName) &&
+        !string.IsNullOrWhiteSpace(_newUser.Email) &&
+        !string.IsNullOrWhiteSpace(_newUser.Phone) &&
+        !string.IsNullOrWhiteSpace(_newUser.Address) &&
+        !string.IsNullOrWhiteSpace(_newUser.Password);
 
     private async Task RegisterUser()
     {
@@ -81,10 +81,10 @@
             return;
         }
 
-        var user = await UserService.RegisterUser(newUser);
+        var user = await UserService.RegisterUser(_newUser);
         if (user != null)
         {
-            showSuccessMessage = true;
+            _showSuccessMessage = true;
             StateHasChanged();
 
             await Task.Delay(2500);

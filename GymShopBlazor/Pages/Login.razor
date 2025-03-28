@@ -23,21 +23,21 @@
 
     <div class="mb-3">
         <label for="email" class="form-label">E-post</label>
-        <input type="email" class="form-control" id="email" placeholder="E-post" @bind="user.Email" @bind:event="oninput" />
+        <input type="email" class="form-control" id="email" placeholder="E-post" @bind="_user.Email" @bind:event="oninput" />
     </div>
 
     <div class="mb-3">
         <label for="password" class="form-label">Lösenord</label>
-        <input type="password" class="form-control" id="password" placeholder="Lösenord" @bind="user.Password" @bind:event="oninput" />
+        <input type="password" class="form-control" id="password" placeholder="Lösenord" @bind="_user.Password" @bind:event="oninput" />
     </div>
 
-    @if (showSuccessMessage)
+    @if (_showSuccessMessage)
     {
         <div class="alert alert-success" role="alert">
             Inloggad!
         </div>
     }
-    else if (showErrorMessage)
+    else if (_showErrorMessage)
     {
         <div class="alert alert-danger" role="alert">
             Fel användarnamn eller lösenord!
@@ -57,13 +57,13 @@
 </div>
 
 @code {
-    private UserLogin user = new();
-    private bool showSuccessMessage = false;
-    private bool showErrorMessage = false;
+    private UserLogin _user = new();
+    private bool _showSuccessMessage = false;
+    private bool _showErrorMessage = false;
 
     private bool IsFormValid =>
-        !string.IsNullOrWhiteSpace(user.Email) &&
-        !string.IsNullOrWhiteSpace(user.Password);
+        !string.IsNullOrWhiteSpace(_user.Email) &&
+        !string.IsNullOrWhiteSpace(_user.Password);
 
     protected override void OnInitialized()
     {
@@ -82,7 +82,7 @@
             return;
         }
 
-        var token = await UserService.LoginUser(user);
+        var token = await UserService.LoginUser(_user);
         if (!string.IsNullOrEmpty(token))
         {
             await _localStorage.SetItemAsync("authToken", token);
@@ -94,7 +94,7 @@
 
             ((AuthStateProvider)AuthenticationStateProvider).NotifyUserAuthentication(token);
 
-            showSuccessMessage = true;
+            _showSuccessMessage = true;
             StateHasChanged();
 
             await Task.Delay(2000);
@@ -103,7 +103,7 @@
         }
         else
         {
-            showErrorMessage = true;
+            _showErrorMessage = true;
         }
     }
 }

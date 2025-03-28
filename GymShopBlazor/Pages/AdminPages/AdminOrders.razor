@@ -13,7 +13,7 @@
 <h3>Ordrar</h3>
 
 <div class="form-group search-container">
-    <input type="text" class="form-control" placeholder="Sök efter kund id..." @bind="searchQuery" @oninput="FilterOrders" />
+    <input type="text" class="form-control" placeholder="Sök efter kund id..." @bind="_searchQuery" @oninput="FilterOrders" />
 </div>
 
 <table class="table fixed-table">
@@ -26,7 +26,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var order in filteredOrders)
+        @foreach (var order in _filteredOrders)
         {
             <tr @onclick="() => OpenModal(order)" style="cursor: pointer;">
                 <td>@order.Id</td>
@@ -38,7 +38,7 @@
     </tbody>
 </table>
 
-<div class="modal fade @(isModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
+<div class="modal fade @(_isModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -48,22 +48,22 @@
                 </button>
             </div>
             <div class="modal-body">
-                @if (selectedOrder != null)
+                @if (SelectedOrder != null)
                 {
                     <p>Du kan endast uppdatera orderstatus. <br/> Vid felaktig order skall den raderas. <br/>
                         Kunden får skapa en ny order.</p>
                     <div class="form-group">
-                        <label><strong>Order Id:</strong> @selectedOrder.Id</label>
+                        <label><strong>Order Id:</strong> @SelectedOrder.Id</label>
                     </div>
                     <div class="form-group">
-                        <label><strong>Kund Id:</strong> @selectedOrder.User.Id</label>
+                        <label><strong>Kund Id:</strong> @SelectedOrder.User.Id</label>
                     </div>
 
                     <div class="form-group">
                         <label><strong>Orderstatus:</strong></label>
-                        <select class="form-control" @bind="selectedStatusId">
+                        <select class="form-control" @bind="SelectedStatusId">
                             <option value="" >Välj kategori</option> 
-                            @foreach (var status in orderStatuses) 
+                            @foreach (var status in _orderStatuses) 
                             {
                                 <option value="@status.Id">@Translations.GetTranslatedOrderStatus(status.Name)</option>
                             } 
@@ -71,7 +71,7 @@
                     </div> 
 
                     <div class="form-group">
-                        <label><strong>Datum:</strong> @selectedOrder.PurchaseDate</label>
+                        <label><strong>Datum:</strong> @SelectedOrder.PurchaseDate</label>
                     </div>
 
                     <div class="form-group">
@@ -84,7 +84,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var product in selectedOrder.OrderProducts)
+                                @foreach (var product in SelectedOrder.OrderProducts)
                                 {
                                     <tr>
                                         <td>@product.ProductName</td>
@@ -97,21 +97,21 @@
                     </div>
 
                     <div class="form-group">
-                        <label><strong>Totalpris:</strong> @selectedOrder.TotalPrice SEK</label>
+                        <label><strong>Totalpris:</strong> @SelectedOrder.TotalPrice SEK</label>
                     </div>
                 }
             </div>
 
-            @if (!string.IsNullOrEmpty(errorMessage))
+            @if (!string.IsNullOrEmpty(_errorMessage))
             {
                 <div class="alert alert-danger" role="alert">
-                    @errorMessage
+                    @_errorMessage
                 </div>
             }
-            @if (!string.IsNullOrEmpty(successMessage))
+            @if (!string.IsNullOrEmpty(_successMessage))
             {
                 <div class="alert alert-success" role="alert">
-                    @successMessage
+                    @_successMessage
                 </div>
             }
             <div class="modal-footer">
@@ -123,7 +123,7 @@
     </div>
 </div>
 
-<div class="modal fade @(isDeleteModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
+<div class="modal fade @(_isDeleteModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -133,7 +133,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>Vill du verkligen radera order: <strong>@selectedOrder?.Id</strong>?</p>
+                <p>Vill du verkligen radera order: <strong>@SelectedOrder?.Id</strong>?</p>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-danger" @onclick="DeleteOrder">Ja, radera</button>
@@ -144,35 +144,35 @@
 </div>
 
 @code {
-    private List<OrderResponse> orders { get; set; } = new();
-    private OrderResponse selectedOrder { get; set; }
-    private int selectedStatusId { get; set; }
-    private bool isModalOpen = false;
-    private bool isDeleteModalOpen = false;
-    private List<OrderResponse> filteredOrders = new List<OrderResponse>();
-    private string searchQuery = "";
-    private string errorMessage = "";
-    private string successMessage = "";
+    private List<OrderResponse> Orders { get; set; } = new();
+    private OrderResponse SelectedOrder { get; set; }
+    private int SelectedStatusId { get; set; }
+    private bool _isModalOpen = false;
+    private bool _isDeleteModalOpen = false;
+    private List<OrderResponse> _filteredOrders = new List<OrderResponse>();
+    private string _searchQuery = "";
+    private string _errorMessage = "";
+    private string _successMessage = "";
 
-    private List<OrderStatus> orderStatuses = new List<OrderStatus>();
+    private List<OrderStatus> _orderStatuses = new List<OrderStatus>();
 
     protected override async Task OnInitializedAsync()
     {
-        orders = await OrderService.GetAll();
-        orderStatuses = await OrderService.GetOrderStatuses();
-        filteredOrders = orders;
+        Orders = await OrderService.GetAll();
+        _orderStatuses = await OrderService.GetOrderStatuses();
+        _filteredOrders = Orders;
     }
 
     private void FilterOrders(ChangeEventArgs e)
     {
-        searchQuery = e.Value?.ToString() ?? "";
-        filteredOrders = orders
-            .Where(o => o.User.Id.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+        _searchQuery = e.Value?.ToString() ?? "";
+        _filteredOrders = Orders
+            .Where(o => o.User.Id.ToString().Contains(_searchQuery, StringComparison.OrdinalIgnoreCase))
             .ToList();
     }
     private void OpenModal(OrderResponse order)
     {
-        selectedOrder = new OrderResponse
+        SelectedOrder = new OrderResponse
         {
             Id = order.Id,
             User = order.User,
@@ -181,66 +181,66 @@
             TotalPrice = order.TotalPrice,
             OrderProducts = order.OrderProducts
         };
-        selectedStatusId = order.OrderStatus.Id;
-        isModalOpen = true;
+        SelectedStatusId = order.OrderStatus.Id;
+        _isModalOpen = true;
     }
     private void CloseModal()
     {
-        isModalOpen = false;
-        selectedOrder = null;
+        _isModalOpen = false;
+        SelectedOrder = null;
     }
     private void CloseDeleteModal()
     {
-        isDeleteModalOpen = false;
+        _isDeleteModalOpen = false;
     }
     private async Task ConfirmDelete()
     {
-        if (selectedOrder.OrderStatus.Id == 3)
+        if (SelectedOrder.OrderStatus.Id == 3)
         {
-            errorMessage = "Du kan inte ta bort ordrar som är markerade som \"Avslutad\"";
+            _errorMessage = "Du kan inte ta bort ordrar som är markerade som \"Avslutad\"";
             await Task.Delay(2500);
-            errorMessage = "";
+            _errorMessage = "";
             return;
         }
 
-        isDeleteModalOpen = true;
+        _isDeleteModalOpen = true;
     }
 
     private async Task UpdateOrder()
     {
-        if (selectedOrder.OrderStatus.Id == 3)
+        if (SelectedOrder.OrderStatus.Id == 3)
         {
-            errorMessage = "Du kan inte uppdatera ordrar som är markerade som \"Avslutad\"";
+            _errorMessage = "Du kan inte uppdatera ordrar som är markerade som \"Avslutad\"";
             await Task.Delay(2500);
-            errorMessage = "";
+            _errorMessage = "";
             return;
         }
-        var newStatus = orderStatuses.FirstOrDefault(s => s.Id == selectedStatusId);
-        if (newStatus != null && newStatus != selectedOrder.OrderStatus)
+        var newStatus = _orderStatuses.FirstOrDefault(s => s.Id == SelectedStatusId);
+        if (newStatus != null && newStatus != SelectedOrder.OrderStatus)
         {
             var updatedOrder = new OrderCreate
             {
-                Id = selectedOrder.Id,
-                User = selectedOrder.User,
-                PurchaseDate = selectedOrder.PurchaseDate,
+                Id = SelectedOrder.Id,
+                User = SelectedOrder.User,
+                PurchaseDate = SelectedOrder.PurchaseDate,
                     OrderStatus = newStatus,
-                OrderProducts = selectedOrder.OrderProducts
+                OrderProducts = SelectedOrder.OrderProducts
             };
             var responseOrderUpdate = await OrderService.UpdateOrder(updatedOrder);
             if (responseOrderUpdate.Id != 0)
             {
-                var orderIndex = orders.FindIndex(o => o.Id == responseOrderUpdate.Id);
+                var orderIndex = Orders.FindIndex(o => o.Id == responseOrderUpdate.Id);
                 if (orderIndex != -1)
                 {
-                    orders[orderIndex] = responseOrderUpdate;
+                    Orders[orderIndex] = responseOrderUpdate;
                 }
 
-                filteredOrders = new List<OrderResponse>(orders);
+                _filteredOrders = new List<OrderResponse>(Orders);
 
-                successMessage = "Ordern har uppdaterats";
+                _successMessage = "Ordern har uppdaterats";
                 StateHasChanged();
                 await Task.Delay(2500);
-                successMessage = "";
+                _successMessage = "";
             }
             StateHasChanged();
         }
@@ -248,21 +248,21 @@
     private async Task DeleteOrder()
     {
         CloseDeleteModal();
-        if (await OrderService.DeleteOrder(selectedOrder.Id))
+        if (await OrderService.DeleteOrder(SelectedOrder.Id))
         {
-            orders = orders.Where(o => o.Id != selectedOrder.Id).ToList();
-            filteredOrders = new List<OrderResponse>(orders);
+            Orders = Orders.Where(o => o.Id != SelectedOrder.Id).ToList();
+            _filteredOrders = new List<OrderResponse>(Orders);
             StateHasChanged();
-            successMessage = "Ordern har raderats";
+            _successMessage = "Ordern har raderats";
             await Task.Delay(2500);
-            successMessage = "";
+            _successMessage = "";
             CloseModal();
         }
         else
         {
-            errorMessage = "Kunde inte radera ordern"; 
+            _errorMessage = "Kunde inte radera ordern"; 
             await Task.Delay(2500);
-            errorMessage = "";
+            _errorMessage = "";
         }
     }   
 }

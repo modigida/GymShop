@@ -12,7 +12,7 @@
             <button class="btn btn-outline-secondary" @onclick="() => DecreaseQuantity(Item)">-</button>
             <span class="quantity">@Item.Quantity</span>
             <button class="btn btn-outline-secondary" @onclick="() => IncreaseQuantity(Item)">+</button>
-            <p>@quantityMessage</p>
+            <p>@_quantityMessage</p>
         </div>
     </div>
 </div>
@@ -22,16 +22,16 @@
     [Parameter] public EventCallback<int> OnQuantityChanged { get; set; }
     [Parameter] public EventCallback<OrderProduct> OnRemove { get; set; }
 
-    private string quantityMessage = "";
+    private string _quantityMessage = "";
 
     private async Task IncreaseQuantity(OrderProduct item)
     {
-        quantityMessage = await CartService.IncreaseQuantity(item);
+        _quantityMessage = await CartService.IncreaseQuantity(item);
         StateHasChanged();
-        if (!string.IsNullOrEmpty(quantityMessage))
+        if (!string.IsNullOrEmpty(_quantityMessage))
         {
             await Task.Delay(2000);
-            quantityMessage = "";
+            _quantityMessage = "";
         }
         StateHasChanged();
     }
@@ -39,6 +39,6 @@
     private void DecreaseQuantity(OrderProduct item)
     {
         CartService.DecreaseQuantity(item);
-        quantityMessage = "";
+        _quantityMessage = "";
     }
 }

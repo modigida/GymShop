@@ -13,13 +13,13 @@
 </div>
 
 
-@if (isLoading)
+@if (_isLoading)
 {
     <div class="loading-info">
         <h3>Laddar produkter...</h3>
     </div>
 }
-else if (!isLoading && !products.Any())
+else if (!_isLoading && !_products.Any())
 {
     <div class="loading-info">
         <h3>Inga produkter hittades.</h3>
@@ -28,9 +28,9 @@ else if (!isLoading && !products.Any())
 else
 {
     <div class="product-container">
-        @foreach (var category in categories)
+        @foreach (var category in _categories)
         {
-            var productsInCategory = products
+            var productsInCategory = _products
             .Where(p => p.Category.Id == category.Id)
             .Take(5)
             .ToList();
@@ -51,48 +51,48 @@ else
     </div>
 }
 
-<div class="modal fade @(isModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
+<div class="modal fade @(_isModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@selectedProduct?.Name</h5>
+                <h5 class="modal-title">@_selectedProduct?.Name</h5>
                 <button type="button" class="close" @onclick="CloseModal">
                     <span>&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                @if (selectedProduct != null)
+                @if (_selectedProduct != null)
                 {
                     <div class="form-group">
                         <div>
-                            <img src="@selectedProduct.ImageUrl" alt="Produktbild" class="img-fluid" style="max-width: 200px; height: auto;" />
+                            <img src="@_selectedProduct.ImageUrl" alt="Produktbild" class="img-fluid" style="max-width: 200px; height: auto;" />
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label><strong>Kategori:</strong> @Translations.GetTranslatedCategoryName(selectedProduct.Category.Name)</label>
+                        <label><strong>Kategori:</strong> @Translations.GetTranslatedCategoryName(_selectedProduct.Category.Name)</label>
                     </div>
 
                     <div class="form-group">
-                        <label><strong>Lagerstatus:</strong> @Translations.GetTranslatedProductStatus(selectedProduct.ProductStatus.Name)</label>
+                        <label><strong>Lagerstatus:</strong> @Translations.GetTranslatedProductStatus(_selectedProduct.ProductStatus.Name)</label>
                     </div>
 
                     <div class="form-group">
-                        <label><strong>Lagersaldo:</strong> @selectedProduct.Balance ST</label>
+                        <label><strong>Lagersaldo:</strong> @_selectedProduct.Balance ST</label>
                     </div>
                     <div class="form-group">
-                        <label><strong>Pris:</strong> @selectedProduct.Price SEK</label>
+                        <label><strong>Pris:</strong> @_selectedProduct.Price SEK</label>
                     </div>
                     <div class="form-group">
-                        <label><strong>Produktbeskrivning:</strong> @selectedProduct.Description</label>
+                        <label><strong>Produktbeskrivning:</strong> @_selectedProduct.Description</label>
                     </div>
                 }
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" @onclick="CloseModal">Stäng</button>
-                @if (selectedProduct?.Balance > 0)
+                @if (_selectedProduct?.Balance > 0)
                 {
-                    <button type="button" class="add-to-cart-button" @onclick="() => HandleAddToCart(selectedProduct)">Köp</button>
+                    <button type="button" class="add-to-cart-button" @onclick="() => HandleAddToCart(_selectedProduct)">Köp</button>
                 }
             </div>
         </div>
@@ -100,32 +100,32 @@ else
 </div>
 
 @code {
-    private List<Product> products = new();
-    private List<Category> categories = new();
-    private bool isLoading = true;
-    private Product? selectedProduct; 
-    private bool isModalOpen = false;
+    private List<Product> _products = new();
+    private List<Category> _categories = new();
+    private bool _isLoading = true;
+    private Product? _selectedProduct; 
+    private bool _isModalOpen = false;
 
     [Inject] private ProductService ProductService { get; set; } = default!;
     [Inject] private CartService CartService { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        products = await ProductService.GetAll();
-        categories = await ProductService.GetCategories();
-        isLoading = false;
+        _products = await ProductService.GetAll();
+        _categories = await ProductService.GetCategories();
+        _isLoading = false;
     }
 
     private void OpenModal(Product product)
     {
-        selectedProduct = product;
-        isModalOpen = true;
+        _selectedProduct = product;
+        _isModalOpen = true;
     }
 
     private void CloseModal()
     {
-        isModalOpen = false;
-        selectedProduct = null;
+        _isModalOpen = false;
+        _selectedProduct = null;
     }
 
     private void HandleAddToCart(Product product)

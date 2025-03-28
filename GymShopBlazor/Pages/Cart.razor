@@ -18,7 +18,7 @@
     {
         <div class="cart-summary">
             <h4>Totalt ordervärde: @CartService.CartItems.Sum(item => item.CurrentPrice * item.Quantity).ToString("0.00") SEK</h4>
-            @if (!isCheckoutOpen)
+            @if (!_isCheckoutOpen)
             {
                 <button class="btn btn-success" @onclick="OpenCheckout">Betala</button>
             }
@@ -29,14 +29,14 @@
         <p>Din varukorg är tom.</p>
     }
 
-    @if (isCheckoutOpen)
+    @if (_isCheckoutOpen)
     {
         <Checkout/>
     }
 </div>
 
 @code {
-    private bool isCheckoutOpen = false;
+    private bool _isCheckoutOpen = false;
 
     [Inject] private CartService CartService { get; set; } = default!;
 
@@ -62,6 +62,6 @@
 
     private void OpenCheckout()
     {
-        isCheckoutOpen = !isCheckoutOpen;
+        _isCheckoutOpen = !_isCheckoutOpen;
     }
 }

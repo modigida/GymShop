@@ -11,13 +11,13 @@
 <h3>@(string.IsNullOrEmpty(CategoryName) ? "Alla produkter" : Translations.GetTranslatedCategoryName(category.Name))</h3>
 
 
-@if (products == null)
+@if (AllProducts == null)
 {
     <div class="loading-info">
         <h3>Laddar produkter...</h3>
     </div>
 }
-else if (!products.Any())
+else if (!AllProducts.Any())
 {
     <div class="loading-info">
         <h3>Inga produkter hittades.</h3>
@@ -26,34 +26,34 @@ else if (!products.Any())
 else
 {
     <div class="form-group">
-        <input type="text" class="form-control" placeholder="Sök efter produkt..." @bind="searchQuery" @oninput="FilterProducts" />
+        <input type="text" class="form-control" placeholder="Sök efter produkt..." @bind="_searchQuery" @oninput="FilterProducts" />
     </div>
 
     <div class="product-list">
-        @foreach (var product in filteredProducts)
+        @foreach (var product in FilteredProducts)
         {
             <ProductComponent Product="product" OnProductClick="OpenModal" />
         }
     </div>
 }
 
-<div class="modal fade @(isModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
+<div class="modal fade @(_isModalOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="background: rgba(0, 0, 0, 0.5);">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@selectedProduct?.Name</h5>
+                <h5 class="modal-title">@_selectedProduct?.Name</h5>
                 <button type="button" class="close" @onclick="CloseModal">
                     <span>&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                @if (selectedProduct != null)
+                @if (_selectedProduct != null)
                 {
                     <div class="form-group">
                         <div>
-                            @if (!string.IsNullOrEmpty(selectedProduct.ImageUrl))
+                            @if (!string.IsNullOrEmpty(_selectedProduct.ImageUrl))
                             {
-                                <img src="@selectedProduct.ImageUrl" alt="Produktbild" class="img-fluid" style="max-width: 200px; height: auto;" />
+                                <img src="@_selectedProduct.ImageUrl" alt="Produktbild" class="img-fluid" style="max-width: 200px; height: auto;" />
                             }
                             else
                             {
@@ -63,29 +63,29 @@ else
                     </div>
 
                     <div class="form-group">
-                        <label><strong>Kategori:</strong> @Translations.GetTranslatedCategoryName(selectedProduct.Category.Name)</label>
+                        <label><strong>Kategori:</strong> @Translations.GetTranslatedCategoryName(_selectedProduct.Category.Name)</label>
                     </div>
 
                     <div class="form-group">
-                        <label><strong>Lagerstatus:</strong> @Translations.GetTranslatedProductStatus(selectedProduct.ProductStatus.Name)</label>
+                        <label><strong>Lagerstatus:</strong> @Translations.GetTranslatedProductStatus(_selectedProduct.ProductStatus.Name)</label>
                     </div>
 
                     <div class="form-group">
-                        <label><strong>Lagersaldo:</strong> @selectedProduct.Balance ST</label>
+                        <label><strong>Lagersaldo:</strong> @_selectedProduct.Balance ST</label>
                     </div>
                     <div class="form-group">
-                        <label><strong>Pris:</strong> @selectedProduct.Price SEK</label>
+                        <label><strong>Pris:</strong> @_selectedProduct.Price SEK</label>
                     </div>
                     <div class="form-group">
-                        <label><strong>Produktbeskrivning:</strong> @selectedProduct.Description</label>
+                        <label><strong>Produktbeskrivning:</strong> @_selectedProduct.Description</label>
                     </div>
                 }
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" @onclick="CloseModal">Stäng</button>
-                @if (selectedProduct?.Balance > 0)
+                @if (_selectedProduct?.Balance > 0)
                 {
-                    <button type="button" class="add-to-cart-button" @onclick="() => HandleAddToCart(selectedProduct)">Köp</button>
+                    <button type="button" class="add-to-cart-button" @onclick="() => HandleAddToCart(_selectedProduct)">Köp</button>
                 }
             </div>
         </div>
@@ -96,21 +96,21 @@ else
     [Inject]
     private NavigationManager Navigation { get; set; }
 
-    public string CategoryName { get; set; }
-    private List<Category> categories { get; set; }
+    public string? CategoryName { get; set; }
+    private List<Category> Categories { get; set; } = new();
     private Category category { get; set; }
-    private List<Product> products { get; set; } = new();
-    private List<Product> filteredProducts = new List<Product>();
-    private string searchQuery = "";
-
-    private Product? selectedProduct;
-    private bool isModalOpen = false;
+    private List<Product> AllProducts { get; set; } = new();
+    private List<Product> FilteredProducts { get; set; } = new List<Product>();
+    private string _searchQuery = "";
+    
+    private Product? _selectedProduct;
+    private bool _isModalOpen = false;
 
     [Inject] private CartService CartService { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        categories = await ProductService.GetCategories();
+        Categories = await ProductService.GetCategories();
         Navigation.LocationChanged += OnLocationChanged;
         await LoadProducts();
         ExtractCategoryFromUri();
@@ -118,9 +118,9 @@ else
 
     private void FilterProducts(ChangeEventArgs e)
     {
-        searchQuery = e.Value?.ToString() ?? "";
-        filteredProducts = products
-            .Where(p => p.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+        _searchQuery = e.Value?.ToString() ?? "";
+        FilteredProducts = AllProducts
+            .Where(p => p.Name.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase))
             .ToList();
     }
 
@@ -146,7 +146,7 @@ else
         {
             var queryParams = System.Web.HttpUtility.ParseQueryString(query);
             CategoryName = queryParams["category"];
-            category = categories.FirstOrDefault(c => c.Name.ToLower() == CategoryName.ToLower());
+            category = Categories.FirstOrDefault(c => c.Name.ToLower() == CategoryName.ToLower());
         }
         else
         {
@@ -159,13 +159,13 @@ else
     {
         if (string.IsNullOrEmpty(CategoryName))
         {
-            products = await ProductService.GetAll();
-            filteredProducts = products;
+            AllProducts = await ProductService.GetAll();
+            FilteredProducts = AllProducts;
         }
         else
         {
-            products = await ProductService.GetByCategory(category);
-            filteredProducts = products;
+            AllProducts = await ProductService.GetByCategory(category);
+            FilteredProducts = AllProducts;
         }
 
         StateHasChanged();
@@ -173,14 +173,14 @@ else
 
     private void OpenModal(Product product)
     {
-        selectedProduct = product;
-        isModalOpen = true;
+        _selectedProduct = product;
+        _isModalOpen = true;
     }
 
     private void CloseModal()
     {
-        isModalOpen = false;
-        selectedProduct = null;
+        _isModalOpen = false;
+        _selectedProduct = null;
     }
 
     private async Task HandleAddToCart(Product product)
