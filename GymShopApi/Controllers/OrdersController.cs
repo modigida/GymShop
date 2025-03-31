@@ -4,6 +4,7 @@ using GymShopApi.Repositories;
 using GymShopApi.Repositories.Interfaces;
 using GymShopApi.Services;
 using GymShopApi.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymShopApi.Controllers;
@@ -14,6 +15,7 @@ public class OrdersController(IOrderService orderService) : ControllerBase
 {
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAll()
     {
         var orders = await orderService.GetAllAsync();
@@ -39,20 +41,22 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         return Ok(order);
     }
 
-    //[HttpGet("email/{email}")]
-    //public async Task<IActionResult> GetByEmail(string email)
-    //{
-    //    var orders = await orderService.GetByEmailAsync(email);
+    [HttpGet("email/{email}")]
+    [Authorize]
+    public async Task<IActionResult> GetByEmail(string email)
+    {
+        var orders = await orderService.GetByEmailAsync(email);
 
-    //    if (!orders.Any())
-    //    {
-    //        return NotFound($"No orders found for email: {email}");
-    //    }
+        if (!orders.Any())
+        {
+            return NotFound($"No orders found for email: {email}");
+        }
 
-    //    return Ok(orders);
-    //}
+        return Ok(orders);
+    }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Post([FromBody] OrderCreateDto orderResponse)
     {
         try
@@ -67,6 +71,7 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Put(int id, [FromBody] OrderCreateDto updatedOrderResponse)
     {
         try
@@ -85,6 +90,7 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         try

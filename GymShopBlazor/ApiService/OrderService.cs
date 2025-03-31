@@ -1,15 +1,36 @@
 ﻿using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
+using GymShopBlazor.AuthService;
 using GymShopBlazor.Models;
 
 namespace GymShopBlazor.ApiService
 {
-    public class OrderService(HttpClient httpClient, UserService userService)
+    public class OrderService(HttpClient httpClient, UserService userService, AuthStateProvider authStateProvider)
     {
         public async Task<List<OrderResponse>> GetAll()
         {
             try
             {
+                var tokenObject = await authStateProvider.GetJwtTokenAsync();
+                if (!string.IsNullOrEmpty(tokenObject))
+                {
+                    try
+                    {
+                        var jsonDov = JsonDocument.Parse(tokenObject);
+                        if (jsonDov.RootElement.TryGetProperty("token", out var tokenProperty))
+                        {
+                            var token = tokenProperty.ToString();
+                            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+
                 return await httpClient.GetFromJsonAsync<List<OrderResponse>>("api/Orders")
                     ?? new List<OrderResponse>();
             }
@@ -35,6 +56,24 @@ namespace GymShopBlazor.ApiService
         {
             try
             {
+                var tokenObject = await authStateProvider.GetJwtTokenAsync();
+                if (!string.IsNullOrEmpty(tokenObject))
+                {
+                    try
+                    {
+                        var jsonDoc = JsonDocument.Parse(tokenObject);
+                        if (jsonDoc.RootElement.TryGetProperty("token", out var tokenProperty))
+                        {
+                            var token = tokenProperty.ToString();
+                            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+
                 return await httpClient.GetFromJsonAsync<List<OrderResponse>>($"api/Orders/email/{email}")
                        ?? new List<OrderResponse>();
             }
@@ -48,6 +87,24 @@ namespace GymShopBlazor.ApiService
         {
             try
             {
+                var tokenObject = await authStateProvider.GetJwtTokenAsync();
+                if (!string.IsNullOrEmpty(tokenObject))
+                {
+                    try
+                    {
+                        var jsonDoc = JsonDocument.Parse(tokenObject);
+                        if (jsonDoc.RootElement.TryGetProperty("token", out var tokenProperty))
+                        {
+                            var token = tokenProperty.ToString();
+                            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+
                 var response = await httpClient.PostAsJsonAsync("api/Orders", order);
                 return await response.Content.ReadFromJsonAsync<OrderResponse>();
             }
@@ -74,6 +131,24 @@ namespace GymShopBlazor.ApiService
         {
             try
             {
+                var tokenObject = await authStateProvider.GetJwtTokenAsync();
+                if (!string.IsNullOrEmpty(tokenObject))
+                {
+                    try
+                    {
+                        var jsonDoc = JsonDocument.Parse(tokenObject);
+                        if (jsonDoc.RootElement.TryGetProperty("token", out var tokenProperty))
+                        {
+                            var token = tokenProperty.ToString();
+                            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+
                 updatedOrder.User = await userService.GetUserById(updatedOrder.User.Id);
                 var response = await httpClient.PutAsJsonAsync($"api/Orders/{updatedOrder.Id}", updatedOrder);
 
@@ -96,6 +171,24 @@ namespace GymShopBlazor.ApiService
         {
             try
             {
+                var tokenObject = await authStateProvider.GetJwtTokenAsync();
+                if (!string.IsNullOrEmpty(tokenObject))
+                {
+                    try
+                    {
+                        var jsonDoc = JsonDocument.Parse(tokenObject);
+                        if (jsonDoc.RootElement.TryGetProperty("token", out var tokenProperty))
+                        {
+                            var token = tokenProperty.ToString();
+                            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+
                 var response = await httpClient.DeleteAsync($"api/Orders/{id}");
                 if (response.IsSuccessStatusCode)
                 {
