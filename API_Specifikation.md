@@ -54,7 +54,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  En lista med alla kategorier returneras   |
-| `404 Undocumented` | Inga kategorier hittade      |
+| `404 Not Found` | Inga kategorier hittade      |
 
 
 ### **Hämta en kategori**
@@ -72,7 +72,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  En kategori returneras   |
-| `404 Undocumented` | Ingen kategori hittad      |
+| `404 Not Found` | Ingen kategori hittad      |
 
 
 ## Ordrar
@@ -195,7 +195,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Uppdaterad order returneras   |
-| `404 Undocumented` | Ingen order hittad      |
+| `404 Not Found` | Ingen order hittad      |
 
 **Endpoint:**  
 
@@ -210,7 +210,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Ordern raderad   |
-| `404 Undocumented` | Ingen order hittad      |
+| `404 Not Found` | Ingen order hittad      |
 
 
 ## Order produkter
@@ -228,7 +228,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Order produkten returneras   |
-| `404 Undocumented` | Ingen order produkt hittad      |
+| `404 Not Found` | Ingen order produkt hittad      |
 
 
 ## Orderstatusar
@@ -246,7 +246,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  En lista med orderstatusar returneras   |
-| `404 Undocumented` | Inga orderstatusar hittade      |
+| `404 Not Found` | Inga orderstatusar hittade      |
 
 ### Hämta en orderstatus
 
@@ -261,7 +261,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Orderstatus returneras   |
-| `404 Undocumented` | Ingen orderstatus hittad      |
+| `404 Not Found` | Ingen orderstatus hittad      |
 
 ## Produkter
 
@@ -278,7 +278,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  En lista med alla produkter returneras   |
-| `404 Undocumented` | Inga produkter hittade      |
+| `404 Not Found` | Inga produkter hittade      |
 
 ### Hämta en produkt
 
@@ -293,7 +293,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Produkten returneras   |
-| `404 Undocumented` | Ingen produkt hittad      |
+| `404 Not Found` | Ingen produkt hittad      |
 
 ### Skapa ny produkt
 
@@ -363,7 +363,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Uppdaterad produkt returneras   |
-| `404 Undocumented` | Ingen produkt hittad      |
+| `404 Not Found` | Ingen produkt hittad      |
 
 ### Ta bort produkt
 
@@ -378,7 +378,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Produkten raderad   |
-| `404 Undocumented` | Ingen produkt hittad      |
+| `404 Not Found` | Ingen produkt hittad      |
 
 ## Produktstatusar
 
@@ -395,7 +395,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  En lista med alla produktstatusar returneras   |
-| `404 Undocumented` | Inga produktstatusar hittade      |
+| `404 Not Found` | Inga produktstatusar hittade      |
 
 ### Hämta en produktstatus
 
@@ -410,7 +410,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Produktstatus returneras   |
-| `404 Undocumented` | Ingen produktstatus hittad      |
+| `404 Not Found` | Ingen produktstatus hittad      |
 
 ## Roller
 
@@ -427,7 +427,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  En lista med alla roller returneras   |
-| `404 Undocumented` | Inga roller hittade      |
+| `404 Not Found` | Inga roller hittade      |
 
 ### Hämta en roll
 
@@ -442,7 +442,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Rollen returneras   |
-| `404 Undocumented` | Ingen roll hittad      |
+| `404 Not Found` | Ingen roll hittad      |
 
 ## Användare
 
@@ -459,7 +459,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  En lista med alla användare returneras   |
-| `404 Undocumented` | Inga användare hittade      |
+| `404 Not Found` | Inga användare hittade      |
 
 ### Hämta alla kunder
 
@@ -474,7 +474,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  En lista med alla kunder returneras   |
-| `404 Undocumented` | Inga kunder hittade      |
+| `404 Not Found` | Inga kunder hittade      |
 
 ### Hämta en användare
 
@@ -489,7 +489,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  En användare returneras   |
-| `404 Undocumented` | Ingen användare hittades      |
+| `404 Not FOund` | Ingen användare hittades      |
 
 ### Registrera användare
 
@@ -611,7 +611,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Uppdaterad användare returneras   |
-| `404 Undocumented` | Ingen användare hittades      |
+| `404 Not Found` | Ingen användare hittades      |
 
 ### Radera användare
 
@@ -626,4 +626,4 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Användare raderad   |
-| `404 Undocumented` | Ingen användare hittades      |
+| `404 Not Found` | Ingen användare hittades      |
