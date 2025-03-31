@@ -90,6 +90,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  En lista med alla ordrar returneras   |
+| `401 Unauthorized`    |  Användaren är inte autentiserad   |
 
 **Endpoint:**  
 
@@ -148,6 +149,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Order skapad   |
+| `401 Unauthorized`    |  Användaren är inte autentiserad   |
 
 **Endpoint:**  
 
@@ -195,6 +197,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Uppdaterad order returneras   |
+| `401 Unauthorized`    |  Användaren är inte autentiserad   |
 | `404 Not Found` | Ingen order hittad      |
 
 **Endpoint:**  
@@ -210,6 +213,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Ordern raderad   |
+| `401 Unauthorized`    |  Användaren är inte autentiserad   |
 | `404 Not Found` | Ingen order hittad      |
 
 
@@ -328,6 +332,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Produkten skapad   |
+| `401 Unauthorized`    |  Användaren är inte autentiserad   |
 
 ### Uppdatera produkt
 
@@ -363,6 +368,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Uppdaterad produkt returneras   |
+| `401 Unauthorized`    |  Användaren är inte autentiserad   |
 | `404 Not Found` | Ingen produkt hittad      |
 
 ### Ta bort produkt
@@ -378,6 +384,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Produkten raderad   |
+| `401 Unauthorized`    |  Användaren är inte autentiserad   |
 | `404 Not Found` | Ingen produkt hittad      |
 
 ## Produktstatusar
@@ -459,6 +466,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  En lista med alla användare returneras   |
+| `401 Unauthorized`    |  Användaren är inte autentiserad   |
 | `404 Not Found` | Inga användare hittade      |
 
 ### Hämta alla kunder
@@ -611,6 +619,7 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Uppdaterad användare returneras   |
+| `401 Unauthorized`    |  Användaren är inte autentiserad   |
 | `404 Not Found` | Ingen användare hittades      |
 
 ### Radera användare
@@ -626,4 +635,5 @@
 | Statuskod      |  Beskrivning                |
 |------------|----------------------------|
 | `200 OK`    |  Användare raderad   |
+| `401 Unauthorized`    |  Användaren är inte autentiserad   |
 | `404 Not Found` | Ingen användare hittades      |
