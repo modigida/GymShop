@@ -1,9 +1,12 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
+using GymShopBlazor.AuthService;
 using GymShopBlazor.Models;
 
 namespace GymShopBlazor.ApiService;
 
-public class ProductService(HttpClient httpClient)
+public class ProductService(HttpClient httpClient, AuthStateProvider authStateProvider)
 {
     public async Task<List<Product?>> GetAll()
     {
@@ -48,6 +51,24 @@ public class ProductService(HttpClient httpClient)
     {
         try
         {
+            var tokenObject = await authStateProvider.GetJwtTokenAsync();
+            if (!string.IsNullOrEmpty(tokenObject))
+            {
+                try
+                {
+                    var jsonDoc = JsonDocument.Parse(tokenObject);
+                    if (jsonDoc.RootElement.TryGetProperty("token", out var tokenProperty))
+                    {
+                        var token = tokenProperty.ToString();
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+
             var response = await httpClient.PostAsJsonAsync("api/Products", product);
             if (!response.IsSuccessStatusCode)
             {
@@ -66,6 +87,24 @@ public class ProductService(HttpClient httpClient)
     {
         try
         {
+            var tokenObject = await authStateProvider.GetJwtTokenAsync();
+            if (!string.IsNullOrEmpty(tokenObject))
+            {
+                try
+                {
+                    var jsonDoc = JsonDocument.Parse(tokenObject);
+                    if (jsonDoc.RootElement.TryGetProperty("token", out var tokenProperty))
+                    {
+                        var token = tokenProperty.ToString();
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+
             var response = await httpClient.PutAsJsonAsync($"api/Products/{product.Id}", product);
 
             if (!response.IsSuccessStatusCode)
@@ -86,6 +125,24 @@ public class ProductService(HttpClient httpClient)
     {
         try
         {
+            var tokenObject = await authStateProvider.GetJwtTokenAsync();
+            if (!string.IsNullOrEmpty(tokenObject))
+            {
+                try
+                {
+                    var jsonDoc = JsonDocument.Parse(tokenObject);
+                    if (jsonDoc.RootElement.TryGetProperty("token", out var tokenProperty))
+                    {
+                        var token = tokenProperty.ToString();
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+
             var response = await httpClient.DeleteAsync($"api/Products/{id}");
             if (response.IsSuccessStatusCode)
             {

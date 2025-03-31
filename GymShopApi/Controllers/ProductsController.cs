@@ -3,6 +3,7 @@ using GymShopApi.Entities;
 using GymShopApi.Repositories;
 using GymShopApi.Repositories.Interfaces;
 using GymShopApi.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 
@@ -49,18 +50,19 @@ public class ProductsController(IProductService productService) : ControllerBase
         return Ok(products);
     }
 
-[HttpGet("status/{statusId}")]
-public async Task<IActionResult> GetByStatus(int statusId)
-{
-    var products = await productService.GetByStatusAsync(statusId);
-    if (!products.Any())
+    [HttpGet("status/{statusId}")]
+    public async Task<IActionResult> GetByStatus(int statusId)
     {
-        return NotFound($"No products found for status with ID: {statusId}");
+        var products = await productService.GetByStatusAsync(statusId);
+        if (!products.Any())
+        {
+            return NotFound($"No products found for status with ID: {statusId}");
+        }
+        return Ok(products);
     }
-    return Ok(products);
-}
 
-[HttpPost]
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Post([FromBody] ProductDto product)
     {
         try
@@ -75,11 +77,12 @@ public async Task<IActionResult> GetByStatus(int statusId)
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Put(int id, [FromBody] ProductDto updatedProduct)
     {
         try
         {
-            var product = await productService.Update( updatedProduct, id);
+            var product = await productService.Update(updatedProduct, id);
             return Ok(product);
         }
         catch (ArgumentException ex)
@@ -93,6 +96,7 @@ public async Task<IActionResult> GetByStatus(int statusId)
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         try
