@@ -24,6 +24,7 @@ builder.Services.AddScoped<MainLayout>();
 builder.Services.AddScoped<AuthenticationStateNotifier>();
 
 builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
+builder.Services.AddScoped<AuthStateProvider>();
 
 
 builder.Services.AddBlazoredLocalStorage();

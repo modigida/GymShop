@@ -56,9 +56,9 @@ public class AuthStateProvider : AuthenticationStateProvider
 
         _authenticationStateNotifier.NotifyStateChanged();
     }
-    public bool IsUserAdmin(ClaimsPrincipal user)
+    public async Task<string?> GetJwtTokenAsync()
     {
-        return user.IsInRole("Admin");
+        return await _localStorage.GetItemAsync<string>("authToken");
     }
 
     public async Task LogoutUser()

@@ -49,7 +49,7 @@ public class UsersController(IUserService userService) : ControllerBase
     }
 
     [HttpGet]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAll()
     {
         var users = await userService.GetAllAsync();
@@ -63,7 +63,7 @@ public class UsersController(IUserService userService) : ControllerBase
     }    
     
     [HttpGet("customers")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllCustomers()
     {
         var users = await userService.GetAllCustomersAsync();
@@ -90,6 +90,7 @@ public class UsersController(IUserService userService) : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<IActionResult> Put(Guid id, [FromBody] UserCreateDto updatedUser)
     {
         try
@@ -108,6 +109,7 @@ public class UsersController(IUserService userService) : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<IActionResult> Delete(Guid id)
     {
         try
